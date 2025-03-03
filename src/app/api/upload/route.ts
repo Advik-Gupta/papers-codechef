@@ -4,9 +4,10 @@ import { campuses, exams, semesters, slots, years } from "@/components/select_op
 import { connectToDatabase } from "@/lib/mongoose";
 import cloudinary from "cloudinary";
 import { type ICourses, type CloudinaryUploadResult } from "@/interface";
-import { PaperAdmin } from "@/db/papers";
+import Paper, { PaperAdmin } from "@/db/papers";
 import axios from "axios";
 // TODO: REMOVE THUMBNAIL FROM admin-buffer DB
+
 const cloudinaryConfig1 = cloudinary.v2;
 cloudinaryConfig1.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_1,
@@ -14,19 +15,23 @@ cloudinaryConfig1.config({
   api_secret: process.env.CLOUDINARY_SECRET_1,
 });
 
-// Config 2: Secondary Cloudinary account
 const cloudinaryConfig2 = cloudinary.v2;
 cloudinaryConfig2.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_2,
   api_key: process.env.CLOUDINARY_API_KEY_2,
   api_secret: process.env.CLOUDINARY_SECRET_2,
 });
+const cloudinaryConfigs = [cloudinaryConfig1, cloudinaryConfig2];
 
 export async function POST(req: Request) {
   try {
     if (!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET) {
       return NextResponse.json({ message: "ServerMisconfig" }, { status: 500 });
     }
+    const count: number = await Paper.countDocuments();
+
+    const configIndex = cloudinaryConfigs[count % 2];
+    cloudinary.v2.config(configIndex);
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
     const formData = await req.formData();
     const files: File[] = formData.getAll("files") as File[];

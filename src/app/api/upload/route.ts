@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     }
     const count: number = await Paper.countDocuments();
 
-    const configIndex = cloudinaryConfigs[count % 2];
+    const configIndex = cloudinaryConfigs[count % cloudinaryConfigs.length];
     cloudinary.v2.config(configIndex);
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
     const formData = await req.formData();

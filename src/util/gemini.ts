@@ -38,6 +38,7 @@ export default async function processAndAnalyze({
 
   if (imageURL) {
     const analysisResult = await analyzeImage(imageURL);
+    
     return analysisResult[0]?.examDetail;
   } else {
     throw "Error Creating the Image";
@@ -113,6 +114,7 @@ async function analyzeImage(dataUrl: string): Promise<AnalysisResult[]> {
     if (!apiKey) {
       throw new ProcessingError("GEMINI_API_KEY environment variable not set");
     }
+    
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({model: "gemini-1.5-flash"})
     const results: AnalysisResult[] = [];
@@ -131,7 +133,7 @@ async function analyzeImage(dataUrl: string): Promise<AnalysisResult[]> {
     const result = await model.generateContent([prompt, image]);
 
     const chatResponse = result.response.text();
-    const rawAnalysis = await chatResponse;
+    const rawAnalysis =  chatResponse;
 
     const examDetail: ExamDetail = parseExamDetail(rawAnalysis);
 
@@ -195,7 +197,7 @@ async function analyzeImage(dataUrl: string): Promise<AnalysisResult[]> {
 
 // Example usage - Replace with your PDF URL
 // const pdfUrl =
-//   "https://res.cloudinary.com/dtorpaj1c/image/upload/v1731668830/papers/mykcs2yxaman61kx0jvj.pdf";
+//   "https://res.cloudinaGEMINI_API_KEY=AIzaSyBpN6k0jktq4VAbNT4QPoxuEEpDGOnHXSYry.com/dtorpaj1c/image/upload/v1731668830/papers/mykcs2yxaman61kx0jvj.pdf";
 
 // Run the complete process
 // processPDFAndAnalyze(pdfUrl)

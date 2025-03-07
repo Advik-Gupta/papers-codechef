@@ -16,7 +16,7 @@ import type {
   ExamDetail,
   IAdminPaper,
 } from "@/interface";
-import { PaperAdmin } from "@/db/papers";
+import Paper, { PaperAdmin } from "@/db/papers";
 import axios from "axios";
 import processAndAnalyze from "@/util/gemini";
 import { examMap } from "./map";
@@ -30,17 +30,35 @@ cloudinary.v2.config({
 });
 type SemesterType = IAdminPaper["semester"]; // Extract the exam type from the IPaper interface
 
+const cloudinaryConfig1 = cloudinary.v2;
+cloudinaryConfig1.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_1,
+  api_key: process.env.CLOUDINARY_API_KEY_1,
+  api_secret: process.env.CLOUDINARY_SECRET_1,
+});
+
+const cloudinaryConfig2 = cloudinary.v2;
+cloudinaryConfig2.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_2,
+  api_key: process.env.CLOUDINARY_API_KEY_2,
+  api_secret: process.env.CLOUDINARY_SECRET_2,
+});
+const cloudinaryConfigs = [cloudinaryConfig1, cloudinaryConfig2];
+
 export async function POST(req: Request) {
   try {
     if (!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET) {
       return NextResponse.json({ message: "ServerMisconfig" }, { status: 500 });
     }
+    const count: number = await Paper.countDocuments();
+    const configIndex = count % cloudinaryConfigs.length;
+    const selectedConfig = cloudinaryConfigs[configIndex];
+    cloudinary.v2.config(selectedConfig);
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
     const formData = await req.formData();
     const files: File[] = formData.getAll("files") as File[];
     const isPdf = formData.get("isPdf") === "true"; // Convert string to boolean
-
-
+    
     let imageURL = "";
     if (isPdf) {
       imageURL = formData.get("image") as string;
@@ -53,8 +71,9 @@ export async function POST(req: Request) {
     }
     const tags = await processAndAnalyze({ imageURL });
 
+    // console.log("Final tags:", tags);
+
     const finalTags = await setTagsFromCurrentLists(tags);
-    console.log("Final tags:", finalTags);
     const subject = finalTags["course-name"];
     const slot = finalTags.slot;
     const exam = finalTags["exam-type"];
@@ -150,6 +169,7 @@ export async function POST(req: Request) {
       .replace("upload", "upload/w_400,h_400,c_fill")
       .replace(/<img src='|'\s*\/>/g, "");
     const paper = new PaperAdmin({
+      cloudinary_index: configIndex,
       public_id_cloudinary,
       finalUrl,
       thumbnailUrl,

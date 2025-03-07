@@ -18,7 +18,7 @@ import type {
 } from "@/interface";
 import { PaperAdmin } from "@/db/papers";
 import axios from "axios";
-import processAndAnalyze from "@/util/mistral";
+import processAndAnalyze from "@/util/gemini";
 import { examMap } from "./map";
 import Fuse from "fuse.js";
 // import processAndAnalyze from "./mistral";

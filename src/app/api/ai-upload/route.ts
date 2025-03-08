@@ -29,20 +29,18 @@ cloudinary.v2.config({
 });
 type SemesterType = IAdminPaper["semester"]; // Extract the exam type from the IPaper interface
 
-const cloudinaryConfig1 = cloudinary.v2;
-cloudinaryConfig1.config({
+const config1 = {
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_1,
   api_key: process.env.CLOUDINARY_API_KEY_1,
   api_secret: process.env.CLOUDINARY_SECRET_1,
-});
+};
 
-const cloudinaryConfig2 = cloudinary.v2;
-cloudinaryConfig2.config({
+const config2 = {
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_2,
   api_key: process.env.CLOUDINARY_API_KEY_2,
   api_secret: process.env.CLOUDINARY_SECRET_2,
-});
-const cloudinaryConfigs = [cloudinaryConfig1, cloudinaryConfig2];
+};
+const cloudinaryConfigs = [config1, config2];
 
 export async function POST(req: Request) {
   try {
@@ -50,16 +48,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "ServerMisconfig" }, { status: 500 });
     }
     await connectToDatabase();
-
     const count: number = await PaperAdmin.countDocuments();
     const configIndex = count % cloudinaryConfigs.length;
-    const selectedConfig = cloudinaryConfigs[configIndex];
-    cloudinary.v2.config(selectedConfig);
+    console.log(configIndex)
+    cloudinary.v2.config(cloudinaryConfigs[configIndex]);
+
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
     const formData = await req.formData();
     const files: File[] = formData.getAll("files") as File[];
     const isPdf = formData.get("isPdf") === "true"; // Convert string to boolean
-    
     let imageURL = "";
     if (isPdf) {
       imageURL = formData.get("image") as string;
@@ -162,7 +159,7 @@ export async function POST(req: Request) {
         uploadPreset,
       );
     }
-
+    console.log(finalUrl)
     const thumbnailResponse = cloudinary.v2.image(finalUrl!, {
       format: "jpg",
     });

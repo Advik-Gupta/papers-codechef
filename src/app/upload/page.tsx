@@ -12,7 +12,6 @@ import Dropzone from "react-dropzone";
 import { createCanvas } from "canvas";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import { PDFDocument } from "pdf-lib";
-import { ApiError } from "next/dist/server/api-utils";
 async function pdfToImage(file: File) {
   GlobalWorkerOptions.workerSrc =
     "https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js";
@@ -22,7 +21,7 @@ async function pdfToImage(file: File) {
   // Get the first page
   const page = pdfDoc.getPages()[0];
   if (!page) {
-    throw "First page not found";
+    throw Error("First page not found");
   }
   // Create a canvas to render the image
   const canvas = createCanvas(page.getWidth(), page.getHeight());

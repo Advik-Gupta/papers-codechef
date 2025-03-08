@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
         { status: 400 },
       );
     }
-    console.log((await Paper.find()).map((paper)=>{paper.campus}))
+    console.log((await Paper.find()).map((paper)=> paper.campus))
     const papers: IPaper[] = await Paper.find({
       subject: { $regex: new RegExp(`${escapedSubject}`, "i") },
     });

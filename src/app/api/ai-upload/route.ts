@@ -257,7 +257,7 @@ async function setTagsFromCurrentLists(
   );
   const courses = data.map((course: { name: string }) => course.name);
   if (!courses[0] || !slots[0] || !exams[0] || !semesters[0] || !years[0]) {
-    throw "Cannot fetch default value for courses/slot/exam/sem/year!";
+    throw Error("Cannot fetch default value for courses/slot/exam/sem/year!");
   }
 
   const newTags: ExamDetail = {

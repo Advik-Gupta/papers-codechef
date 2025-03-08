@@ -34,7 +34,7 @@ export default async function processAndAnalyze({
     
     return analysisResult[0]?.examDetail;
   } else {
-    throw "Error Creating the Image";
+    throw Error("Error Creating the Image");
   }
 }
 // export async function pdfToImage(file: File) {
@@ -67,7 +67,8 @@ export default async function processAndAnalyze({
 function parseExamDetail(analysis: string): ExamDetail {
   try {
     // Try to find JSON in the response
-    const jsonMatch = analysis.match(/\{[\s\S]*\}/);
+    const jsonRegex = /\{[\s\S]*\}/;
+    const jsonMatch = jsonRegex.exec(analysis);
     if (jsonMatch) {
       const examDetail: ExamDetail = JSON.parse(jsonMatch[0]) as ExamDetail;
       if (examDetail.semester) {

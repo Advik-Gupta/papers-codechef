@@ -76,10 +76,7 @@ export async function POST(req: Request) {
 
     const finalTags = await setTagsFromCurrentLists(tags);
     console.log(" tags:", finalTags);
-    if(!tags)
-    {
-      return null;
-    }
+
     const subject = finalTags.subject;
     const slot = finalTags.slot;
     const exam = finalTags.exam
@@ -176,6 +173,7 @@ export async function POST(req: Request) {
     const paper = new PaperAdmin({
       cloudinary_index: configIndex,
       public_id_cloudinary,
+  
       finalUrl,
       thumbnailUrl,
       subject,

@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { PDFDocument } from "pdf-lib";
 import {
   campuses,
-  courses,
   exams,
   semesters,
   slots,
@@ -71,7 +70,12 @@ export async function POST(req: Request) {
 
     console.log(" tags:", tags);
 
-    const finalTags = await setTagsFromCurrentLists(tags);
+    const { data } = await axios.get<ICourses[]>(
+      `${process.env.SERVER_URL}/api/course-list`,
+    );
+    const courses = data.map((course: { name: string }) => course.name);
+  
+    const finalTags = await setTagsFromCurrentLists(tags, courses);
     console.log(" tags:", finalTags);
 
     const subject = finalTags.subject;
@@ -80,7 +84,6 @@ export async function POST(req: Request) {
     const year = finalTags.year;
     const campus = formData.get("campus") as string;
     const semester = finalTags.semester;
-
     if (!courses.includes(subject)) {
       return NextResponse.json(
         { message: "The course subject is invalid." },
@@ -251,11 +254,9 @@ async function CreatePDF(orderedFiles: File[]) {
 //sets course-name to corresponding course name from our api
 async function setTagsFromCurrentLists(
   tags: ExamDetail | undefined,
+  courses:  string[]
+
 ): Promise<ExamDetail> {
-  const { data } = await axios.get<ICourses[]>(
-    `${process.env.SERVER_URL}/api/course-list`,
-  );
-  const courses = data.map((course: { name: string }) => course.name);
   if (!courses[0] || !slots[0] || !exams[0] || !semesters[0] || !years[0]) {
     throw Error("Cannot fetch default value for courses/slot/exam/sem/year!");
   }

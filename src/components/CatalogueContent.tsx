@@ -1,3 +1,5 @@
+"use client";
+
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios, { type AxiosError } from "axios";
@@ -10,6 +12,7 @@ import { useRouter } from "next/navigation";
 import SearchBarChild from "./Searchbar/searchbar-child";
 import Loader from "./ui/loader";
 import { campuses, semesters } from "./select_options";
+import SearchBar from "./Searchbar/searchbar";
 
 const CatalogueContent = () => {
   const searchParams = useSearchParams();
@@ -165,7 +168,7 @@ const CatalogueContent = () => {
     <div className="min-h-screen px-2 md:p-8">
       <div className="mb-10 flex w-full flex-row items-center md:justify-between md:gap-10">
         <div className="w-[120%] md:w-[576px]">
-          <SearchBarChild />
+          <SearchBar />
         </div>
         <div className="flex gap-8">
           {subject && filterOptions && (

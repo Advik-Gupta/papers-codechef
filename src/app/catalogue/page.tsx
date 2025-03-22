@@ -1,5 +1,4 @@
 "use client";
-
 import CatalogueContent from "@/components/CatalogueContent";
 import { Suspense } from "react";
 import Navbar from "@/components/Navbar";

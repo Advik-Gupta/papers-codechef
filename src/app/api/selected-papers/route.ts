@@ -10,7 +10,6 @@ export async function GET() {
 
     const selectedPapers = await Paper.find({ isSelected: true }).limit(4);
 
-    console.log("Selected papers:", selectedPapers);
     if (selectedPapers.length === 0) {
       return NextResponse.json(
         {

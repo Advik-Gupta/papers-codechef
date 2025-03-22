@@ -18,7 +18,5 @@ async function fetchSubjects() {
 export default async function SearchBar() {
   const subjects = await fetchSubjects();
 
-  console.log("Fetched subjects:", subjects);
-
   return <SearchBarChild initialSubjects={subjects} />;
 }

@@ -1,5 +1,3 @@
-"use client";
-
 interface PdfViewerProps {
   url: string;
   name: string;

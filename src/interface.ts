@@ -64,8 +64,8 @@ export interface PaperResponse {
 }
 export interface IAdminPaper {
   public_id_cloudinary: string;
-  final_url: string;
-  thumbnail_url: string;
+  finalUrl: string;
+  thumbnailUrl: string;  
   subject: string;
   slot: string;
   year: string;
@@ -79,7 +79,7 @@ export interface IAdminPaper {
     | "Bhopal"
     | "Bangalore"
     | "Mauritius";
-  answer_key_included?: boolean;
+  answerKeyIncluded?: boolean;
   isSelected?: boolean;
 }
 

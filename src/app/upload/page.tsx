@@ -9,9 +9,6 @@ import Footer from "@/components/Footer";
 import { type APIResponse } from "@/interface";
 import Dropzone from "react-dropzone";
 
-import { createCanvas } from "canvas";
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
-import { PDFDocument } from "pdf-lib";
 const Page = () => {
   const [campus, setCampus] = useState("Vellore");
 

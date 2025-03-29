@@ -1,44 +1,39 @@
+"use client";
 import { useEffect, useState } from "react";
 import { type IPaper } from "@/interface";
 import Image from "next/image";
-import { Eye, Download } from "lucide-react";
+import { Eye, Download, Check } from "lucide-react";
 import {
-  capsuleGreen,
+  capsule,
   extractBracketContent,
   extractWithoutBracketContent,
 } from "@/util/utils";
-import { capsule } from "@/util/utils";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
-const Card = ({
-  paper,
-  onSelect,
-  isSelected,
-}: {
+interface CardProps {
   paper: IPaper;
   onSelect: (paper: IPaper, isSelected: boolean) => void;
   isSelected: boolean;
-}) => {
-  const [checked, setChecked] = useState<boolean>(false);
+}
+
+const Card = ({ paper, onSelect, isSelected }: CardProps) => {
+  const [checked, setChecked] = useState<boolean>(isSelected);
 
   useEffect(() => {
     setChecked(isSelected);
   }, [isSelected]);
 
-  const handleDownload = async (paper: IPaper) => {
+  const getSecureUrl = (url: string): string =>
+    url.startsWith("http://") ? url.replace("http://", "https://") : url;
+
+  const generateFileName = (paper: IPaper): string => {
     const extension = paper.finalUrl.split(".").pop();
-    const fileName = `${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}.${extension}`;
-    await downloadFile(paper.finalUrl, fileName);
+    return `${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}.${extension}`;
   };
 
-  function handleCheckboxChange() {
-    setChecked(!checked);
-    onSelect(paper, !checked);
-  }
-
-  async function downloadFile(url: string, filename: string) {
+  const downloadFile = async (url: string, filename: string): Promise<void> => {
     try {
       const response = await axios.get(url, { responseType: "blob" });
       const blob = new Blob([response.data]);
@@ -47,70 +42,86 @@ const Card = ({
       link.download = filename;
       link.click();
       window.URL.revokeObjectURL(link.href);
-    } catch (error) {}
-  }
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  };
 
-  if (paper.finalUrl.startsWith("http://")) {
-    paper.finalUrl = paper.finalUrl.replace("http://", "https://");
-  }
+  const handleDownload = async (paper: IPaper) => {
+    await downloadFile(getSecureUrl(paper.finalUrl), generateFileName(paper));
+  };
+
+  const handleCheckboxChange = () => {
+    setChecked((prev) => {
+      const newChecked = !prev;
+      onSelect(paper, newChecked);
+      return newChecked;
+    });
+  };
+
+  const paperLink = `/paper/${paper._id}`;
+
   return (
     <div
-      key={paper._id}
-      className={`mb-2 flex w-[70%] flex-col justify-between space-y-1 rounded-xl border-2 border-black bg-white hover:border-[#434dba] dark:border-[#434dba] dark:bg-black dark:hover:border-white md:w-64  ${checked ? "bg-[#EEF2FF] dark:bg-[#050b1f]" : ""}  p-4 `}
+      className={cn(
+        "overflow-hidden rounded-md border-2 border-[#36266D] bg-[#171720] hover:bg-[#262635]",
+        checked && "bg-[#262635]",
+      )}
     >
-      <Link
-        href={`/paper/${paper._id}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <Link href={paperLink} target="_blank" rel="noopener noreferrer">
         <Image
           src={paper.thumbnailUrl}
           alt={paper.subject}
           width={320}
           height={180}
-          className="mb-2 h-[160px] w-full object-cover md:h-[180px]"
+          className="h-[160px] w-full object-cover p-4 pb-3 md:h-[250px]"
         />
 
-        <div className="h-30 justify-center space-y-2">
-          <div className="font-sans text-sm font-medium">
-            {extractBracketContent(paper.subject)}
+        <div className="justify-center">
+          <div className="flex flex-row items-center justify-between px-4 pb-2">
+            <div className="font-sans text-sm font-medium">
+              {extractBracketContent(paper.subject)}
+            </div>
+            <div className="flex gap-2">
+              <Link href={paperLink} target="_blank" rel="noopener noreferrer">
+                <Eye size={22} />
+              </Link>
+              <Download size={20} onClick={() => handleDownload(paper)} />
+            </div>
           </div>
-          <div className="font-sans text-base font-semibold">
-            {extractWithoutBracketContent(paper.subject)}
-          </div>
-          <div className="flex flex-wrap  gap-2 py-2">
-            {capsule(paper.exam)}
-            {capsule(paper.slot)}
-            {capsule(paper.year)}
-            {/* {capsule(paper.campus)} */}
-            {capsule(paper.semester)}
-            {paper.answerKeyIncluded && capsuleGreen("Answer key included")}
+
+          <div className="h-[1px] w-full bg-[#36266D]" />
+
+          <div className="space-y-2 p-4">
+            <div className="font-sans text-base font-semibold">
+              {extractWithoutBracketContent(paper.subject)}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {capsule(paper.exam)}
+              {capsule(paper.slot)}
+              {capsule(paper.year)}
+              {capsule(paper.semester)}
+            </div>
           </div>
         </div>
       </Link>
 
-      <div className="hidden items-center justify-between gap-2 pt-4 md:flex">
+      <div className="hidden items-center justify-between gap-2 px-4 pb-4 md:flex">
         <div className="flex items-center gap-2">
           <input
             checked={checked}
             onChange={handleCheckboxChange}
-            className="h-4 w-4 rounded-lg"
+            className="h-5 w-5 accent-[#7480FF]"
             type="checkbox"
           />
-          <p className="font-sans text-sm">Select</p>
+          <p>Select</p>
         </div>
-        <div className="flex gap-2">
-          <Link
-            href={`/paper/${paper._id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Eye size={20} />
-          </Link>
-          <button onClick={() => handleDownload(paper)}>
-            <Download size={20} />
-          </button>
-        </div>
+        {paper.answerKeyIncluded && (
+          <div className="flex items-center gap-2 font-normal text-[#7480FF]">
+            <Check color="#7480FF" />
+            Answer Key
+          </div>
+        )}
       </div>
     </div>
   );

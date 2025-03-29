@@ -216,7 +216,7 @@ const CatalogueContent = () => {
         <Loader />
       ) : papers.length > 0 ? (
         <>
-          <div className="mx-auto flex flex-col flex-wrap items-center justify-center gap-10 md:flex-row md:justify-normal">
+          <div className="grid grid-cols-4 gap-8">
             {papers.map((paper) => (
               <Card
                 key={paper._id}

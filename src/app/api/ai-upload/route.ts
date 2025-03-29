@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { PDFDocument } from "pdf-lib";
 import {
-  answerKeyIncluded,
   campuses,
   exams,
   semesters,
   slots,
   years,
 } from "@/components/select_options";
-import { connectToDatabase } from "@/lib/mongoose";
+import { connectToDatabase } from "@/lib/mongoose"; 
 import cloudinary from "cloudinary";
 import type {
   ICourses,
@@ -89,6 +88,7 @@ export async function POST(req: Request) {
     const year = finalTags.year;
     const campus = formData.get("campus") as string;
     const semester = finalTags.semester;
+    const answerKeyIncluded = finalTags.answerKeyIncluded;
     if (!courses.includes(subject)) {
       return NextResponse.json(
         { message: "The course subject is invalid." },
@@ -178,7 +178,7 @@ export async function POST(req: Request) {
     const paper = new PaperAdmin({
       cloudinary_index: configIndex,
       public_id_cloudinary,
-  
+      answerKeyIncluded,
       finalUrl,
       thumbnailUrl,
       subject,
@@ -262,7 +262,7 @@ async function setTagsFromCurrentLists(
   courses:  string[],
 
 ): Promise<ExamDetail> {
-  if (!courses[0] || !slots[0] || !exams[0] || !semesters[0] || !years[0] || !answerKeyIncluded) {
+  if (!courses[0] || !slots[0] || !exams[0] || !semesters[0] || !years[0]) {
     throw Error("Cannot fetch default value for courses/slot/exam/sem/year!");
   }
 
@@ -273,7 +273,7 @@ async function setTagsFromCurrentLists(
     "exam": exams[0],
     semester: semesters[0] as SemesterType,
     year: years[0],
-    answerKeyIncluded: answerKeyIncluded[0],
+    answerKeyIncluded: false,
   };
   
   const coursesFuzy = new Fuse(courses);
@@ -305,7 +305,7 @@ async function setTagsFromCurrentLists(
     if (yearSearchResult) {
       newTags.year = yearSearchResult;
     }
-    const answerkeySearchResults = findMatch(answerKeyIncluded, tags.answerKeyIncluded?.toString());
+    const answerkeySearchResults = findMatch([true, false], tags.answerKeyIncluded?.toString());
 
     if (yearSearchResult) {
       newTags.answerKeyIncluded = answerkeySearchResults;

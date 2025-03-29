@@ -12,34 +12,6 @@ import Dropzone from "react-dropzone";
 import { createCanvas } from "canvas";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import { PDFDocument } from "pdf-lib";
-async function pdfToImage(file: File) {
-  GlobalWorkerOptions.workerSrc =
-    "https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js";
-
-  const pdfDoc = await PDFDocument.load(await file.arrayBuffer());
-
-  // Get the first page
-  const page = pdfDoc.getPages()[0];
-  if (!page) {
-    throw Error("First page not found");
-  }
-  // Create a canvas to render the image
-  const canvas = createCanvas(page.getWidth(), page.getHeight());
-  const context = canvas.getContext("2d");
-
-  // Use pdfjs-dist to render the page
-  const pdfjsDoc = await getDocument({ data: await file.arrayBuffer() })
-    .promise;
-  const pdfPage = await pdfjsDoc.getPage(1);
-
-  // Render page to canvas
-  const viewport = pdfPage.getViewport({ scale: 1 });
-  await pdfPage.render({ canvasContext: context, viewport }).promise;
-
-  // Convert the canvas to the desired output (Buffer, base64, etc.)
-  return canvas.toDataURL().replace(/^data:image\/\w+;base64,/, "");
-}
-
 const Page = () => {
   const [campus, setCampus] = useState("Vellore");
 
@@ -116,11 +88,7 @@ const Page = () => {
     files.forEach((file) => {
       formData.append("files", file);
     });
-
-    if (isPdf && files[0]) {
-      formData.append("image", await pdfToImage(files[0]));
-    }
-
+    
     // formData.append("exam", exam);
     formData.append("campus", campus);
 

@@ -45,7 +45,6 @@ const Page = () => {
       (file) =>
         file.size > maxFileSize || !allowedFileTypes.includes(file.type),
     );
-
     if (invalidFiles.length > 0) {
       toast.error(
         `Some files are invalid. Ensure each file is below 5MB and of an allowed type (PDF, JPEG, PNG, GIF).`,
@@ -56,15 +55,17 @@ const Page = () => {
       return;
     }
 
-    const isPdf =
-      acceptedFiles.length === 1 &&
-      acceptedFiles[0]?.type === "application/pdf";
+    const isPdf = acceptedFiles.reduce(
+      (reducer, file) => file.type === "application/pdf" || reducer,
+      false,
+    );
     if (isPdf && acceptedFiles.length > 1) {
       toast.error("PDFs must be uploaded separately", {
         id: toastId,
       });
       return;
     }
+
     const orderedFiles = acceptedFiles.sort((a, b) => {
       return a.lastModified - b.lastModified;
     });
@@ -85,7 +86,7 @@ const Page = () => {
     files.forEach((file) => {
       formData.append("files", file);
     });
-    
+
     // formData.append("exam", exam);
     formData.append("campus", campus);
 
@@ -97,14 +98,12 @@ const Page = () => {
       await toast.promise(
         async () => {
           try {
-            await axios.post<APIResponse>(
-              "/api/ai-upload",
-              formData,
-            );
+            await axios.post<APIResponse>("/api/ai-upload", formData);
           } catch (error) {
-            if (error instanceof AxiosError && error.response?.data ) {
+            if (error instanceof AxiosError && error.response?.data) {
               const errorData = error.response.data as APIResponse;
-              const errorMessage = errorData.message || "Failed to upload papers";
+              const errorMessage =
+                errorData.message || "Failed to upload papers";
               throw new Error(errorMessage);
             }
             throw new Error("Failed to upload papers");
@@ -167,7 +166,7 @@ const Page = () => {
                 )}
               </Dropzone>
               <label className="mx-2 -mr-2 block text-center text-xs font-medium text-gray-700">
-                Only Images and PDFs are allowed
+                Only Images and PDF are allowed
                 <sup className="text-red-500">*</sup>
               </label>
             </div>

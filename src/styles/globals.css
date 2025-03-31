@@ -17,7 +17,6 @@
   color: #888888;
 }
 
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -75,7 +74,6 @@
   }
 }
 
-
 @layer base {
   * {
     @apply border-border;
@@ -93,11 +91,32 @@
   font-family: "jost";
   src: url(/jostfont.ttf);
 }
-.jost{
+@font-face {
+  font-family: "vipna";
+  src: url(/Vipnagorgialla.otf);
+}
+@font-face {
+  font-family: "vipnabd";
+  src: url(/VipnagorgiallaBd.otf);
+}
+@font-face {
+  font-family: "play";
+  src: url(/play.ttf);
+}
+.jost {
   font-family: "jost";
 }
-.phonk{
+.phonk {
   font-family: "phonk";
+}
+.vipna {
+  font-family: "vipna";
+}
+.vipnabd {
+  font-family: "vipnabd";
+}
+.play {
+  font-family: "play";
 }
 .dark ::-webkit-scrollbar {
   width: 0.4rem;

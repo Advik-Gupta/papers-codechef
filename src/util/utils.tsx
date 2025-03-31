@@ -25,7 +25,7 @@ export function extractWithoutBracketContent(subject: string): string {
 
 export function capsule(data: string) {
   return (
-    <div className="rounded-md bg-[#7480FF]/80 p-1 px-3 text-sm">{data}</div>
+    <div className=" rounded-sm bg-[#B2B8FF] dark:bg-[#7480FFCC] p-1 px-3 text-sm">{data}</div>
   );
 }
 export function capsuleGreen(data: string) {

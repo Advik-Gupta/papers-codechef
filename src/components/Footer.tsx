@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 
 export default function Footer() {
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const [isDarkMode, setIsDarkMode] = useState<boolean | null>(true);
 
   useEffect(() => {
@@ -23,78 +23,81 @@ export default function Footer() {
   }, [theme]);
 
   return (
-    <div className="mx-auto flex flex-col items-center justify-between gap-y-12 pt-12 md:pt-8 lg:w-full lg:flex-row lg:justify-around lg:px-12 mb-4">
-      <div className="flex items-center">
-        <h1 className="jost bg-gradient-to-r from-[#562EE7] to-[rgba(116,128,255,0.8)] bg-clip-text text-center text-3xl font-bold text-transparent lg:text-5xl 2xl:text-6xl dark:from-[#562EE7] dark:to-[#FFC6E8]">
-          Papers
-        </h1>
-        <Separator orientation="vertical" className="mx-3 h-full min-h-20" />
-        <div className="flex items-center">
-          <Image
-            src={ccLogo as HTMLImageElement}
-            alt="codechef-logo"
-            height={70}
-            width={70}
-          />
-          <p className="jost text-2xl font-bold lg:text-4xl">CodeChef-VIT</p>
+    <footer className="w-full overflow-hidden font-sans bg-gradient-to-b dark:from-[#070114] dark:to-[#1F0234] from-[#F3F5FF] to-[#A599CE] px-6 py-12 text-white">
+      <div className="max-w-7xl mx-auto flex flex-col gap-y-10 lg:flex-row lg:justify-between">
+        <div className="flex flex-col items-center lg:items-start gap-4 text-center lg:text-left">
+          <h1 className="jost tracking-wide bg-gradient-to-r from-[#562EE7] to-[rgba(116,128,255,0.8)] bg-clip-text font-bold text-xl text-transparent mb-5 dark:from-[#562EE7] dark:to-[#FFC6E8] text-left md:text-7xl">
+            Papers
+          </h1>
+          <p className="text-md text-black dark:text-white">Made with ❤️ by Codechef-VIT</p>
+          <div className="flex items-center gap-4 flex-wrap justify-center lg:justify-start">
+            <Link href="https://www.instagram.com/codechefvit/">
+              <Button variant="ghost" size="icon">
+                <Instagram className="text-black dark:text-white" />
+              </Button>
+            </Link>
+            <Link href="https://www.linkedin.com/company/codechefvit/">
+              <Button variant="ghost" size="icon">
+                <Linkedin className="text-black dark:text-white" />
+              </Button>
+            </Link>
+            <Link href="https://www.youtube.com/@CodeChefVIT">
+              <Button variant="ghost" size="icon">
+                <Youtube className="text-black dark:text-white" />
+              </Button>
+            </Link>
+            <Link href="https://github.com/CodeChefVIT">
+              <Button variant="ghost" size="icon">
+                <Github className="text-black dark:text-white" />
+              </Button>
+            </Link>
+            <Link href="https://www.facebook.com/codechefvit/">
+              <Button variant="ghost" size="icon">
+                <Image
+                  src={
+                    isDarkMode
+                      ? (meta_icon_dark as HTMLInputElement)
+                      : (meta_icon as HTMLInputElement)
+                  }
+                  alt="meta-icon"
+                  height={24}
+                  width={24}
+                />
+              </Button>
+            </Link>
+            <Link href="https://x.com/codechefvit" className="pb-1.5">
+              <Button variant="ghost" size="icon">
+                <Image
+                  src={
+                    isDarkMode
+                      ? (x_twitter_icon_dark as HTMLInputElement)
+                      : (x_twitter_icon as HTMLInputElement)
+                  }
+                  alt="x_twitter_icon"
+                  height={24}
+                  width={24}
+                />
+              </Button>
+            </Link>
+          </div>
+        </div>
+        <div className="flex flex-col items-center dark:text-white text-black lg:items-start text-center lg:text-left gap-2">
+          <h3 className="text-xl font-semibold">Menu</h3>
+          <Link href="/search">Search</Link>
+          <Link href="/features">Features</Link>
+          <Link href="/faq">FAQ</Link>
+        </div>
+        <div className="flex flex-col items-center dark:text-white text-black lg:items-start text-center lg:text-left gap-2">
+          <h3 className="text-xl font-semibold">Our Projects</h3>
+          <Link href="/">Papers</Link>
+          <Link href="/">FFCS-inator</Link>
+          <Link href="/">Brainrot Arcade</Link>
+        </div>
+        <div className="flex flex-col items-center dark:text-white text-black lg:items-start text-center lg:text-left gap-2">
+          <h3 className="text-xl font-semibold">Contact Us</h3>
+          <p>contact@codechefvit.com</p>
         </div>
       </div>
-      <div>
-        <div className="flex items-center gap-x-8">
-          <Link href="https://www.instagram.com/codechefvit/">
-            <Button variant="ghost" size="icon">
-              <Instagram />
-            </Button>
-          </Link>
-          <Link href="https://www.linkedin.com/company/codechefvit/">
-            <Button variant="ghost" size="icon">
-              <Linkedin />
-            </Button>
-          </Link>
-          <Link href="https://www.youtube.com/@CodeChefVIT">
-            <Button variant="ghost" size="icon">
-              <Youtube />
-            </Button>
-          </Link>
-          <Link href="https://github.com/CodeChefVIT">
-            <Button variant="ghost" size="icon">
-              <Github />
-            </Button>
-          </Link>
-          <Link href="https://www.facebook.com/codechefvit/">
-            <Button variant="ghost" size="icon">
-              <Image
-                src={
-                  isDarkMode
-                    ? (meta_icon_dark as HTMLInputElement)
-                    : (meta_icon as HTMLInputElement)
-                }
-                alt="meta-icon"
-                height={24}
-                width={24}
-              />
-            </Button>
-          </Link>
-          <Link href="https://x.com/codechefvit" className="pb-1.5">
-            <Button variant="ghost" size="icon">
-              <Image
-                src={
-                  isDarkMode
-                    ? (x_twitter_icon_dark as HTMLInputElement)
-                    : (x_twitter_icon as HTMLInputElement)
-                }
-                alt="x_twitter_icon"
-                height={24}
-                width={24}
-              />
-            </Button>
-          </Link>
-        </div>
-        {/* <p className="hidden text-center text-xl lg:block">
-          Made with 💜 By Codechef-VIT
-        </p> */}
-      </div>
-      <p className="block text-xl lg:hidden">Made with 💜 By Codechef-VIT</p>
-    </div>
+    </footer>
   );
 }

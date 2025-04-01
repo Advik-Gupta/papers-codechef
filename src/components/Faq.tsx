@@ -22,23 +22,25 @@ function Faq() {
             </div>
             <div className="max-w-7xl play mx-auto space-y-6">
                 {faqs.map((faq, index) => (
-                    <div key={index} className="p-4 border-b-2 border-[#453D60]">
-                        <div className="flex items-center">
+                    <div
+                        key={index}
+                        className="p-4 border-b-2 border-[#453D60] cursor-pointer"
+                        onClick={() => handleClick(index)}
+                    >
+                        <div className="flex items-center justify-between w-full">
                             <h2
-                                className={`text-lg play font-semibold ${faqActive === index ? "dark:text-[#A47DE5] text-[#6F2DA6]" : "dark:text-[#C0BACE] text-black"} w-full pr-15`}
+                                className={`text-lg font-semibold w-full ${faqActive === index ? "text-[#A47DE5]" : "text-[#C0BACE]"}`}
                             >
                                 {faq.question}
                             </h2>
                             <button
-                                onClick={() => handleClick(index)}
-                                className={`text-md font-bold w-11 h-6 flex items-center justify-center rounded-full transition-all duration-200 ${faqActive === index ? "text-white dark:bg-[#A47DE5] bg-[#6F2DA6]" : "dark:bg-white bg-[#EDEFF0] text-[#99979F]"}`}
+                                className={`text-md font-bold w-11 h-6 flex items-center justify-center rounded-full transition-all duration-200 
+                        ${faqActive === index ? "text-white bg-[#A47DE5]" : "bg-white text-[#99979F]"}`}
                             >
                                 {faqActive === index ? "−" : "+"}
                             </button>
                         </div>
-                        {faqActive === index && (
-                            <p className="mt-2 play text-black dark:text-[#C0BACE]">{faq.answer}</p>
-                        )}
+                        {faqActive === index && <p className="mt-2 text-white">{faq.answer}</p>}
                     </div>
                 ))}
             </div>

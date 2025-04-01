@@ -2,7 +2,7 @@
 import papers from "ongoing-papers";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import PreviewCard from "@/components/PreviewCard";
+import Card from "@/components/Card";
 import { type IPaper } from "@/interface";
 import Loader from "./ui/loader";
 import Link from "next/link";
@@ -30,13 +30,18 @@ function StoredPapers() {
 
   return (
     <>
-      <p className="mt-2 mb-6 text-center play text-lg font-semibold">Most Viewed Papers</p>
-      <div className="flex flex-wrap justify-center gap-4">
+      <p className="mt-2 mb-4 text-center play text-lg font-semibold">Most Viewed Papers</p>
+      <div className="flex flex-wrap justify-center gap-6">
         {displayPapers.map((paper: IPaper) => (
-          <PreviewCard key={paper._id} paper={paper} />
+          <Card
+            key={paper._id}
+            paper={paper}
+            onSelect={() => { "" }}
+            isSelected={false}
+          />
         ))}
       </div>
-      <h1 className="play text-md text-center mt-10">Learn More</h1>
+      <h1 className="play text-md text-center mt-4">Learn More</h1>
       <Link href="#hero" className="play flex items-center justify-center text-center text-md dark:text-white text-black">▼</Link>
     </>
   );

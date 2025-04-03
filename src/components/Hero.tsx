@@ -15,12 +15,12 @@ function Hero() {
     <div id="hero" className="m-10 pt-10 flex flex-col lg:flex-row items-center justify-between">
       <div className="w-full lg:w-[50%] text-center lg:text-left">
         <div className="vignabd mb-8 text-3xl lg:text-5xl font-extrabold text-[#120020] dark:text-white">
-          <span className="mb-2 block">Prepare to excel in</span>
-          <span className="mb-2 block">your CATs and FATs</span>
-          <span className="mb-2 block ">with CodeChef-</span>
-          <span className="mb-2 block">VIT’s dedicated</span>
-          <span className="mb-2 block">repository of past</span>
-          <span className="mb-6 block">exam papers</span>
+          <span className="mb-2 block font-extrabold">Prepare to excel in</span>
+          <span className="mb-2 block font-extrabold">your CATs and FATs</span>
+          <span className="mb-2 block font-extabold ">with CodeChef-</span>
+          <span className="mb-2 block font-extrabold">VIT’s dedicated</span>
+          <span className="mb-2 block font-extrabold">repository of past</span>
+          <span className="mb-6 block font-extrabold">exam papers</span>
         </div>
         <div className="play mt-6 flex flex-col lg:flex-row lg:gap-6 text-[#120020] dark:text-white items-center">
           <div className="flex flex-col gap-4 lg:w-[200px]">

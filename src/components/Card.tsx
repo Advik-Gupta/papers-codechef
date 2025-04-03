@@ -64,7 +64,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-md border-2 border-[#36266D] bg-[#171720] hover:bg-[#262635]",
+        "overflow-hidden play rounded-sm border-2 dark:border-[#36266D] border-[#734DFF] bg-[#FFFFFF] dark:bg-[#171720] hover:bg-[#EFEAFF] hover:dark:bg-[#262635]",
         checked && "bg-[#262635]",
       )}
     >
@@ -90,7 +90,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
             </div>
           </div>
 
-          <div className="h-[1px] w-full bg-[#36266D]" />
+          <div className="h-[1px] w-full dark:bg-[#36266D] bg-[#734DFF]" />
 
           <div className="space-y-2 p-4">
             <div className="font-sans text-base font-semibold">
@@ -106,7 +106,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
         </div>
       </Link>
 
-      <div className="hidden items-center justify-between gap-2 px-4 pb-4 md:flex">
+      <div className="hidden play items-center justify-between gap-2 px-4 pb-4 md:flex">
         <div className="flex items-center gap-2">
           <input
             checked={checked}

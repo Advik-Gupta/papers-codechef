@@ -5,7 +5,6 @@ import axios from "axios";
 import Card from "@/components/Card";
 import { type IPaper } from "@/interface";
 import Loader from "./ui/loader";
-import Link from "next/link";
 
 function StoredPapers() {
   const [displayPapers, setDisplayPapers] = useState<IPaper[]>([]);
@@ -29,21 +28,24 @@ function StoredPapers() {
   }
 
   return (
-    <>
-      <p className="mt-2 mb-4 text-center play text-lg font-semibold">Most Viewed Papers</p>
-      <div className="flex flex-wrap justify-center gap-6">
+    <div className="h-min">
+      <p className="play my-8 text-center text-lg font-semibold">
+        Most Viewed Papers
+      </p>
+
+      <div className="grid grid-cols-2 justify-center gap-6 lg:grid-cols-4">
         {displayPapers.map((paper: IPaper) => (
           <Card
             key={paper._id}
             paper={paper}
-            onSelect={() => { "" }}
+            onSelect={() => {
+              ("");
+            }}
             isSelected={false}
           />
         ))}
       </div>
-      <h1 className="play text-md text-center mt-4">Learn More</h1>
-      <Link href="#hero" className="play flex items-center justify-center text-center text-md dark:text-white text-black">▼</Link>
-    </>
+    </div>
   );
 }
 

@@ -2,12 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import SearchBar from "./Searchbar/searchbar";
-import { FilterDialog } from "./FilterDialog";
 import { Button } from "./ui/button";
 import Image from "next/image";
 import { XIcon } from "lucide-react";
 import filterIcon from "../assets/filterIcon.svg";
-import { Filters, IPaper } from "@/interface";
+import { type Filters, type IPaper } from "@/interface";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Accordion,
@@ -80,8 +79,6 @@ function SideBar({
     const theParams = searchParams.get(param);
     const theParamsArray = theParams?.split(",");
     if (theParamsArray) {
-    //   console.log(theParamsArray);
-
       setSelectedStuff((prevItems) => {
         const newItems = theParamsArray.filter((el) => !prevItems.includes(el));
         return [...prevItems, ...newItems];
@@ -132,18 +129,18 @@ function SideBar({
   return (
     <div
       className={`sticky top-0 mb-0 h-full w-[100em] flex-col items-baseline border-r-2 border-[#36266d] bg-[#030712] py-[40px] md:flex md:w-[30%] ${filtersPulled ? "flex" : "hidden"}`}
-    ><div onClick={closeFilters} className="md:hidden block">
+    >
+      <div onClick={closeFilters} className="block md:hidden">
         <Image
-        className="w-[7%] absolute top-[10px] right-[10px]"
+          className="absolute right-[10px] top-[10px] w-[7%]"
           src={closeIcon as string}
           width={500}
           height={500}
           alt="Navbar trigger"
         />
-    </div>
+      </div>
       <div className="px-[10px] md:w-[100%]">
         <SearchBar />
-        
       </div>
       <div className="flex w-full gap-8 border-b-2 border-[#36266d] px-[10px] pb-4 pt-8">
         <div className="hidden flex-col items-baseline justify-center gap-2 md:flex md:justify-end 2xl:mr-4">

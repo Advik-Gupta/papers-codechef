@@ -153,7 +153,6 @@ const PaperPage = async ({ params }: { params: { id: string } }) => {
   }
   return (
     <div>
-      <Navbar />
       {typeof paper === "string" ? (
         <div className="text-center text-red-500">
           <h1 className="text-xl font-semibold">Error</h1>
@@ -175,8 +174,6 @@ const PaperPage = async ({ params }: { params: { id: string } }) => {
           </center>
         </>
       )}
-
-      <Footer />
     </div>
   );
 };

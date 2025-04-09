@@ -8,7 +8,13 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { type APIResponse } from "@/interface";
-import { slots, years, campuses, semesters, exams } from "@/components/select_options";
+import {
+  slots,
+  years,
+  campuses,
+  semesters,
+  exams,
+} from "@/components/select_options";
 import SearchBar from "@/components/searchbarSubjectList";
 import Dropzone from "react-dropzone";
 import {
@@ -28,7 +34,7 @@ const Page = () => {
   const [year, setYear] = useState("");
   const [campus, setCampus] = useState("Vellore");
   const [semester, setSemester] = useState("");
-  function  fileCheckAndSelect<T extends File>(acceptedFiles: T[]) {
+  function fileCheckAndSelect<T extends File>(acceptedFiles: T[]) {
     const maxFileSize = 5 * 1024 * 1024;
     const allowedFileTypes = [
       "application/pdf",
@@ -169,14 +175,11 @@ const Page = () => {
     setIsUploading(true);
 
     try {
-      await toast.promise(
-        axios.post<APIResponse>("/api/upload", formData),
-        {
-          loading: "Uploading papers...",
-          success: "Papers uploaded successfully!",
-          error: "Failed to upload papers. Please try again.",
-        },
-      );
+      await toast.promise(axios.post<APIResponse>("/api/upload", formData), {
+        loading: "Uploading papers...",
+        success: "Papers uploaded successfully!",
+        error: "Failed to upload papers. Please try again.",
+      });
 
       setSlot("");
       setSubject("");
@@ -194,9 +197,6 @@ const Page = () => {
 
   return (
     <div className="flex h-screen flex-col justify-between">
-      <div>
-        <Navbar />
-      </div>
       <div className="2xl:my-15 flex flex-col items-center">
         <fieldset className="mb-4 w-[350px] rounded-lg border-2 border-gray-300 p-4 pr-8">
           <legend className="text-lg font-bold">Select paper parameters</legend>
@@ -329,9 +329,6 @@ const Page = () => {
         >
           {isUploading ? "Uploading..." : "Upload Papers"}
         </Button>
-      </div>
-      <div>
-        <Footer />
       </div>
     </div>
   );

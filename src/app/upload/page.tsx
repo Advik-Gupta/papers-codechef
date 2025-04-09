@@ -134,9 +134,6 @@ const Page = () => {
 
   return (
     <div className="flex h-screen flex-col justify-between">
-      <div>
-        <Navbar />
-      </div>
       <div className="2xl:my-15 flex flex-col items-center">
         <fieldset className="mb-4 w-[350px] rounded-lg border-2 border-gray-300 p-4 pr-8">
           {/* <legend className="text-lg font-bold">Upload papers</legend> */}
@@ -179,9 +176,6 @@ const Page = () => {
         >
           {isUploading ? "Uploading..." : "Upload Papers"}
         </Button>
-      </div>
-      <div>
-        <Footer />
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ import {
   slots,
   years,
 } from "@/components/select_options";
-import { connectToDatabase } from "@/lib/mongoose"; 
+import { connectToDatabase } from "@/lib/mongoose";
 import cloudinary from "cloudinary";
 import type {
   ICourses,
@@ -48,14 +48,13 @@ export async function POST(req: Request) {
     await connectToDatabase();
     const count: number = await PaperAdmin.countDocuments();
     const configIndex = count % cloudinaryConfigs.length;
-    console.log(configIndex)
+    console.log(configIndex);
     cloudinary.v2.config(cloudinaryConfigs[configIndex]);
 
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
     const formData = await req.formData();
     const files: File[] = formData.getAll("files") as File[];
     const isPdf = formData.get("isPdf") === "true"; // Convert string to boolean
-
 
     let pdfData = "";
 
@@ -64,27 +63,26 @@ export async function POST(req: Request) {
       const pdfBytes = await pdfFile.arrayBuffer();
       const pdfBuffer = Buffer.from(pdfBytes);
       pdfData = pdfBuffer.toString("base64");
-    }
-    else if (files.length > 0) {
+    } else if (files.length > 0) {
       const pdfBytes = await CreatePDF(files);
       const pdfBuffer = Buffer.from(pdfBytes);
       pdfData = pdfBuffer.toString("base64");
     }
     const tags = await processAndAnalyze({ pdfData });
 
-    console.log(" tags generated:", tags);
+    console.log("tags generated:", tags);
 
     const { data } = await axios.get<ICourses[]>(
       `${process.env.SERVER_URL}/api/course-list`,
     );
     const courses = data.map((course: { name: string }) => course.name);
-  
+
     const finalTags = await setTagsFromCurrentLists(tags, courses);
     console.log(" tags final:", finalTags);
 
     const subject = finalTags.subject;
     const slot = finalTags.slot;
-    const exam = finalTags.exam
+    const exam = finalTags.exam;
     const year = finalTags.year;
     const campus = formData.get("campus") as string;
     const semester = finalTags.semester;
@@ -167,7 +165,7 @@ export async function POST(req: Request) {
         uploadPreset,
       );
     }
-    console.log(finalUrl)
+    console.log(finalUrl);
     const thumbnailResponse = cloudinary.v2.image(finalUrl!, {
       format: "jpg",
     });
@@ -259,31 +257,28 @@ async function CreatePDF(orderedFiles: File[]) {
 //sets course-name to corresponding course name from our api
 async function setTagsFromCurrentLists(
   tags: ExamDetail | undefined,
-  courses:  string[],
-
+  courses: string[],
 ): Promise<ExamDetail> {
   if (!courses[0] || !slots[0] || !exams[0] || !semesters[0] || !years[0]) {
     throw Error("Cannot fetch default value for courses/slot/exam/sem/year!");
   }
 
   const newTags: ExamDetail = {
-    "subject": courses[0],
+    subject: courses[0],
     slot: slots[0],
     "course-code": "notInUse",
-    "exam": exams[0],
+    exam: exams[0],
     semester: semesters[0] as SemesterType,
     year: years[0],
     answerKeyIncluded: false,
   };
-  
+
   const coursesFuzy = new Fuse(courses);
   if (!tags) {
     console.log("Anaylsis failed setting random courses as fields");
     return newTags;
   } else {
-    const subjectSearch = coursesFuzy.search(
-      tags.subject ,
-    )[0];
+    const subjectSearch = coursesFuzy.search(tags.subject)[0];
     if (subjectSearch) {
       newTags.subject = subjectSearch.item;
     }
@@ -298,7 +293,6 @@ async function setTagsFromCurrentLists(
     const semesterSearchResult = findMatch(semesters, tags.semester);
     if (semesterSearchResult) {
       newTags.semester = semesterSearchResult as SemesterType;
-
     }
     const yearSearchResult = findMatch(years, tags.year);
 

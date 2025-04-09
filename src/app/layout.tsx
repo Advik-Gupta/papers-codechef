@@ -4,7 +4,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { GeistSans } from "geist/font/sans";
 import Script from "next/script";
 import type { Metadata } from "next";
-import Banner from "@/components/Banner";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://papers.codechefvit.com/"),
@@ -116,8 +117,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Toaster position="top-right" reverseOrder={false} />
-        
-          {children}
+          <div className="bg-[#F3F5FF] dark:bg-[#070114]">
+            <Navbar />
+            <div className="mx-auto max-w-[1440px] px-16">{children}</div>
+            <Footer />
+          </div>
         </ThemeProvider>
       </body>
     </html>

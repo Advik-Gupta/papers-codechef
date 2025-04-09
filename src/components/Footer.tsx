@@ -1,6 +1,4 @@
 "use client";
-import { Separator } from "./ui/separator";
-import ccLogo from "../assets/codechef_logo.svg";
 import Image from "next/image";
 import { Instagram, Linkedin, Youtube, Github } from "lucide-react";
 import meta_icon from "../assets/meta_icon.svg";
@@ -23,14 +21,16 @@ export default function Footer() {
   }, [theme]);
 
   return (
-    <footer className="w-full overflow-hidden font-sans bg-gradient-to-b dark:from-[#070114] dark:to-[#1F0234] from-[#F3F5FF] to-[#A599CE] px-6 py-12 text-white">
-      <div className="max-w-7xl mx-auto flex flex-col gap-y-10 lg:flex-row lg:justify-between">
-        <div className="flex flex-col items-center lg:items-start gap-4 text-center lg:text-left">
-          <h1 className="jost tracking-wide bg-gradient-to-r from-[#562EE7] to-[rgba(116,128,255,0.8)] bg-clip-text font-bold text-xl text-transparent mb-5 dark:from-[#562EE7] dark:to-[#FFC6E8] text-left md:text-7xl">
+    <footer className="w-full overflow-hidden bg-gradient-to-b from-[#F3F5FF] to-[#A599CE] px-16 px-6 py-12 font-sans text-white dark:from-[#070114] dark:to-[#1F0234]">
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-y-10 lg:flex-row lg:justify-between">
+        <div className="flex flex-col items-center gap-4 text-center lg:items-start lg:text-left">
+          <h1 className="jost mb-5 bg-gradient-to-r from-[#562EE7] to-[rgba(116,128,255,0.8)] bg-clip-text text-left text-xl font-bold tracking-wide text-transparent dark:from-[#562EE7] dark:to-[#FFC6E8] md:text-7xl">
             Papers
           </h1>
-          <p className="text-md text-black dark:text-white">Made with ❤️ by Codechef-VIT</p>
-          <div className="flex items-center gap-4 flex-wrap justify-center lg:justify-start">
+          <p className="text-md text-black dark:text-white">
+            Made with ❤️ by Codechef-VIT
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-4 lg:justify-start">
             <Link href="https://www.instagram.com/codechefvit/">
               <Button variant="ghost" size="icon">
                 <Instagram className="text-black dark:text-white" />
@@ -81,21 +81,23 @@ export default function Footer() {
             </Link>
           </div>
         </div>
-        <div className="flex flex-col items-center dark:text-white text-black lg:items-start text-center lg:text-left gap-2">
+        <div className="flex flex-col items-center gap-2 text-center text-black dark:text-white lg:items-start lg:text-left">
           <h3 className="text-xl font-semibold">Menu</h3>
           <Link href="/search">Search</Link>
           <Link href="/features">Features</Link>
           <Link href="/faq">FAQ</Link>
         </div>
-        <div className="flex flex-col items-center dark:text-white text-black lg:items-start text-center lg:text-left gap-2">
+        <div className="flex flex-col items-center gap-2 text-center text-black dark:text-white lg:items-start lg:text-left">
           <h3 className="text-xl font-semibold">Our Projects</h3>
           <Link href="/">Papers</Link>
           <Link href="/">FFCS-inator</Link>
           <Link href="/">Brainrot Arcade</Link>
         </div>
-        <div className="flex flex-col items-center dark:text-white text-black lg:items-start text-center lg:text-left gap-2">
+        <div className="flex flex-col items-center gap-2 text-center text-black dark:text-white lg:items-start lg:text-left">
           <h3 className="text-xl font-semibold">Contact Us</h3>
-          <p>contact@codechefvit.com</p>
+          <Link href={`mailto:codechefvit@gmail.com`}>
+            codechefvit@gmail.com
+          </Link>
         </div>
       </div>
     </footer>

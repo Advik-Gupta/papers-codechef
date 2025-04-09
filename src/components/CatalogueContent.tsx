@@ -52,10 +52,9 @@ const CatalogueContent = () => {
   const [filterOptions, setFilterOptions] = useState<Filters>();
   const [filtersPulled, setFiltersPulled] = useState<boolean>(false);
 
-
-  const closeFilters = ()=>{
-    setFiltersPulled(false)
-  }
+  const closeFilters = () => {
+    setFiltersPulled(false);
+  };
   const handleSelectAll = () => setSelectedPapers(papers);
   const handleDeselectAll = () => setSelectedPapers([]);
 
@@ -99,7 +98,6 @@ const CatalogueContent = () => {
         );
       }
       if (exams !== undefined && exams.length > 0) {
-        // console.log(exams);
         pushContent = pushContent.concat(
           `&exams=${encodeURIComponent(exams.join(","))}`,
         );
@@ -123,7 +121,6 @@ const CatalogueContent = () => {
   };
 
   useEffect(() => {
-
     if (subject) {
       const fetchPapers = async () => {
         setLoading(true);
@@ -193,11 +190,17 @@ const CatalogueContent = () => {
         <Loader />
       ) : papers.length > 0 ? (
         <>
-          <div className={`grid h-fit grid-cols-1 gap-8 px-[30px] py-[40px] md:grid-cols-4 ${filtersPulled? "blur-xl":""}`}>
-            <div className={`filter md:hidden justify-center ${filtersPulled?"hidden": "flex"}`} >
+          <div
+            className={`grid h-fit grid-cols-1 gap-8 px-[30px] py-[40px] md:grid-cols-4 ${filtersPulled ? "blur-xl" : ""}`}
+          >
+            <div
+              className={`justify-center filter md:hidden ${filtersPulled ? "hidden" : "flex"}`}
+            >
               <Button
                 variant="outline"
-                onClick={()=>{setFiltersPulled(true)}}
+                onClick={() => {
+                  setFiltersPulled(true);
+                }}
                 className="mr-2 border-2 border-black font-sans font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
               >
                 Add Filters

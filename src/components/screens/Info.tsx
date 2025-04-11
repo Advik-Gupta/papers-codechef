@@ -17,13 +17,13 @@ function Info() {
       className="flex flex-col items-center justify-between px-6 py-12 lg:flex-row scroll-mt-24 md:scroll-mt-32"
     >
       <div className="w-full text-center lg:w-[50%] lg:text-left">
-        <div className="vignabd mb-8 text-3xl font-extrabold text-[#120020] dark:text-white lg:text-5xl">
-          <span className="block font-extrabold">Prepare to excel in</span>
-          <span className="block font-extrabold">your CATs and FATs</span>
-          <span className="block font-extrabold">with CodeChef-</span>
-          <span className="block font-extrabold">VIT’s dedicated</span>
-          <span className="block font-extrabold">repository of past</span>
-          <span className="block font-extrabold">exam papers</span>
+        <div className="vignabd mb-8 block text-3xl font-extrabold text-[#120020] dark:text-white lg:text-5xl">
+          <span>Prepare to excel in </span>
+          <span>your CATs and FATs </span>
+          <span>with CodeChef-</span>
+          <span>VIT’s dedicated </span>
+          <span>repository of past</span>
+          <span>exam papers</span>
         </div>
         <div className="play grid gap-4 text-[12px] xl:text-[16px] text-[#120020] dark:text-white md:grid-cols-3">
           <FeatureCard

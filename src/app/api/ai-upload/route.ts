@@ -154,6 +154,7 @@ export async function POST(req: Request) {
           uploadPreset,
         );
       } catch (error) {
+        console.error("Error creating PDF:", error);
         return NextResponse.json(
           { error: "Failed to process PDF" },
           { status: 500 },

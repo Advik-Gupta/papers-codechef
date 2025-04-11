@@ -4,8 +4,7 @@ import axios, { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { handleAPIError } from "../../util/error";
 import { Button } from "@/components/ui/button";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+
 import { type APIResponse } from "@/interface";
 import Dropzone from "react-dropzone";
 

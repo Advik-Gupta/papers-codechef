@@ -28,6 +28,7 @@ function SearchbarSubjectList({
       setCourses(fetchedCourses);
       setLoading(false);
     } catch (err) {
+      console.error("Error fetching courses:", err);
       setError("Failed to fetch courses");
       setLoading(false);
     }

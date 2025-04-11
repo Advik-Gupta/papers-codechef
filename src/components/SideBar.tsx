@@ -91,7 +91,7 @@ function SideBar({
     retrieveFilters("year", selectedYears, setSelectedYears);
     retrieveFilters("semester", selectedSemesters, setSelectedSemesters);
     retrieveFilters("campus", selectedCampuses, setSelectedCampuses);
-  }, []);
+  }, [retrieveFilters, selectedCampuses, selectedExams, selectedSemesters, selectedSlots, selectedYears]);
   const handleResetFilters = () => {
     setSelectedExams([]);
     setSelectedSlots([]);

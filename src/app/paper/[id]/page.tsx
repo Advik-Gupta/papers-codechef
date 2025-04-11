@@ -1,6 +1,5 @@
 import { fetchPaperID } from "@/app/actions/get-papers-by-id";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
+
 import PdfViewer from "@/components/pdfViewer";
 import RelatedPapers from "@/components/RelatedPaper";
 import ShareButton from "@/components/ShareButton";

@@ -27,9 +27,9 @@ function SearchBarChild({ initialSubjects }: { initialSubjects: string[] }) {
   };
 
   const handleSelectSuggestion = (suggestion: string) => {
+    router.push(`/catalogue?subject=${encodeURIComponent(suggestion)}`);
     setSearchText(suggestion);
     setSuggestions([]);
-    router.push(`/catalogue?subject=${encodeURIComponent(suggestion)}`);
   };
 
   const handleClickOutside = (event: MouseEvent) => {

@@ -42,7 +42,7 @@ export const FilterDialog = ({
   const [selectedYears, setSelectedYears] = useState<string[]>(
     initialYears ?? [],
   );
-  const [selectedCampuses, setSelectedCampuses] = useState<string[]>(
+  const [, setSelectedCampuses] = useState<string[]>(
     initialYears ?? [],
   );
   const [selectedSemesters, setSelectedSemesters] = useState<string[]>(
@@ -56,7 +56,7 @@ export const FilterDialog = ({
     setSelectedYears(initialYears ?? []);
     setSelectedCampuses(initialCampuses ?? []);
     setSelectedSemesters(initialSemesters ?? []);
-  }, [initialExams, initialSlots, initialYears]);
+  }, [initialCampuses, initialExams, initialSemesters, initialSlots, initialYears]);
 
   const exams = filterOptions.uniqueExams.map((exam) => ({
     label: exam,
@@ -74,10 +74,10 @@ export const FilterDialog = ({
     label: semester,
     value: semester,
   }));
-  const campuses = filterOptions.uniqueCampuses.map((campus) => ({
-    label: campus,
-    value: campus,
-  }));
+  // const campuses = filterOptions.uniqueCampuses.map((campus) => ({
+  //   label: campus,
+  //   value: campus,
+  // }));
   const handleFilterClick = () => {
     onApplyFilters(selectedExams, selectedSlots, selectedYears);
     setOpen(false);

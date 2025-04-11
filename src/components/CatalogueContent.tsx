@@ -5,17 +5,13 @@ import { useEffect, useState } from "react";
 import axios, { type AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
 import { type IPaper, type Filters } from "@/interface";
-import { FilterDialog } from "@/components/FilterDialog";
 import Card from "./Card";
 import { extractBracketContent } from "@/util/utils";
 import { useRouter } from "next/navigation";
-import SearchBarChild from "./Searchbar/searchbar-child";
 import Loader from "./ui/loader";
-import { campuses, semesters } from "./select_options";
-import SearchBar from "./Searchbar/searchbar";
+
 import filterIcon from "../assets/filterIcon.svg";
 import Image from "next/image";
-import { XIcon } from "lucide-react";
 import SideBar from "../components/SideBar";
 
 const CatalogueContent = () => {
@@ -25,18 +21,7 @@ const CatalogueContent = () => {
   const exams = searchParams.get("exams")?.split(",");
   const slots = searchParams.get("slots")?.split(",");
   const years = searchParams.get("years")?.split(",");
-  const semesters = searchParams.get("semesters")?.split(",");
-  const campuses = searchParams.get("campuses")?.split(",");
 
-  const [selectedExams, setSelectedExams] = useState<string[] | undefined>(
-    exams,
-  );
-  const [selectedSlots, setSelectedSlots] = useState<string[] | undefined>(
-    slots,
-  );
-  const [selectedYears, setSelectedYears] = useState<string[] | undefined>(
-    years,
-  );
 
   // const handleResetFilters = () => {
   //   setSelectedExams([]);
@@ -170,7 +155,7 @@ const CatalogueContent = () => {
 
       void fetchPapers();
     }
-  }, [subject, exams?.join(","), slots?.join(","), years?.join(",")]); //changed because userRouter() changes everytime
+  }, [exams, slots, subject, years]); //changed because userRouter() changes everytime
   return (
     <div className="relative flex min-h-screen p-0">
       <SideBar

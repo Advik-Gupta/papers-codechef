@@ -4,7 +4,7 @@ import Hero from "@/components/screens/Hero";
 
 const HomePage = () => {
   return (
-    <div className="vipna flex min-h-screen w-full flex-col space-y-8">
+    <div >
       <Hero />
       <Info />
       <Faq />

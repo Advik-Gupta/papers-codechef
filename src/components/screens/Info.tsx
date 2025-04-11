@@ -12,9 +12,9 @@ import filterd from "@/assets/filterd.svg" assert { type: "image/svg" };
 
 function Info() {
   return (
-    <div
+    <section
       id="hero"
-      className="flex flex-col items-center justify-between lg:flex-row"
+      className="flex flex-col items-center justify-between px-6 py-12 lg:flex-row scroll-mt-24 md:scroll-mt-32"
     >
       <div className="w-full text-center lg:w-[50%] lg:text-left">
         <div className="vignabd mb-8 block text-3xl font-extrabold text-[#120020] dark:text-white lg:text-5xl">
@@ -25,7 +25,7 @@ function Info() {
           <span>repository of past</span>
           <span>exam papers</span>
         </div>
-        <div className="play grid gap-4 text-[#120020] dark:text-white md:grid-cols-3">
+        <div className="play grid gap-4 text-[12px] xl:text-[16px] text-[#120020] dark:text-white md:grid-cols-3">
           <FeatureCard
             lightIcon={signd as HTMLImageElement}
             darkIcon={sign as HTMLImageElement}
@@ -69,7 +69,7 @@ function Info() {
           className="hidden dark:block"
         />
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -95,7 +95,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   if (isHighlight) {
     return (
       <div className="row-span-2 flex flex-col justify-center rounded-lg border-2 border-[#7480FF8A] bg-[#EAEEFF] p-4 text-center dark:border-[#453D60] dark:bg-[#130E20]">
-        <span className="p-2 text-4xl font-extrabold lg:text-5xl">
+        <span className="p-3 text-2xl font-extrabold lg:text-4xl xl:text-5xl text-center">
           {highlightText}
         </span>
         <span>{subText}</span>

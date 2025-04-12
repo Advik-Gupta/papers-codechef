@@ -23,6 +23,9 @@
 //   thumbnail_url: string;
 //   type: string;
 //   url: string;
+
+import { mongo } from "mongoose";
+
 // }
 export interface CloudinaryUploadResult {
   asset_id: string;
@@ -45,7 +48,13 @@ export interface CloudinaryUploadResult {
   folder: string;
   access_mode: string;
 }
-
+export interface IUpcomingSlot {
+  slot: string;
+}
+export interface IUpcomingSubject {
+  subject: string;
+  slots: string [];
+}
 export interface CloudinaryUploadWidgetProps {
   info: CloudinaryUploadResult;
   event?: string;
@@ -128,7 +137,10 @@ export interface DecryptedLoginResponse {
     id: string;
   };
 }
-
+export interface IUpcomingPaper extends mongo.Document {
+  subject: string;
+  slots: string [];
+}
 export interface IPaper {
   _id: string;
   exam: "CAT-1" | "CAT-2" | "FAT" | "Model CAT-1" | "Model CAT-2" | "Model FAT";

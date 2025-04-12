@@ -38,6 +38,6 @@ yarn-error.log*
 
 # vercel
 .vercel
-
+.env.staging
 # typescript
 *.tsbuildinfo

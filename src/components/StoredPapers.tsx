@@ -2,20 +2,21 @@
 import papers from "ongoing-papers";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Card from "@/components/Card";
-import { type IPaper } from "@/interface";
+import { type IUpcomingPaper } from "@/interface";
 import Loader from "./ui/loader";
+import UpcomingPaper from "./UpcomingPaper";
 
 function StoredPapers() {
-  const [displayPapers, setDisplayPapers] = useState<IPaper[]>([]);
+  const [displayPapers, setDisplayPapers] = useState<IUpcomingPaper[]>([]);
 
   useEffect(() => {
     async function fetchPapers() {
       try {
-        const response = await axios.get("/api/selected-papers");
-        setDisplayPapers(response.data as IPaper[]);
+        const response = await axios.get<IUpcomingPaper[]>(
+          "/api/upcoming-papers",
+        );
+        setDisplayPapers(response.data);
       } catch (error) {
-        setDisplayPapers(papers);
         console.error("Failed to fetch papers:", error);
       }
     }
@@ -30,18 +31,15 @@ function StoredPapers() {
   return (
     <div className="h-min">
       <p className="play my-8 text-center text-lg font-semibold">
-        Most Viewed Papers
+        Upcoming Papers
       </p>
 
-      <div className="grid grid-cols-1 justify-center gap-6 md:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
-        {displayPapers.map((paper: IPaper) => (
-          <Card
-            key={paper._id}
-            paper={paper}
-            onSelect={() => {
-              ("");
-            }}
-            isSelected={false}
+      <div className="grid grid-cols-1 justify-center gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
+        {displayPapers.map((paper: IUpcomingPaper) => (
+          <UpcomingPaper
+            key={paper.subject}
+            subject={paper.subject}
+            slots={paper.slots}
           />
         ))}
       </div>

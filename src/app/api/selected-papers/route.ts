@@ -8,7 +8,7 @@ export async function GET() {
   try {
     await connectToDatabase();
 
-    const selectedPapers = await Paper.find({ isSelected: true }).limit(4);
+    const selectedPapers = await Paper.find({ isSelected: true }).limit(8);
 
     if (selectedPapers.length === 0) {
       return NextResponse.json(

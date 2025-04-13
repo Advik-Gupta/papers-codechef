@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import axios, { type AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
 import { type IPaper, type Filters } from "@/interface";
@@ -15,32 +15,33 @@ import Image from "next/image";
 import SideBar from "../components/SideBar";
 
 const CatalogueContent = () => {
+  {
+    console.log("component loaded");
+  }
+
   const searchParams = useSearchParams();
-  const router = useRouter();
   const subject = searchParams.get("subject");
   const exams = searchParams.get("exams")?.split(",");
   const slots = searchParams.get("slots")?.split(",");
   const years = searchParams.get("years")?.split(",");
 
 
-  // const handleResetFilters = () => {
-  //   setSelectedExams([]);
-  //   setSelectedSlots([]);
-  //   setSelectedYears([]);
-  //   router.push(`/catalogue?subject=${encodeURIComponent(subject!)}`);
-  // };
 
   const [papers, setPapers] = useState<IPaper[]>([]);
+  const [filteredPapers, setFilteredPapers] = useState<IPaper[]>([]);
   const [selectedPapers, setSelectedPapers] = useState<IPaper[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [filterOptions, setFilterOptions] = useState<Filters>();
   const [filtersPulled, setFiltersPulled] = useState<boolean>(false);
-
+  const [appliedFilters, setAppliedFilters] = useState<boolean>(false);
   const closeFilters = () => {
     setFiltersPulled(false);
   };
-  const handleSelectAll = () => setSelectedPapers(papers);
+  const noAppliedFilters = ()=>{
+    setAppliedFilters(false);
+  }
+  const handleSelectAll = () => setSelectedPapers(appliedFilters?filteredPapers:papers);
   const handleDeselectAll = () => setSelectedPapers([]);
 
   const handleDownloadAll = async () => {
@@ -70,42 +71,39 @@ const CatalogueContent = () => {
       setSelectedPapers((prev) => prev.filter((p) => p._id !== paper._id));
     }
   };
+
   const handleApplyFilters = (
     exams: string[],
     slots: string[],
     years: string[],
+    campus: string[],
+    semester: string[],
+    anskey: boolean,
   ) => {
-    if (subject) {
-      let pushContent = "/catalogue";
-      if (subject) {
-        pushContent = pushContent.concat(
-          `?subject=${encodeURIComponent(subject)}`,
-        );
-      }
-      if (exams !== undefined && exams.length > 0) {
-        pushContent = pushContent.concat(
-          `&exams=${encodeURIComponent(exams.join(","))}`,
-        );
-      }
-      if (slots !== undefined && slots.length > 0) {
-        pushContent = pushContent.concat(
-          `&slots=${encodeURIComponent(slots.join(","))}`,
-        );
-      }
-      if (years !== undefined && years.length > 0) {
-        pushContent = pushContent.concat(
-          `&years=${encodeURIComponent(years.join(","))}`,
-        );
-      }
-      router.push(pushContent);
-    }
-    // setSelectedExams(exams);
-    // setSelectedSlots(slots);
-    // setSelectedYears(years);
-    handleDeselectAll();
+    const filters = {
+      exam: exams,
+      slot: slots,
+      year: years,
+      campus: campus,
+      semester: semester,
+    };
+    setAppliedFilters(true);
+    console.log("filters : ", filters);
+    let fPapers = papers.filter((paper) =>
+      Object.entries(filters).every(
+        ([key, values]) =>
+          values.length === 0 ||
+          values.includes(paper[key as keyof typeof paper] as string),
+      ),
+    );
+    fPapers = fPapers.filter((paper) => paper.answerKeyIncluded == anskey)
+    console.log("fpapers : ",fPapers)
+    setFilteredPapers(fPapers);
   };
 
+
   useEffect(() => {
+
     if (subject) {
       const fetchPapers = async () => {
         setLoading(true);
@@ -117,7 +115,7 @@ const CatalogueContent = () => {
           const Data: Filters = papersResponse.data;
           const papersData = Data.papers;
           const filters: Filters = papersResponse.data;
-
+          console.log(papersResponse.data);
           setFilterOptions(filters);
 
           const papersDataWithFilters = papersData.filter((paper) => {
@@ -154,11 +152,13 @@ const CatalogueContent = () => {
       };
 
       void fetchPapers();
+
     }
-  }, [exams, slots, subject, years]); //changed because userRouter() changes everytime
+  }, [exams, slots, subject, years]);
   return (
     <div className="relative flex min-h-screen p-0">
       <SideBar
+        noAppliedFilters={noAppliedFilters}
         filtersPulled={filtersPulled}
         handleApplyFilters={handleApplyFilters}
         handleSelectAll={handleSelectAll}
@@ -197,14 +197,28 @@ const CatalogueContent = () => {
                 />
               </Button>
             </div>
-            {papers.map((paper) => (
-              <Card
-                key={paper._id}
-                paper={paper}
-                onSelect={(p, isSelected) => handleSelectPaper(p, isSelected)}
-                isSelected={selectedPapers.some((p) => p._id === paper._id)}
-              />
-            ))}
+
+            {appliedFilters?( filteredPapers.length > 0
+              ? filteredPapers.map((paper: IPaper) => (
+                  <Card
+                    key={paper._id}
+                    paper={paper}
+                    onSelect={(p, isSelected) =>
+                      handleSelectPaper(p, isSelected)
+                    }
+                    isSelected={selectedPapers.some((p) => p._id === paper._id)}
+                  />
+                ))
+              : <p>No papers available with the applied filter</p>) : papers.map((paper: IPaper) => (
+                  <Card
+                    key={paper._id}
+                    paper={paper}
+                    onSelect={(p, isSelected) =>
+                      handleSelectPaper(p, isSelected)
+                    }
+                    isSelected={selectedPapers.some((p) => p._id === paper._id)}
+                  />
+                ))}
           </div>
         </>
       ) : (

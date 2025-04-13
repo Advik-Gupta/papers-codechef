@@ -17,6 +17,7 @@ import {
 import closeIcon from "../assets/close.svg";
 
 function SideBar({
+  noAppliedFilters,
   filtersPulled,
   subject,
   filterOptions,
@@ -27,6 +28,7 @@ function SideBar({
   handleApplyFilters,
   closeFilters,
 }: {
+  noAppliedFilters: () => void;
   closeFilters: () => void;
   filtersPulled: boolean;
   subject: string | null;
@@ -39,11 +41,11 @@ function SideBar({
     exams: string[],
     slots: string[],
     years: string[],
+    campus: string[],
+    semester: string[],
+    anskey: boolean,
   ) => void;
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
   const [selectedExams, setSelectedExams] = useState<string[]>([]);
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [selectedYears, setSelectedYears] = useState<string[]>([]);
@@ -70,34 +72,19 @@ function SideBar({
     label: campus,
     value: campus,
   }));
-  function retrieveFilters(
-    param: string,
-    selectedStuff: string[],
-    setSelectedStuff: React.Dispatch<React.SetStateAction<string[]>>,
-  ) {
-    //the filters are deselcted once refreshed that is why we need to retrive them from the params
-    const theParams = searchParams.get(param);
-    const theParamsArray = theParams?.split(",");
-    if (theParamsArray) {
-      setSelectedStuff((prevItems) => {
-        const newItems = theParamsArray.filter((el) => !prevItems.includes(el));
-        return [...prevItems, ...newItems];
-      });
-    }
-  }
-  useEffect(() => {
-    retrieveFilters("exams", selectedExams, setSelectedExams);
-    retrieveFilters("slots", selectedSlots, setSelectedSlots);
-    retrieveFilters("year", selectedYears, setSelectedYears);
-    retrieveFilters("semester", selectedSemesters, setSelectedSemesters);
-    retrieveFilters("campus", selectedCampuses, setSelectedCampuses);
-  }, [retrieveFilters, selectedCampuses, selectedExams, selectedSemesters, selectedSlots, selectedYears]);
+
   const handleResetFilters = () => {
     setSelectedExams([]);
     setSelectedSlots([]);
     setSelectedYears([]);
-    router.push(`/catalogue?subject=${encodeURIComponent(subject!)}`);
+    setSelectedCampuses([]);
+    setSelectedSemesters([]);
+    setAnswerKey(false);
+    noAppliedFilters();
   };
+  useEffect(() => {
+    handleResetFilters();
+  }, []);
   function handleXClick<T>(
     event: React.MouseEvent,
     mainStuff: T,
@@ -125,10 +112,40 @@ function SideBar({
       setSelectedStuff((prevItems) => [...prevItems, mainstuff]);
     }
   }
+  useEffect(() => {
+    //this is to check if any of the filters is clicked and if clicked then apply the filter without using the applyfilter button
+    if (
+      selectedExams.length > 0 ||
+      selectedSlots.length > 0 ||
+      selectedYears.length > 0 ||
+      selectedCampuses.length > 0 ||
+      selectedSemesters.length > 0 ||
+      answerKey === true
+    )
+      handleApplyFilters(
+        selectedExams,
+        selectedSlots,
+        selectedYears,
+        selectedCampuses,
+        selectedSemesters,
+        answerKey,
+      );
+    else {
+      noAppliedFilters();
+    }
+  }, [
+    //dont listen to eslint here if ya dont want to have an infinite loop
+    selectedExams,
+    selectedSlots,
+    selectedYears,
+    selectedCampuses,
+    selectedSemesters,
+    answerKey,
+  ]);
 
   return (
     <div
-      className={`sticky top-0 mb-0 h-full w-[100em] flex-col items-baseline border-r-2 border-[#36266d] bg-[#030712] py-[40px] md:flex md:w-[30%] ${filtersPulled ? "flex" : "hidden"}`}
+      className={`sticky top-0 mb-0 h-full w-[100em] max-w-xs flex-col items-baseline border-r-2 border-[#36266d] bg-[#f3f5ff] py-[40px] dark:bg-[#070114] md:flex md:w-[30%] ${filtersPulled ? "flex" : "hidden"}`}
     >
       <div onClick={closeFilters} className="block md:hidden">
         <Image
@@ -139,9 +156,7 @@ function SideBar({
           alt="Navbar trigger"
         />
       </div>
-      <div className="px-[10px] md:w-[100%]">
-        <SearchBar />
-      </div>
+      <div className="px-[10px] md:w-[100%]">{/* <SearchBar /> */}</div>
       <div className="flex w-full gap-8 border-b-2 border-[#36266d] px-[10px] pb-4 pt-8">
         <div className="hidden flex-col items-baseline justify-center gap-2 md:flex md:justify-end 2xl:mr-4">
           <div>
@@ -176,19 +191,12 @@ function SideBar({
             src={filterIcon as string}
             width={30}
             height={30}
+            className="invert dark:invert-0"
             alt="Picture of the author"
           />
           <div className="font-sans text-xl font-bold">Filters</div>
         </div>
         <div className="flex flex-col">
-          <div
-            className="mb-1 cursor-pointer rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
-            onClick={() => {
-              handleApplyFilters(selectedExams, selectedSlots, selectedYears);
-            }}
-          >
-            Apply Filters
-          </div>
           <div
             className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
             onClick={handleResetFilters}
@@ -202,7 +210,7 @@ function SideBar({
           onClick={() => {
             setAnswerKey(true);
           }}
-          className={`flex cursor-pointer rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white ${answerKey ? "dark:border-[#434dba] dark:hover:border-[white]" : "dark:border-white dark:hover:border-[#434dba]"} dark:hover:bg-slate-900`}
+          className={`flex cursor-pointer rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white ${answerKey ? "dark:border-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba] dark:bg-[#434dba] bg-[#B2B8FF]  border-[#B2B8FF] hover:bg-[#B2B8FF] hover:border-black" : "dark:border-white dark:hover:border-[#434dba] hover:bg-[#B2B8FF] bg-none"}`}
         >
           Answer Key Available
           {answerKey && (
@@ -241,7 +249,7 @@ function SideBar({
                             setSelectedExams,
                           );
                         }}
-                        className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedExams.includes(exam.value) ? "dark:border-[#434dba] dark:hover:border-[white]" : "dark:border-white dark:hover:border-[#434dba]"}`}
+                        className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedExams.includes(exam.value) ? "dark:border-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba] dark:bg-[#434dba] bg-[#B2B8FF]  border-[#B2B8FF] hover:bg-[#B2B8FF] hover:border-black" : "dark:border-white dark:hover:border-[#434dba] hover:bg-[#B2B8FF] bg-none"}`}
                       >
                         {exam.label}
                         {selectedExams.includes(exam.value) && (
@@ -286,7 +294,7 @@ function SideBar({
                             setSelectedSlots,
                           );
                         }}
-                        className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedSlots.includes(slot.value) ? "dark:border-[#434dba] dark:hover:border-[white]" : "dark:border-white dark:hover:border-[#434dba]"}`}
+                        className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedSlots.includes(slot.value) ? "dark:border-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba] dark:bg-[#434dba] bg-[#B2B8FF]  border-[#B2B8FF] hover:bg-[#B2B8FF] hover:border-black" : "dark:border-white dark:hover:border-[#434dba] hover:bg-[#B2B8FF] bg-none"}`}
                       >
                         {slot.label}
                         {selectedSlots.includes(slot.value) && (
@@ -331,7 +339,7 @@ function SideBar({
                             setSelectedYears,
                           );
                         }}
-                        className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedYears.includes(year.value) ? "dark:border-[#434dba] dark:hover:border-[white]" : "dark:border-white dark:hover:border-[#434dba]"}`}
+                        className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedYears.includes(year.value) ? "dark:border-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba] dark:bg-[#434dba] bg-[#B2B8FF]  border-[#B2B8FF] hover:bg-[#B2B8FF] hover:border-black" : "dark:border-white dark:hover:border-[#434dba] hover:bg-[#B2B8FF] bg-none"}`}
                       >
                         {year.label}
                         {selectedYears.includes(year.value) && (
@@ -376,7 +384,7 @@ function SideBar({
                             setSelectedSemesters,
                           );
                         }}
-                        className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedSemesters.includes(semester.value) ? "dark:border-[#434dba] dark:hover:border-[white]" : "dark:border-white dark:hover:border-[#434dba]"}`}
+                        className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedSemesters.includes(semester.value) ? "dark:border-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba] dark:bg-[#434dba] bg-[#B2B8FF]  border-[#B2B8FF] hover:bg-[#B2B8FF] hover:border-black" : "dark:border-white dark:hover:border-[#434dba] hover:bg-[#B2B8FF] bg-none"}`}
                       >
                         {semester.label}
                         {selectedSemesters.includes(semester.value) && (
@@ -421,7 +429,7 @@ function SideBar({
                             setSelectedCampuses,
                           );
                         }}
-                        className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedCampuses.includes(campus.value) ? "dark:border-[#434dba] dark:hover:border-[white]" : "dark:border-white dark:hover:border-[#434dba]"}`}
+                        className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedCampuses.includes(campus.value) ? "dark:border-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba] dark:bg-[#434dba] bg-[#B2B8FF]  border-[#B2B8FF] hover:bg-[#B2B8FF] hover:border-black" : "dark:border-white dark:hover:border-[#434dba] hover:bg-[#B2B8FF] bg-none"}`}
                       >
                         {campus.label}
                         {selectedCampuses.includes(campus.value) && (

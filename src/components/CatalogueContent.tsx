@@ -15,9 +15,7 @@ import Image from "next/image";
 import SideBar from "../components/SideBar";
 
 const CatalogueContent = () => {
-  {
-    console.log("component loaded");
-  }
+
 
   const searchParams = useSearchParams();
   const subject = searchParams.get("subject");
@@ -88,7 +86,6 @@ const CatalogueContent = () => {
       semester: semester,
     };
     setAppliedFilters(true);
-    console.log("filters : ", filters);
     let fPapers = papers.filter((paper) =>
       Object.entries(filters).every(
         ([key, values]) =>
@@ -97,7 +94,6 @@ const CatalogueContent = () => {
       ),
     );
     fPapers = fPapers.filter((paper) => paper.answerKeyIncluded == anskey)
-    console.log("fpapers : ",fPapers)
     setFilteredPapers(fPapers);
   };
 
@@ -115,7 +111,6 @@ const CatalogueContent = () => {
           const Data: Filters = papersResponse.data;
           const papersData = Data.papers;
           const filters: Filters = papersResponse.data;
-          console.log(papersResponse.data);
           setFilterOptions(filters);
 
           const papersDataWithFilters = papersData.filter((paper) => {

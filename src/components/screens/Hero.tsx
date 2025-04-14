@@ -11,7 +11,7 @@ const Hero = () => {
       </h1>
       <SearchBar />
       <StoredPapers />
-      <div className="hidden md:flex flex-col items-center whitespace-nowrap text-center">
+      <div className="hidden lg:flex flex-col items-center whitespace-nowrap text-center">
         <h1 className="play text-md">Learn More</h1>
         <Link
           href="#hero"

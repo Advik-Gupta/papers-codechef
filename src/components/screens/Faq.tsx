@@ -18,7 +18,7 @@ function Faq() {
 
   return (
     <>
-      <div className="mb-8 w-full text-center text-4xl font-bold text-[#120020] dark:text-white lg:text-left lg:text-5xl">
+      <div id="faq" className="mb-8 w-full text-center text-4xl font-bold text-[#120020] dark:text-white lg:text-left lg:text-5xl">
         Frequently Asked Questions
       </div>
       <div className="play mx-auto w-full space-y-6">

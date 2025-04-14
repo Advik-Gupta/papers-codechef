@@ -91,7 +91,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  handleDownload(paper);
+                  void handleDownload(paper);
                 }}
                 className="cursor-pointer"
               />

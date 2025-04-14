@@ -83,9 +83,9 @@ export default function Footer() {
         </div>
         <div className="flex flex-col items-center gap-2 text-center text-black dark:text-white lg:items-start lg:text-left">
           <h3 className="text-xl font-semibold">Menu</h3>
-          <Link href="/search">Search</Link>
-          <Link href="/features">Features</Link>
-          <Link href="/faq">FAQ</Link>
+          <Link href="#search">Search</Link>
+          <Link href="#features">Features</Link>
+          <Link href="#faq">FAQ</Link>
         </div>
         <div className="flex flex-col items-center gap-2 text-center text-black dark:text-white lg:items-start lg:text-left">
           <h3 className="text-xl font-semibold">Our Projects</h3>

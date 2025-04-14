@@ -13,7 +13,7 @@ import filterd from "@/assets/filterd.svg" assert { type: "image/svg" };
 function Info() {
   return (
     <section
-      id="hero"
+      id="features"
       className="flex flex-col items-center justify-between px-6 py-12 lg:flex-row scroll-mt-24 md:scroll-mt-32"
     >
       <div className="w-full text-center lg:w-[50%] lg:text-left">

@@ -132,7 +132,7 @@ const Page = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col justify-center">
+    <div className="flex h-screen flex-col justify-center play">
       <div className="2xl:my-15 flex flex-col items-center ">
         <fieldset className="mb-4 w-full max-w-md rounded-lg border-2 border-gray-300 pr-8 p-4 ">
           {/* <legend className="text-lg font-bold">Upload papers</legend> */}
@@ -171,7 +171,7 @@ const Page = () => {
         <Button
           onClick={handlePrint}
           disabled={isUploading}
-          className={`w-fit rounded-md px-4 py-3 ${isUploading ? "bg-gray-300" : ""}`}
+          className={`w-fit rounded-md px-4 text-xl py-3 ${isUploading ? "bg-gray-300" : ""}`}
         >
           {isUploading ? "Uploading..." : "Upload Papers"}
         </Button>

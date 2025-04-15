@@ -27,31 +27,31 @@ export default function Footer() {
           <h1 className="jost mb-5 bg-gradient-to-r from-[#562EE7] to-[rgba(116,128,255,0.8)] bg-clip-text text-left text-xl font-bold tracking-wide text-transparent dark:from-[#562EE7] dark:to-[#FFC6E8] md:text-7xl">
             Papers
           </h1>
-          <p className="text-md text-black dark:text-white">
+          <p className="text-lg text-black play dark:text-white">
             Made with ❤️ by Codechef-VIT
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 lg:justify-start">
-            <Link href="https://www.instagram.com/codechefvit/">
+            <Link href="https://www.instagram.com/codechefvit/" target="_blank">
               <Button variant="ghost" size="icon">
                 <Instagram className="text-black dark:text-white" />
               </Button>
             </Link>
-            <Link href="https://www.linkedin.com/company/codechefvit/">
+            <Link href="https://www.linkedin.com/company/codechefvit/" target="_blank">
               <Button variant="ghost" size="icon">
                 <Linkedin className="text-black dark:text-white" />
               </Button>
             </Link>
-            <Link href="https://www.youtube.com/@CodeChefVIT">
+            <Link href="https://www.youtube.com/@CodeChefVIT" target="_blank">
               <Button variant="ghost" size="icon">
                 <Youtube className="text-black dark:text-white" />
               </Button>
             </Link>
-            <Link href="https://github.com/CodeChefVIT">
+            <Link href="https://github.com/CodeChefVIT" target="_blank">
               <Button variant="ghost" size="icon">
                 <Github className="text-black dark:text-white" />
               </Button>
             </Link>
-            <Link href="https://www.facebook.com/codechefvit/">
+            <Link href="https://www.facebook.com/codechefvit/" target="_blank">
               <Button variant="ghost" size="icon">
                 <Image
                   src={
@@ -65,7 +65,7 @@ export default function Footer() {
                 />
               </Button>
             </Link>
-            <Link href="https://x.com/codechefvit" className="pb-1.5">
+            <Link href="https://x.com/codechefvit" className="pb-1.5" target="_blank">
               <Button variant="ghost" size="icon">
                 <Image
                   src={
@@ -82,19 +82,19 @@ export default function Footer() {
           </div>
         </div>
         <div className="flex flex-col items-center gap-2 text-center text-black dark:text-white lg:items-start lg:text-left">
-          <h3 className="text-xl font-semibold">Menu</h3>
-          <Link href="#search">Search</Link>
-          <Link href="#features">Features</Link>
-          <Link href="#faq">FAQ</Link>
+          <h3 className="text-2xl jost font-semibold">Menu</h3>
+          <Link href="/#search">Search</Link>
+          <Link href="/#features">Features</Link>
+          <Link href="/#faq">FAQ</Link>
         </div>
         <div className="flex flex-col items-center gap-2 text-center text-black dark:text-white lg:items-start lg:text-left">
-          <h3 className="text-xl font-semibold">Our Projects</h3>
+          <h3 className="text-2xl jost font-semibold">Our Projects</h3>
           <Link href="/">Papers</Link>
           <Link href="/">FFCS-inator</Link>
           <Link href="/">Brainrot Arcade</Link>
         </div>
         <div className="flex flex-col items-center gap-2 text-center text-black dark:text-white lg:items-start lg:text-left">
-          <h3 className="text-xl font-semibold">Contact Us</h3>
+          <h3 className="text-2xl font-semibold jost ">Contact Us</h3>
           <Link href={`mailto:codechefvit@gmail.com`}>
             codechefvit@gmail.com
           </Link>

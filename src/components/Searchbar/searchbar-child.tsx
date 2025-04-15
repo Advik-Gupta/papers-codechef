@@ -47,7 +47,7 @@ function SearchBarChild({ initialSubjects }: { initialSubjects: string[] }) {
   }, []);
 
   return (
-    <div className="play mx-auto w-full max-w-xl">
+    <div className="play mx-auto w-full max-w-xl ">
       <form
         onSubmit={(e) => {
           e.preventDefault();

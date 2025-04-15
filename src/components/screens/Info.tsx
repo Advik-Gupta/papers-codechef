@@ -17,7 +17,7 @@ function Info() {
       className="flex flex-col items-center justify-between px-6 py-12 lg:flex-row scroll-mt-24 md:scroll-mt-32"
     >
       <div className="w-full text-center lg:w-[50%] lg:text-left">
-        <div className="vignabd mb-8 block text-3xl font-extrabold text-[#120020] dark:text-white lg:text-5xl">
+        <div className="vipnabd mb-8 block text-3xl font-extrabold text-[#120020] dark:text-white lg:text-5xl">
           <span>Prepare to excel in </span>
           <span>your CATs and FATs </span>
           <span>with CodeChef-</span>

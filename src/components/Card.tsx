@@ -101,7 +101,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
           <div className="h-[1px] w-full bg-[#734DFF] dark:bg-[#36266D]" />
 
           <div className="space-y-2 p-4">
-            <div className="font-sans text-base font-semibold">
+            <div className="play text-lg font-semibold">
               {extractWithoutBracketContent(paper.subject)}
             </div>
             <div className="flex flex-wrap gap-2">

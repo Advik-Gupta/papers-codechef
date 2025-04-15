@@ -97,9 +97,8 @@ function SideBar({
   }, []);
   return (
     <div
-      className={`sticky top-0 mb-0 h-full w-[100em] max-w-xs flex-col items-baseline border-r-2 border-[#36266d] bg-[#f3f5ff] py-[40px] dark:bg-[#070114] md:flex md:w-[30%] ${filtersPulled ? "flex" : "hidden"}`}
+      className={`no-scrollbar overflow-y-scroll sticky top-0 mb-0 h-[100vh] w-[100em] max-w-xs flex-col items-baseline border-r-2 border-[#36266d] bg-[#f3f5ff] py-[40px] dark:bg-[#070114] md:flex md:w-[30%] ${filtersPulled ? "flex" : "hidden"}`}
     >
-      <SearchbarChild initialSubjects={subjects ?? []}></SearchbarChild>
       <div onClick={closeFilters} className="block md:hidden">
         <Image
           className="absolute right-[10px] top-[10px] w-[7%]"
@@ -109,21 +108,24 @@ function SideBar({
           alt="Navbar trigger"
         />
       </div>
-      <div className="px-[10px] md:w-[100%]">{/* <SearchBar /> */}</div>
+      <div className="px-[10px] md:w-[100%]">{/* <SearchBar /> */}
+      <SearchbarChild initialSubjects={subjects ?? []}></SearchbarChild>
+
+      </div>
       <div className="flex w-full gap-8 border-b-2 border-[#36266d] px-[10px] pb-4 pt-8">
         <div className="hidden flex-col items-baseline justify-center gap-2 md:flex md:justify-end 2xl:mr-4">
           <div>
             <Button
               variant="outline"
               onClick={handleSelectAll}
-              className="mr-2 border-2 border-black font-sans font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
+              className="mr-2 border-2 border-black play font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
             >
               Select All
             </Button>
             <Button
               variant="outline"
               onClick={handleDeselectAll}
-              className="border-2 border-black font-sans font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
+              className="border-2 border-black play font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
             >
               Deselect All
             </Button>
@@ -132,7 +134,7 @@ function SideBar({
             variant="outline"
             onClick={handleDownloadAll}
             disabled={selectedPapers.length === 0}
-            className="border-2 border-black font-sans font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
+            className="border-2 border-black play font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
           >
             Download All ({selectedPapers.length})
           </Button>
@@ -147,11 +149,11 @@ function SideBar({
             className="invert dark:invert-0"
             alt="Picture of the author"
           />
-          <div className="font-sans text-xl font-bold">Filters</div>
+          <div className="play text-xl font-bold">Filters</div>
         </div>
         <div className="flex flex-col">
           <div
-            className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
+            className="cursor-pointer rounded-full border-2 border-black px-2 py-1 play text-xs font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
             onClick={() => {
               handleApplyFilters([], [], [], [], [], false);
             }}
@@ -172,16 +174,17 @@ function SideBar({
               !selectedAnswerKeyIncluded,
             );
           }}
-          className={`flex cursor-pointer rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white ${selectedAnswerKeyIncluded ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
+          className={`flex cursor-pointer rounded-full border-2 border-black px-2 py-1 play text-xs font-semibold hover:bg-slate-800 hover:text-white ${selectedAnswerKeyIncluded ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
         >
           Answer Key Available
         </div>
       </div>
       <div className="flex w-full flex-col items-baseline justify-between border-b-2 border-[#36266d] px-[10px]">
-        <Accordion className="w-full" type="single" collapsible>
+        <Accordion className="w-full" type="single" collapsible defaultValue="item-1"> 
+          {/* keep exams open by default it looks good */}
           <AccordionItem className="border-none no-underline" value="item-1">
             <AccordionTrigger className="w-full no-underline">
-              <div className="font-sans text-sm no-underline">Exams</div>
+              <div className="play text-sm no-underline">Exams</div>
             </AccordionTrigger>
             <AccordionContent>
               <div className="my-2 flex w-full flex-wrap items-center">
@@ -209,7 +212,7 @@ function SideBar({
                         );
                       }
                     }}
-                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedExams.includes(exam.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
+                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 play text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedExams.includes(exam.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
                   >
                     {exam.label}
                   </div>
@@ -223,7 +226,7 @@ function SideBar({
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem className="border-none no-underline" value="item-1">
             <AccordionTrigger className="w-full no-underline">
-              <div className="font-sans text-sm no-underline">Slots</div>
+              <div className="play text-sm no-underline">Slots</div>
             </AccordionTrigger>
             <AccordionContent>
               <div className="my-2 flex w-full flex-wrap items-center">
@@ -251,7 +254,7 @@ function SideBar({
                         );
                       }
                     }}
-                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedSlots.includes(slot.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
+                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 play text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedSlots.includes(slot.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
                   >
                     {slot.label}
                   </div>
@@ -265,7 +268,7 @@ function SideBar({
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem className="border-none no-underline" value="item-1">
             <AccordionTrigger className="w-full no-underline">
-              <div className="font-sans text-sm no-underline">Years</div>
+              <div className="play text-sm no-underline">Years</div>
             </AccordionTrigger>
             <AccordionContent>
               <div className="my-2 flex w-full flex-wrap items-center">
@@ -293,7 +296,7 @@ function SideBar({
                         );
                       }
                     }}
-                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedYears.includes(year.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
+                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 play text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedYears.includes(year.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
                   >
                     {year.label}
                   </div>
@@ -307,7 +310,7 @@ function SideBar({
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem className="border-none no-underline" value="item-1">
             <AccordionTrigger className="w-full no-underline">
-              <div className="font-sans text-sm no-underline">Semesters</div>
+              <div className="play text-sm no-underline">Semesters</div>
             </AccordionTrigger>
             <AccordionContent>
               <div className="my-2 flex w-full flex-wrap items-center">
@@ -335,7 +338,7 @@ function SideBar({
                         );
                       }
                     }}
-                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedSemesters.includes(semester.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
+                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 play text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedSemesters.includes(semester.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
                   >
                     {semester.label}
                   </div>

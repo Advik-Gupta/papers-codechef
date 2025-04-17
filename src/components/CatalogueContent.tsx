@@ -48,6 +48,10 @@ const CatalogueContent = () => {
   const [filtersPulled, setFiltersPulled] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<boolean>(false);
 
+
+  const filtersNotPulled = ()=>{
+    setFiltersPulled(false);
+  }
   // Memoized effect to fetch papers
   useEffect(() => {
     if (!subject) return;
@@ -93,6 +97,7 @@ const CatalogueContent = () => {
         });
         setFilteredPapers(filtered.length > 0 ? filtered : papersData);
       } catch (error) {
+        setPapers([]);
         if (axios.isAxiosError(error)) {
           const axiosError = error as AxiosError<{ message?: string }>;
           setError(
@@ -107,7 +112,7 @@ const CatalogueContent = () => {
     };
 
     void fetchPapers();
-  }, []); // just run on initial page render
+  }, [subject]); // just run on initial page render
 
   // Memoized handlers
   const handleSelectPaper = useCallback(
@@ -209,12 +214,13 @@ const CatalogueContent = () => {
       link.download = filename;
       link.click();
       window.URL.revokeObjectURL(link.href);
-    } catch (error) { }
+    } catch (error) {}
   }
 
   return (
     <div className="relative flex min-h-screen justify-center p-0 md:justify-normal">
       <SideBar
+        filtersNotPulled={filtersNotPulled}
         loading={loading}
         selectedExams={selectedExams}
         selectedSlots={selectedSlots}
@@ -235,41 +241,49 @@ const CatalogueContent = () => {
       />
 
       {/* {error && <p className="text-red-500">{error}</p>} */}
-      {loading ? (
-        <Loader />
-      ) : papers.length > 0 ? (
+      <div className="w-full">
         <div
-          className={`grid h-fit grid-cols-1 gap-8 px-[30px] py-[40px] md:grid-cols-4 ${filtersPulled ? "blur-xl" : ""}`}
+          className={`justify-center mt-8 filter md:hidden ${filtersPulled ? "hidden" : "flex"}`}
         >
-          <div
-            className={`justify-center filter md:hidden ${filtersPulled ? "hidden" : "flex"}`}
+          <Button
+            variant="outline"
+            onClick={() => setFiltersPulled(true)}
+            className="mr-2 border-2 border-black font-sans font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
           >
-            <Button
-              variant="outline"
-              onClick={() => setFiltersPulled(true)}
-              className="mr-2 border-2 border-black font-sans font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
-            >
-              Add Filters
-              <Image
-                src={filterIcon as string}
-                width={30}
-                height={30}
-                alt="Filter Icon"
-                className="hidden dark:block"
-              />
-              <Image
-                src={filterd as string}
-                height={30}
-                width={30}
-                alt="filter light"
-                className="block dark:hidden"
-              />
-            </Button>
-          </div>
+            Add Filters
+            <Image
+              src={filterIcon as string}
+              width={30}
+              height={30}
+              alt="Filter Icon"
+              className="invert dark:invert-0"
+            />
 
-          {appliedFilters ? (
-            filteredPapers.length > 0 ? (
-              filteredPapers.map((paper: IPaper) => (
+          </Button>
+        </div>
+        {loading ? (
+          <Loader />
+        ) : papers.length > 0 ? (
+          <div
+            className={`grid h-fit grid-cols-1 gap-8 px-[30px] py-[40px] md:grid-cols-4 ${filtersPulled ? "blur-xl" : ""}`}
+          >
+            
+
+            {appliedFilters ? (
+              filteredPapers.length > 0 ? (
+                filteredPapers.map((paper: IPaper) => (
+                  <Card
+                    key={paper._id}
+                    paper={paper}
+                    onSelect={handleSelectPaper}
+                    isSelected={selectedPapers.some((p) => p._id === paper._id)}
+                  />
+                ))
+              ) : (
+                <p>No papers available with the applied filter</p>
+              )
+            ) : (
+              papers.map((paper: IPaper) => (
                 <Card
                   key={paper._id}
                   paper={paper}
@@ -277,25 +291,12 @@ const CatalogueContent = () => {
                   isSelected={selectedPapers.some((p) => p._id === paper._id)}
                 />
               ))
-            ) : (
-              <p>No papers available with the applied filter</p>
-            )
-          ) : (
-            papers.map((paper: IPaper) => (
-              <Card
-                key={paper._id}
-                paper={paper}
-                onSelect={handleSelectPaper}
-                isSelected={selectedPapers.some((p) => p._id === paper._id)}
-              />
-            ))
-          )}
-        </div>
-      ) : (
-        <Error
-          message={error ?? "No papers available for this subject."}
-        />
-      )}
+            )}
+          </div>
+        ) : (
+          <Error filtersPulled={filtersPulled} message={error ?? "No papers available for this subject."} />
+        )}
+      </div>
     </div>
   );
 };

@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 
-function SearchBarChild({ initialSubjects, filtersNotPulled  }: { initialSubjects: string[]; filtersNotPulled: ()=>void; }) {
+function SearchBarChild({ initialSubjects, filtersNotPulled  }: { initialSubjects: string[]; filtersNotPulled?: ()=>void; }) {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -28,7 +28,7 @@ function SearchBarChild({ initialSubjects, filtersNotPulled  }: { initialSubject
     suggestion = suggestion.replace(/\[.*?\]/g, '').trim();
     router.push(`/catalogue?subject=${encodeURIComponent(suggestion)}`);
     setSearchText(suggestion);
-    filtersNotPulled();
+    filtersNotPulled?.();
     setSuggestions([]);
   };
 

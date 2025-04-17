@@ -142,23 +142,23 @@ const Page = () => {
             <div>
               <Dropzone onDrop={fileCheckAndSelect}>
                 {({ getRootProps, getInputProps }) => (
-                  <section className="my-2 -mr-2 cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center">
-                    <div {...getRootProps()}>
-                      <input {...getInputProps()} />
-                      <p>
-                        Drag &apos;n&apos; drop some files here, or{" "}
-                        <span className="text-[#6D28D9]">click</span> to select
-                        files
-                      </p>
-                    </div>
-                    <div
-                      className={`mt-2 text-xs ${
-                        files?.length === 0 ? "text-red-500" : "text-gray-600"
-                      }`}
-                    >
-                      {files?.length || 0} files selected
-                    </div>
-                  </section>
+                  <section {...getRootProps()} className="my-2 -mr-2 cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center">
+                  <div >
+                    <input {...getInputProps()} />
+                    <p>
+                      Drag &apos;n&apos; drop some files here, or{" "}
+                      <span className="text-[#6D28D9]">click</span> to select
+                      files
+                    </p>
+                  <div
+                    className={`mt-2 text-xs ${
+                      files?.length === 0 ? "text-red-500" : "text-gray-600"
+                    }`}
+                  >
+                    {files?.length || 0} files selected
+                  </div>
+                  </div>
+                </section>
                 )}
               </Dropzone>
               <label className="mx-2 -mr-2 block text-center text-xs font-medium text-gray-700">

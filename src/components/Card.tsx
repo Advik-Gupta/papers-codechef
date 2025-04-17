@@ -64,7 +64,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
   return (
     <div
       className={cn(
-        "play overflow-hidden rounded-sm border-2 border-[#734DFF] bg-[#FFFFFF] hover:bg-[#EFEAFF] dark:border-[#36266D] dark:bg-[#171720] hover:dark:bg-[#262635]",
+        "play overflow-hidden rounded-sm border-2 border-[#734DFF] bg-[#FFFFFF] transition-all duration-150 hover:bg-[#EFEAFF] dark:border-[#36266D] dark:bg-[#171720] hover:dark:bg-[#262635]",
         checked && "bg-white",
       )}
     >

@@ -15,6 +15,15 @@ import Image from "next/image";
 import SideBar from "../components/SideBar";
 import toast from "react-hot-toast";
 import Error from "./Error";
+import { Filter } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
 
 const CatalogueContent = () => {
   const router = useRouter();
@@ -48,10 +57,9 @@ const CatalogueContent = () => {
   const [filtersPulled, setFiltersPulled] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<boolean>(false);
 
-
-  const filtersNotPulled = ()=>{
+  const filtersNotPulled = () => {
     setFiltersPulled(false);
-  }
+  };
   // Memoized effect to fetch papers
   useEffect(() => {
     if (!subject) return;
@@ -219,56 +227,72 @@ const CatalogueContent = () => {
 
   return (
     <div className="relative flex min-h-screen justify-center p-0 md:justify-normal">
-      <SideBar
-        filtersNotPulled={filtersNotPulled}
-        loading={loading}
-        selectedExams={selectedExams}
-        selectedSlots={selectedSlots}
-        selectedYears={selectedYears}
-        selectedSemesters={selectedSemesters}
-        selectedCampuses={selectedCampuses}
-        selectedAnswerKeyIncluded={selectedAnswerKeyIncluded}
-        noAppliedFilters={noAppliedFilters}
-        filtersPulled={filtersPulled}
-        handleApplyFilters={handleApplyFilters}
-        handleSelectAll={handleSelectAll}
-        handleDeselectAll={handleDeselectAll}
-        selectedPapers={selectedPapers}
-        subject={subject}
-        filterOptions={filterOptions}
-        handleDownloadAll={handleDownloadAll}
-        closeFilters={closeFilters}
-      />
+      <div className="hidden w-[30%] min-w-fit md:block">
+        <SideBar
+          filtersNotPulled={filtersNotPulled}
+          loading={loading}
+          selectedExams={selectedExams}
+          selectedSlots={selectedSlots}
+          selectedYears={selectedYears}
+          selectedSemesters={selectedSemesters}
+          selectedCampuses={selectedCampuses}
+          selectedAnswerKeyIncluded={selectedAnswerKeyIncluded}
+          noAppliedFilters={noAppliedFilters}
+          handleApplyFilters={handleApplyFilters}
+          handleSelectAll={handleSelectAll}
+          handleDeselectAll={handleDeselectAll}
+          selectedPapers={selectedPapers}
+          subject={subject}
+          filterOptions={filterOptions}
+          handleDownloadAll={handleDownloadAll}
+          closeFilters={closeFilters}
+        />
+      </div>
 
       {/* {error && <p className="text-red-500">{error}</p>} */}
       <div className="w-full">
-        <div
-          className={`justify-center mt-8 filter md:hidden ${filtersPulled ? "hidden" : "flex"}`}
-        >
-          <Button
-            variant="outline"
-            onClick={() => setFiltersPulled(true)}
-            className="mr-2 border-2 border-black font-sans font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
+        <Sheet>
+          <SheetTrigger className="mx-8 mt-8 block md:hidden">
+            <Button
+              variant="outline"
+              className="flex gap-2 border-2 border-black font-sans font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
+            >
+              <Filter size={18} />
+              Add Filters
+            </Button>
+          </SheetTrigger>
+          <SheetContent
+            side={"left"}
+            className="m-0 bg-[#f3f5ff] p-0 pt-4 dark:bg-[#070114]"
           >
-            Add Filters
-            <Image
-              src={filterIcon as string}
-              width={30}
-              height={30}
-              alt="Filter Icon"
-              className="invert dark:invert-0"
+            <SideBar
+              filtersNotPulled={filtersNotPulled}
+              loading={loading}
+              selectedExams={selectedExams}
+              selectedSlots={selectedSlots}
+              selectedYears={selectedYears}
+              selectedSemesters={selectedSemesters}
+              selectedCampuses={selectedCampuses}
+              selectedAnswerKeyIncluded={selectedAnswerKeyIncluded}
+              noAppliedFilters={noAppliedFilters}
+              handleApplyFilters={handleApplyFilters}
+              handleSelectAll={handleSelectAll}
+              handleDeselectAll={handleDeselectAll}
+              selectedPapers={selectedPapers}
+              subject={subject}
+              filterOptions={filterOptions}
+              handleDownloadAll={handleDownloadAll}
+              closeFilters={closeFilters}
             />
+          </SheetContent>
+        </Sheet>
 
-          </Button>
-        </div>
         {loading ? (
           <Loader />
         ) : papers.length > 0 ? (
           <div
-            className={`grid h-fit grid-cols-1 gap-8 px-[30px] py-[40px] md:grid-cols-4 ${filtersPulled ? "blur-xl" : ""}`}
+            className={`grid h-fit grid-cols-2 gap-8 px-[30px] py-[40px] md:grid-cols-3 lg:grid-cols-4 ${filtersPulled ? "blur-xl" : ""}`}
           >
-            
-
             {appliedFilters ? (
               filteredPapers.length > 0 ? (
                 filteredPapers.map((paper: IPaper) => (
@@ -294,7 +318,10 @@ const CatalogueContent = () => {
             )}
           </div>
         ) : (
-          <Error filtersPulled={filtersPulled} message={error ?? "No papers available for this subject."} />
+          <Error
+            filtersPulled={filtersPulled}
+            message={error ?? "No papers available for this subject."}
+          />
         )}
       </div>
     </div>

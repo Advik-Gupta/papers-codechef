@@ -54,7 +54,6 @@ const CatalogueContent = () => {
   }
   // Memoized effect to fetch papers
   useEffect(() => {
-    console.log(subject);
     if (!subject) return;
 
     const fetchPapers = async () => {

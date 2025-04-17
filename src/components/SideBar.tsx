@@ -20,6 +20,7 @@ import toast from "react-hot-toast";
 import SearchbarChild from "./Searchbar/searchbar-child";
 
 function SideBar({
+  filtersNotPulled,
   loading,
   selectedExams,
   selectedSlots,
@@ -38,6 +39,7 @@ function SideBar({
   handleApplyFilters,
   closeFilters,
 }: {
+  filtersNotPulled: ()=>void;
   loading: boolean;
   selectedExams: string[];
   selectedSlots: string[];
@@ -112,7 +114,7 @@ function SideBar({
         />
       </div>
       <div className="px-[10px] md:w-[100%]">{/* <SearchBar /> */}
-      <SearchbarChild initialSubjects={subjects ?? []}></SearchbarChild>
+      <SearchbarChild filtersNotPulled={filtersNotPulled} initialSubjects={subjects ?? []}></SearchbarChild>
 
       </div>
       <div className="flex w-full gap-8 border-b-2 border-[#36266d] px-[10px] pb-4 pt-8">

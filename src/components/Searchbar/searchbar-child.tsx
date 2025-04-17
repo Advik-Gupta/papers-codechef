@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 
-function SearchBarChild({ initialSubjects }: { initialSubjects: string[] }) {
+function SearchBarChild({ initialSubjects, filtersNotPulled  }: { initialSubjects: string[]; filtersNotPulled: ()=>void; }) {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -25,8 +25,10 @@ function SearchBarChild({ initialSubjects }: { initialSubjects: string[] }) {
   };
 
   const handleSelectSuggestion = (suggestion: string) => {
+    suggestion = suggestion.replace(/\[.*?\]/g, '').trim();
     router.push(`/catalogue?subject=${encodeURIComponent(suggestion)}`);
     setSearchText(suggestion);
+    filtersNotPulled();
     setSuggestions([]);
   };
 
@@ -35,7 +37,7 @@ function SearchBarChild({ initialSubjects }: { initialSubjects: string[] }) {
       suggestionsRef.current &&
       !suggestionsRef.current.contains(event.target as Node)
     ) {
-      setSuggestions([]);
+      // setSuggestions([]);
     }
   };
 
@@ -74,7 +76,7 @@ function SearchBarChild({ initialSubjects }: { initialSubjects: string[] }) {
             (searchText.length > 1 && initialSubjects.length > 0)) && (
             <ul
               ref={suggestionsRef}
-              className="absolute z-20 h-[250px] w-full max-w-xl overflow-y-scroll rounded-md rounded-t-none border border-t-0 bg-white text-center shadow-lg dark:bg-[#303771] md:mx-0 md:h-auto md:overflow-auto"
+              className={`absolute z-20 h-[250px] w-full max-w-xl overflow-y-scroll rounded-md rounded-t-none border border-t-0 bg-white text-center shadow-lg dark:bg-[#303771] md:mx-0 ${suggestions.length>6?"h-[250px]" : "h-auto"} ${suggestions.length>10?"md:h-[400px]" : "md:h-auto"}  `}
             >
               {suggestions.length > 0 ? (
                 suggestions.map((suggestion, index) => (

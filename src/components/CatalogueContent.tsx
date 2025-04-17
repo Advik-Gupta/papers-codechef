@@ -10,6 +10,7 @@ import { extractBracketContent } from "@/util/utils";
 import { useRouter } from "next/navigation";
 import Loader from "./ui/loader";
 import filterIcon from "../assets/filterIcon.svg";
+import filterd from "@/assets/filterd.svg";
 import Image from "next/image";
 import SideBar from "../components/SideBar";
 import toast from "react-hot-toast";
@@ -208,7 +209,7 @@ const CatalogueContent = () => {
       link.download = filename;
       link.click();
       window.URL.revokeObjectURL(link.href);
-    } catch (error) {}
+    } catch (error) { }
   }
 
   return (
@@ -254,6 +255,14 @@ const CatalogueContent = () => {
                 width={30}
                 height={30}
                 alt="Filter Icon"
+                className="hidden dark:block"
+              />
+              <Image
+                src={filterd as string}
+                height={30}
+                width={30}
+                alt="filter light"
+                className="block dark:hidden"
               />
             </Button>
           </div>
@@ -283,7 +292,7 @@ const CatalogueContent = () => {
           )}
         </div>
       ) : (
-        <Error 
+        <Error
           message={error ?? "No papers available for this subject."}
         />
       )}

@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/mongoose";
 import Paper from "@/db/papers";
 import UpcomingSlot from "@/db/upcoming-slot";
 import UpcomingSubject from "@/db/upcoming-paper";
+import next from "next";
 
 export const dynamic = "force-dynamic";
 
@@ -19,12 +20,11 @@ export async function GET() {
         { status: 404 },
       );
     }
-    const correspondingSlots = [slot + "1", slot + "2"];
+    const nextSlot = String.fromCharCode(slot.charCodeAt(0) + 1)
+    const correspondingSlots = [slot + "1", slot + "2", nextSlot + "1", nextSlot + "2"];
     const selectedSubjects = await UpcomingSubject.find({
       slots: { $in: correspondingSlots }, // Match any slot in the array
     });
-    const subbbb = await UpcomingSubject.find({});
-    console.log(correspondingSlots, subbbb);
     if (selectedSubjects.length === 0) {
       return NextResponse.json(
         {

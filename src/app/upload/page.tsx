@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios, { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { handleAPIError } from "../../util/error";
@@ -7,14 +7,60 @@ import { Button } from "@/components/ui/button";
 
 import { type APIResponse } from "@/interface";
 import Dropzone from "react-dropzone";
+import { Upload } from "lucide-react";
 
 const Page = () => {
   const [campus, setCampus] = useState("Vellore");
-
   const [files, setFiles] = useState<File[]>([]);
-
   const [isUploading, setIsUploading] = useState(false);
   const [, setResetSearch] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isGlobalDragging, setIsGlobalDragging] = useState(false);
+
+  useEffect(() => {
+    const handleDragEnter = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsGlobalDragging(true);
+    };
+
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const handleDragLeave = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (
+        !e.relatedTarget ||
+        (e.currentTarget !== e.relatedTarget &&
+          !(e.currentTarget as Element)?.contains(e.relatedTarget as Node))
+      ) {
+        setIsGlobalDragging(false);
+      }
+    };
+
+    const handleDrop = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsGlobalDragging(false);
+    };
+
+    document.addEventListener("dragenter", handleDragEnter);
+    document.addEventListener("dragover", handleDragOver);
+    document.addEventListener("dragleave", handleDragLeave);
+    document.addEventListener("drop", handleDrop);
+
+    return () => {
+      document.removeEventListener("dragenter", handleDragEnter);
+      document.removeEventListener("dragover", handleDragOver);
+      document.removeEventListener("dragleave", handleDragLeave);
+      document.removeEventListener("drop", handleDrop);
+    };
+  }, []);
+
   function fileCheckAndSelect<T extends File>(acceptedFiles: T[]) {
     const maxFileSize = 5 * 1024 * 1024;
     const allowedFileTypes = [
@@ -39,7 +85,6 @@ const Page = () => {
       return;
     }
 
-    // File validations
     const invalidFiles = acceptedFiles.filter(
       (file) =>
         file.size > maxFileSize || !allowedFileTypes.includes(file.type),
@@ -73,6 +118,7 @@ const Page = () => {
       id: toastId,
     });
   }
+
   const handlePrint = async () => {
     if (!campus) {
       setCampus("Vellore");
@@ -80,15 +126,12 @@ const Page = () => {
 
     const isPdf = files.length === 1 && files[0]?.type === "application/pdf";
 
-    // Prepare FormData
     const formData = new FormData();
     files.forEach((file) => {
       formData.append("files", file);
     });
 
-    // formData.append("exam", exam);
     formData.append("campus", campus);
-
     formData.append("isPdf", String(isPdf));
 
     setIsUploading(true);
@@ -117,10 +160,6 @@ const Page = () => {
         },
       );
 
-      // setSlot("");
-      // setSubject("");
-      // setExam("");
-      // setYear("");
       setFiles([]);
       setResetSearch(true);
       setTimeout(() => setResetSearch(false), 100);
@@ -131,34 +170,59 @@ const Page = () => {
     }
   };
 
+  const isCurrentlyDragging = isDragging || isGlobalDragging;
+
   return (
-    <div className="play flex h-screen flex-col justify-center">
+    <div className="play flex h-[calc(100vh-85px)] flex-col justify-center px-6">
       <div className="2xl:my-15 flex flex-col items-center">
         <fieldset className="mb-4 w-full max-w-md rounded-lg border-2 border-gray-300 p-4 pr-8">
-          {/* <legend className="text-lg font-bold">Upload papers</legend> */}
-
           <div className="flex w-full flex-col 2xl:gap-y-4">
             {/* File Dropzone */}
             <div>
-              <Dropzone onDrop={fileCheckAndSelect}>
+              <Dropzone
+                onDrop={fileCheckAndSelect}
+                onDragEnter={() => setIsDragging(true)}
+                onDragLeave={() => setIsDragging(false)}
+                onDropAccepted={() => {
+                  setIsDragging(false);
+                  setIsGlobalDragging(false);
+                }}
+                onDropRejected={() => {
+                  setIsDragging(false);
+                  setIsGlobalDragging(false);
+                }}
+              >
                 {({ getRootProps, getInputProps }) => (
                   <section
                     {...getRootProps()}
-                    className="my-2 -mr-2 cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center"
+                    className={`my-2 -mr-2 cursor-pointer rounded-2xl border-2 ${
+                      isCurrentlyDragging
+                        ? "border-solid border-[#6D28D9] bg-purple-50 dark:bg-[#130E1F]"
+                        : "border-dashed border-gray-300"
+                    } p-8 text-center transition-all duration-200`}
                   >
-                      <input {...getInputProps()} />
+                    <input {...getInputProps()} />
+                    {isCurrentlyDragging ? (
+                      <div className="flex flex-col items-center">
+                        <p className="text-lg font-medium text-[#6D28D9]">
+                          Drop files here
+                        </p>
+                        <Upload className="mt-2 h-10 w-10 animate-bounce text-[#6D28D9]" />
+                      </div>
+                    ) : (
                       <p>
                         Drag &apos;n&apos; drop some files here, or{" "}
                         <span className="text-[#6D28D9]">click</span> to select
                         files
                       </p>
-                      <div
-                        className={`mt-2 text-xs ${
-                          files?.length === 0 ? "text-red-500" : "text-gray-600"
-                        }`}
-                      >
-                        {files?.length || 0} files selected
-                      </div>
+                    )}
+                    <div
+                      className={`mt-2 text-xs ${
+                        files?.length === 0 ? "text-red-500" : "text-gray-600"
+                      }`}
+                    >
+                      {files?.length || 0} files selected
+                    </div>
                   </section>
                 )}
               </Dropzone>
@@ -171,8 +235,10 @@ const Page = () => {
         </fieldset>
         <Button
           onClick={handlePrint}
-          disabled={isUploading}
-          className={`w-fit rounded-md px-4 py-3 text-xl ${isUploading ? "bg-gray-300" : ""}`}
+          disabled={isUploading || files.length === 0}
+          className={`w-fit rounded-md px-4 py-3 text-base ${
+            isUploading || files.length === 0 ? "opacity-60" : ""
+          }`}
         >
           {isUploading ? "Uploading..." : "Upload Papers"}
         </Button>

@@ -6,15 +6,16 @@ await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
 const config = {
+  swcMinify: false,
+
   images: {
     domains: ["res.cloudinary.com"],
   },
-  webpack: (
-    config, options
-  ) => {
+  webpack: (config, options) => {
+    config.resolve.alias.canvas = false;
     config.module.rules.push({
       test: /\.node/,
-      use: 'raw-loader',
+      use: "raw-loader",
     });
     return config;
   },

@@ -24,6 +24,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
+export async function downloadFile(url: string, filename: string) {
+  try {
+    const response = await axios.get(url, { responseType: "blob" });
+    const blob = new Blob([response.data]);
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    window.URL.revokeObjectURL(link.href);
+  } catch (error) { }
+}
 
 const CatalogueContent = () => {
   const router = useRouter();
@@ -213,17 +224,6 @@ const CatalogueContent = () => {
     setSelectedPapers([]);
   }, []);
 
-  async function downloadFile(url: string, filename: string) {
-    try {
-      const response = await axios.get(url, { responseType: "blob" });
-      const blob = new Blob([response.data]);
-      const link = document.createElement("a");
-      link.href = window.URL.createObjectURL(blob);
-      link.download = filename;
-      link.click();
-      window.URL.revokeObjectURL(link.href);
-    } catch (error) { }
-  }
 
   return (
     <div className="relative flex min-h-screen justify-center p-0 md:justify-normal">

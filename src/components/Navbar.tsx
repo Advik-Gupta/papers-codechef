@@ -33,11 +33,11 @@ function Navbar() {
         </div>
 
         <Link href={pathname == "/upload" ? "/" : "/upload"}>
-          <div className="scale-75 rounded-md bg-[#453D60] md:p-[2px]">
-            <div className="flex items-center gap-2 whitespace-nowrap rounded-md bg-slate-200 py-2 text-[10px] font-bold tracking-tight text-black transition-all duration-150 hover:bg-white active:scale-95 dark:bg-[#171720] dark:text-white dark:hover:bg-slate-700 sm:px-4 sm:text-xs md:px-6 md:text-sm">
-              <ArrowDownLeftIcon className="rotate-90" />
-              <span>
-                {pathname == "/upload" ? "SEARCH PAPERS" : "UPLOAD PAPERS"}
+          <div className="rounded-md bg-[#453D60] p-[1.5px] md:p-[2px]">
+            <div className="flex items-center gap-1 rounded-md bg-slate-200 px-2 py-1 text-[9px] font-bold tracking-tight text-black transition-all duration-150 hover:bg-white active:scale-95 dark:bg-[#171720] dark:text-white dark:hover:bg-slate-700 sm:gap-2 sm:px-3 sm:py-2 sm:text-[10px] md:px-6 md:text-sm">
+              <ArrowDownLeftIcon className="h-3 w-3 sm:h-4 sm:w-4 rotate-90" />
+              <span className="text-center font-semibold">
+                {pathname === "/upload" ? "SEARCH PAPERS" : "UPLOAD PAPERS"}
               </span>
             </div>
           </div>

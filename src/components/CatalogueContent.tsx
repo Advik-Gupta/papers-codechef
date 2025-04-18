@@ -222,7 +222,7 @@ const CatalogueContent = () => {
       link.download = filename;
       link.click();
       window.URL.revokeObjectURL(link.href);
-    } catch (error) {}
+    } catch (error) { }
   }
 
   return (
@@ -291,7 +291,7 @@ const CatalogueContent = () => {
           <Loader />
         ) : papers.length > 0 ? (
           <div
-            className={`grid h-fit grid-cols-2 gap-8 px-[30px] py-[40px] md:grid-cols-3 lg:grid-cols-4 ${filtersPulled ? "blur-xl" : ""}`}
+            className={`grid h-fit grid-cols-1 gap-8 px-[30px] py-[40px] md:grid-cols-2 lg:grid-cols-4 ${filtersPulled ? "blur-xl" : ""}`}
           >
             {appliedFilters ? (
               filteredPapers.length > 0 ? (

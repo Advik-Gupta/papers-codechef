@@ -45,8 +45,7 @@ const CatalogueContent = () => {
   const years = searchParams.get("years")?.split(",");
   const campuses = searchParams.get("campus")?.split(",");
   const semesters = searchParams.get("semester")?.split(",");
-  const answerKeyIncluded = searchParams.get("answerkey") === "true";
-
+  const answerKeyIncluded = searchParams.get("answerkey")==="true"? true: false;
   // Initialize state with searchParams
   const [selectedExams, setSelectedExams] = useState<string[]>(exams ?? []);
   const [selectedSlots, setSelectedSlots] = useState<string[]>(slots ?? []);
@@ -58,7 +57,7 @@ const CatalogueContent = () => {
     campuses ?? [],
   );
   const [selectedAnswerKeyIncluded, setSelectedAnswerKeyIncluded] =
-    useState<boolean>(answerKeyIncluded || false);
+    useState<boolean>(answerKeyIncluded);
   const [papers, setPapers] = useState<IPaper[]>([]);
   const [filteredPapers, setFilteredPapers] = useState<IPaper[]>([]);
   const [selectedPapers, setSelectedPapers] = useState<IPaper[]>([]);
@@ -85,7 +84,6 @@ const CatalogueContent = () => {
         const papersData = data.papers;
         setFilterOptions(data);
         setPapers(papersData);
-
         const filtered = papersData.filter((paper) => {
           const examCondition = selectedExams.length
             ? selectedExams.includes(paper.exam)
@@ -203,7 +201,7 @@ const CatalogueContent = () => {
           answerkeyCondition
         );
       });
-      setFilteredPapers(filtered.length > 0 ? filtered : papers);
+      setFilteredPapers(filtered );
     },
     [subject, router, papers],
   );

@@ -2,7 +2,7 @@ import React from "react";
 
 interface ErrorProps {
   message?: string;
-  filtersPulled : boolean;
+  filtersPulled ?: boolean;
 }
 
 const Error = ({ message = "Some error occured", filtersPulled }: ErrorProps) => {

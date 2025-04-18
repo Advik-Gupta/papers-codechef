@@ -25,10 +25,8 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
     <div
       onClick={(e) => {
         e.preventDefault();
-        const slotQuery = slots.join(",");
         const queryParams = new URLSearchParams({
           subject,
-          slots: slotQuery,
         });
 
         router.push(`/catalogue?${queryParams.toString()}`);

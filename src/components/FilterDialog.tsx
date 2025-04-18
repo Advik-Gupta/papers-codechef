@@ -33,21 +33,11 @@ export const FilterDialog = ({
   onReset: () => void;
   onApplyFilters: (exams: string[], slots: string[], years: string[]) => void;
 }) => {
-  const [selectedExams, setSelectedExams] = useState<string[]>(
-    initialExams ?? [],
-  );
-  const [selectedSlots, setSelectedSlots] = useState<string[]>(
-    initialSlots ?? [],
-  );
-  const [selectedYears, setSelectedYears] = useState<string[]>(
-    initialYears ?? [],
-  );
-  const [, setSelectedCampuses] = useState<string[]>(
-    initialYears ?? [],
-  );
-  const [selectedSemesters, setSelectedSemesters] = useState<string[]>(
-    initialYears ?? [],
-  );
+  const [selectedExams, setSelectedExams] = useState<string[]>(initialExams ?? []);
+  const [selectedSlots, setSelectedSlots] = useState<string[]>(initialSlots ?? []);
+  const [selectedYears, setSelectedYears] = useState<string[]>(initialYears ?? []);
+  const [selectedCampuses, setSelectedCampuses] = useState<string[]>(initialCampuses ?? []);
+  const [selectedSemesters, setSelectedSemesters] = useState<string[]>(initialSemesters ?? []);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -56,7 +46,7 @@ export const FilterDialog = ({
     setSelectedYears(initialYears ?? []);
     setSelectedCampuses(initialCampuses ?? []);
     setSelectedSemesters(initialSemesters ?? []);
-  }, [initialCampuses, initialExams, initialSemesters, initialSlots, initialYears]);
+  }, [initialExams, initialSlots, initialYears, initialCampuses, initialSemesters]);
 
   const exams = filterOptions.uniqueExams.map((exam) => ({
     label: exam,
@@ -74,10 +64,11 @@ export const FilterDialog = ({
     label: semester,
     value: semester,
   }));
-  // const campuses = filterOptions.uniqueCampuses.map((campus) => ({
-  //   label: campus,
-  //   value: campus,
-  // }));
+  const campuses = filterOptions.uniqueCampuses.map((campus) => ({
+    label: campus,
+    value: campus,
+  }));
+
   const handleFilterClick = () => {
     onApplyFilters(selectedExams, selectedSlots, selectedYears);
     setOpen(false);
@@ -88,7 +79,6 @@ export const FilterDialog = ({
     setSelectedSlots([]);
     setSelectedYears([]);
     setSelectedSemesters([]);
-
     setSelectedCampuses([]);
     setOpen(false);
     onReset();
@@ -112,31 +102,31 @@ export const FilterDialog = ({
             options={exams}
             onValueChange={setSelectedExams}
             placeholder="Exams"
-            defaultValue={selectedExams}
+            value={selectedExams}
           />
           <MultiSelect
             options={slots}
             onValueChange={setSelectedSlots}
             placeholder="Slots"
-            defaultValue={selectedSlots}
+            value={selectedSlots}
           />
           <MultiSelect
             options={years}
             onValueChange={setSelectedYears}
             placeholder="Years"
-            defaultValue={selectedYears}
+            value={selectedYears}
           />
           <MultiSelect
             options={semesters}
             onValueChange={setSelectedSemesters}
             placeholder="Semesters"
-            defaultValue={selectedSemesters}
+            value={selectedSemesters}
           />
           {/* <MultiSelect
             options={campuses}
             onValueChange={setSelectedCampuses}
             placeholder="Campuses"
-            defaultValue={selectedCampuses}
+            value={selectedCampuses}
           /> */}
         </div>
         <div className="flex justify-between">

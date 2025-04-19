@@ -80,75 +80,86 @@
 
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
 
-
-
 @font-face {
   font-family: "phonk";
   src: url(/phonkfont.otf);
 }
+
 @font-face {
   font-family: "jost";
   src: url(/jostfont.ttf);
 }
+
 @font-face {
   font-family: "vipna";
   src: url(/Vipnagorgialla.otf);
 }
+
 @font-face {
   font-family: "vipnabd";
   src: url(/VipnagorgiallaBd.otf);
 }
+
 @font-face {
   font-family: "play";
   src: url(/play.ttf);
 }
+
 .jost {
   font-family: "jost";
 }
+
 .phonk {
   font-family: "phonk";
 }
+
 .vipna {
   font-family: "vipna";
 }
+
 .vipnabd {
   font-family: "vipnabd";
 }
+
 .play {
   font-family: "play";
 }
+
 .dark ::-webkit-scrollbar {
   width: 0.4rem;
   height: 0.4rem;
   background: #535253;
 }
 
-/* Track */
 .dark ::-webkit-scrollbar-track {
   background: #0c0c0c;
   border-radius: 0.6rem;
   z-index: -99;
 }
-/* Handle */
+
 .dark ::-webkit-scrollbar-thumb {
   background: #5c5957;
   border-radius: 1rem;
 }
+
 ::-webkit-scrollbar {
   width: 0.4rem;
   height: 0.4rem;
   background: #535253;
 }
+
 ::-webkit-scrollbar-track {
   background: #ffffff;
   border-radius: 0.6rem;
   z-index: -99;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #929292;
   border-radius: 1rem;
@@ -165,18 +176,21 @@
   font-style: normal;
 }
 
-body{
+body {
   position: relative;
 }
 
 @layer utilities {
+
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
 
   .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 }

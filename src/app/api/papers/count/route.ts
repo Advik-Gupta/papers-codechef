@@ -8,11 +8,10 @@ export async function GET() {
   try {
     await connectToDatabase();
 
-
     const count: number = await Paper.countDocuments();
 
     return NextResponse.json(
-      {  count },
+      { count },
       { status: 200 }
     );
   } catch (error) {

@@ -6,7 +6,6 @@ import cloudinary from "cloudinary";
 import { type ICourses, type CloudinaryUploadResult } from "@/interface";
 import Paper, { PaperAdmin } from "@/db/papers";
 import axios from "axios";
-// TODO: REMOVE THUMBNAIL FROM admin-buffer DB
 
 const cloudinaryConfig1 = cloudinary.v2;
 cloudinaryConfig1.config({
@@ -43,7 +42,7 @@ export async function POST(req: Request) {
     const campus = formData.get("campus") as string;
     const semester = formData.get("semester") as string;
 
-    const isPdf = formData.get("isPdf") === "true"; // Convert string to boolean
+    const isPdf = formData.get("isPdf") === "true";
 
     const { data } = await axios.get<ICourses[]>(`${process.env.SERVER_URL}/api/course-list`);
     const courses = data.map((course: { name: string }) => course.name);
@@ -54,7 +53,7 @@ export async function POST(req: Request) {
         years.includes(year) &&
         exams.includes(exam) &&
         campuses.includes(campus) &&
-        semesters.includes(semester) 
+        semesters.includes(semester)
       )
     ) {
       return NextResponse.json({ message: "Bad Request" }, { status: 400 });

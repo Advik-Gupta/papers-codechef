@@ -25,7 +25,7 @@ cloudinary.v2.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_SECRET,
 });
-type SemesterType = IAdminPaper["semester"]; // Extract the exam type from the IPaper interface
+type SemesterType = IAdminPaper["semester"];
 
 const config1 = {
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_1,
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
     const formData = await req.formData();
     const files: File[] = formData.getAll("files") as File[];
-    const isPdf = formData.get("isPdf") === "true"; // Convert string to boolean
+    const isPdf = formData.get("isPdf") === "true";
 
     let pdfData = "";
 
@@ -128,8 +128,6 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-
-    // If all checks pass, continue with the rest of the logic
 
     let finalUrl: string | undefined = "";
     let public_id_cloudinary: string | undefined = "";
@@ -255,7 +253,7 @@ async function CreatePDF(orderedFiles: File[]) {
   return mergedPdfBytes;
 }
 
-//sets course-name to corresponding course name from our api
+// Sets course-name to corresponding course name from our api
 async function setTagsFromCurrentLists(
   tags: ExamDetail | undefined,
   courses: string[],
@@ -309,7 +307,7 @@ async function setTagsFromCurrentLists(
   return newTags;
 }
 function findMatch<T>(arr: T[], value: string | undefined): T | undefined {
-  if (!value) return undefined; // Handle undefined case
+  if (!value) return undefined;
   const pattern = new RegExp(value, "i");
   return arr.find((item) => pattern.test(String(item)));
 }

@@ -7,12 +7,7 @@ import { handleAPIError } from "../../util/error";
 import { Button } from "@/components/ui/button";
 
 import { type APIResponse } from "@/interface";
-import {
-  slots,
-  years,
-  semesters,
-  exams,
-} from "@/components/select_options";
+import { slots, years, semesters, exams } from "@/components/select_options";
 import SearchBar from "@/components/searchbarSubjectList";
 import Dropzone from "react-dropzone";
 import {
@@ -32,64 +27,7 @@ const Page = () => {
   const [year, setYear] = useState("");
   const [campus, setCampus] = useState("Vellore");
   const [semester, setSemester] = useState("");
-  function fileCheckAndSelect<T extends File>(acceptedFiles: T[]) {
-    const maxFileSize = 5 * 1024 * 1024;
-    const allowedFileTypes = [
-      "application/pdf",
-      "image/jpeg",
-      "image/png",
-      "image/gif",
-    ];
 
-    const toastId = toast.loading("uploading your files");
-    if (!acceptedFiles || acceptedFiles.length === 0) {
-      toast.error("No files selected", {
-        id: toastId,
-      });
-      return;
-    }
-
-    if (acceptedFiles.length > 5) {
-      toast.error("More than 5 files selected", {
-        id: toastId,
-      });
-      return;
-    }
-
-    // File validations
-    const invalidFiles = acceptedFiles.filter(
-      (file) =>
-        file.size > maxFileSize || !allowedFileTypes.includes(file.type),
-    );
-
-    if (invalidFiles.length > 0) {
-      toast.error(
-        `Some files are invalid. Ensure each file is below 5MB and of an allowed type (PDF, JPEG, PNG, GIF).`,
-        {
-          id: toastId,
-        },
-      );
-      return;
-    }
-
-    const isPdf =
-      acceptedFiles.length === 1 &&
-      acceptedFiles[0]?.type === "application/pdf";
-    if (isPdf && acceptedFiles.length > 1) {
-      toast.error("PDFs must be uploaded separately", {
-        id: toastId,
-      });
-      return;
-    }
-
-    const orderedFiles = files.sort((a, b) => {
-      return a.lastModified - b.lastModified;
-    });
-    setFiles(orderedFiles);
-    toast.success(`${orderedFiles.length} files selected!`, {
-      id: toastId,
-    });
-  }
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [resetSearch, setResetSearch] = useState(false);
@@ -137,7 +75,6 @@ const Page = () => {
       return;
     }
 
-    // File validations
     const invalidFiles = files.filter(
       (file) =>
         file.size > maxFileSize || !allowedFileTypes.includes(file.type),
@@ -156,7 +93,6 @@ const Page = () => {
       return;
     }
 
-    // Prepare FormData
     const formData = new FormData();
     files.forEach((file) => {
       formData.append("files", file);
@@ -267,7 +203,6 @@ const Page = () => {
             </div>
 
             {/* Year Selection */}
-
             <div>
               <label>Semester Selection:</label>
               <Select value={semester} onValueChange={setSemester}>

@@ -1,4 +1,3 @@
-
 const slots: string[] = [
   "A1",
   "B1",
@@ -16,7 +15,7 @@ const slots: string[] = [
   "G2",
 ];
 function getYears(startYear: number) {
-  const currentYear = new Date().getFullYear(); // Get the current year
+  const currentYear = new Date().getFullYear();
   const years = [];
 
   // Loop from startYear to currentYear and add each year to the array
@@ -38,6 +37,6 @@ const campuses: string[] = [
   "Bangalore",
   "Mauritius",
 ];
-const exams: string [] = ["CAT-1", "CAT-2", "FAT","Model CAT-1" , "Model CAT-2" , "Model FAT"]
+const exams: string[] = ["CAT-1", "CAT-2", "FAT", "Model CAT-1", "Model CAT-2", "Model FAT"]
 const semesters: string[] = ["Fall Semester", "Winter Semester", "Summer Semester", "Weekend Semester"];
 export { slots, years, campuses, semesters, exams };

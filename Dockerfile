@@ -1,20 +1,58 @@
-# Step 1: Specify the base image
-FROM node:22
+# Step 1: Build stage
+FROM node:23-alpine AS builder
 
-# Step 2: Set the working directory inside the container
+# Install dependencies required for building native modules
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    pkgconfig \
+    pixman-dev \
+    cairo-dev \
+    pango-dev \
+    glib-dev \
+    jpeg-dev \
+    giflib-dev
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Set the working directory
 WORKDIR /app
 
-# Step 3: Copy package.json and package-lock.json files
-COPY package*.json ./
+# Copy package.json and pnpm-lock.yaml
+COPY package.json pnpm-lock.yaml ./
 
-# Step 4: Install dependencies
-RUN npm install
+# Install dependencies using pnpm
+RUN pnpm install --frozen-lockfile
 
-# Step 5: Copy the rest of the application code
+# Copy the rest of the application code
 COPY . .
 
-# Step 6: Expose the port the application runs on
+# Build the application
+RUN pnpm run build
+
+# Step 2: Production stage
+FROM node:23-alpine
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Set the working directory
+WORKDIR /app
+
+# Set NODE_ENV to production
+ENV NODE_ENV=production
+
+# Copy only the built application and necessary files from the builder stage
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-lock.yaml ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+
+# Expose the port the application runs on
 EXPOSE 3000
 
-# Step 7: Define the command to run the application
-CMD ["npm","run","dev"]
+# Define the command to start the application
+CMD ["pnpm", "start"]

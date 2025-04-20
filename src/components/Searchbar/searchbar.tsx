@@ -1,4 +1,5 @@
 "use server";
+
 import axios from "axios";
 import { type ICourses } from "@/interface";
 import SearchBarChild from "./searchbar-child";
@@ -17,6 +18,6 @@ export async function fetchSubjects() {
 
 export default async function SearchBar() {
   const subjects = await fetchSubjects();
-  
+
   return <SearchBarChild initialSubjects={subjects} />;
 }

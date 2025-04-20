@@ -1,7 +1,6 @@
 import React from "react";
 import SearchBar from "../Searchbar/searchbar";
 import StoredPapers from "../StoredPapers";
-import Link from "next/link";
 
 const Hero = () => {
   return (

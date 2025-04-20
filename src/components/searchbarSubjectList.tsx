@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Search } from "lucide-react";
 import debounce from "debounce";
@@ -24,7 +25,9 @@ function SearchbarSubjectList({
     try {
       setLoading(true);
       const response = await axios.get<ICourses[]>("/api/course-list");
-      const fetchedCourses = response.data.map((course: { name: string }) => course.name);
+      const fetchedCourses = response.data.map(
+        (course: { name: string }) => course.name,
+      );
       setCourses(fetchedCourses);
       setLoading(false);
     } catch (err) {
@@ -62,7 +65,7 @@ function SearchbarSubjectList({
         setSuggestions([]);
       }
     }, 500),
-    [courses]
+    [courses],
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,8 +120,9 @@ function SearchbarSubjectList({
             type="submit"
             className="absolute inset-y-0 right-0 flex items-center pr-3"
             disabled
+            title="Search"
           >
-            <Search className="h-5 w-5 text-white " />
+            <Search className="h-5 w-5 text-white" />
           </button>
           {loading && (
             <div className="text-md absolute z-20 mt-2 w-full max-w-xl rounded-md border border-[#434dba] bg-white p-2 text-center font-sans font-semibold tracking-wider dark:bg-[#030712]">

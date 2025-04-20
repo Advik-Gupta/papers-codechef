@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { usePathname } from 'next/navigation';
-import React from 'react';
+import { usePathname } from "next/navigation";
+import React from "react";
 
 function ChildrenWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  if (pathname.startsWith('/catalogue')) {
+  if (pathname.startsWith("/catalogue")) {
     return <>{children}</>;
   }
 

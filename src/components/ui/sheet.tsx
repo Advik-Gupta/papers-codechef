@@ -7,11 +7,8 @@ import { cn } from "@/lib/utils";
 import { Cross2Icon } from "@radix-ui/react-icons";
 
 const Sheet = SheetPrimitive.Root;
-
 const SheetTrigger = SheetPrimitive.Trigger;
-
 const SheetClose = SheetPrimitive.Close;
-
 const SheetPortal = SheetPrimitive.Portal;
 
 const SheetOverlay = React.forwardRef<

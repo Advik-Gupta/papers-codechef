@@ -5,12 +5,9 @@ import { Suspense } from "react";
 import Loader from "@/components/ui/loader";
 const Catalogue = () => {
   return (
-    <>
-
-      <Suspense fallback={<Loader />}>
-        <CatalogueContent />
-      </Suspense>
-    </>
+    <Suspense fallback={<Loader />}>
+      <CatalogueContent />
+    </Suspense>
   );
 };
 

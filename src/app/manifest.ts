@@ -23,7 +23,7 @@ export default function manifest(): MetadataRoute.Manifest {
       "productivity",
       "technology"
     ],
-    "shortcuts": [
+    shortcuts: [
       {
         "name": "Upload",
         "short_name": "Upload",

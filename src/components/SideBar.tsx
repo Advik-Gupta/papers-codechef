@@ -4,16 +4,13 @@ import React, { useEffect, useState } from "react";
 import { fetchSubjects } from "./Searchbar/searchbar";
 import { Button } from "./ui/button";
 import { Filter } from "lucide-react";
-
 import { type Filters, type IPaper } from "@/interface";
-
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
 import SearchbarChild from "./Searchbar/searchbar-child";
 
 function SideBar({
@@ -93,7 +90,6 @@ function SideBar({
       className={`no-scrollbar mb-0 h-[100vh] min-w-fit flex-col items-baseline overflow-y-scroll border-r-2 border-[#36266d] bg-[#f3f5ff] py-[40px] dark:bg-[#070114] md:flex`}
     >
       <div className="px-[10px] md:w-[100%]">
-        {/* <SearchBar /> */}
         <SearchbarChild
           filtersNotPulled={filtersNotPulled}
           initialSubjects={subjects ?? []}
@@ -167,7 +163,7 @@ function SideBar({
           collapsible
           defaultValue="item-1"
         >
-          {/* keep exams open by default it looks good */}
+          {/* Keep exams open by default for aesthetics */}
           <AccordionItem className="border-none no-underline" value="item-1">
             <AccordionTrigger className="w-full no-underline">
               <div className="play text-sm no-underline">Exams</div>

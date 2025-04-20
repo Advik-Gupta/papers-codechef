@@ -11,7 +11,6 @@ export function handleAPIError(err: unknown): ApiError {
       const msg = (data as { message: string })?.message;
 
       if (msg) {
-
         return new ApiError(response.status, toSentenceCase(msg));
       }
     }

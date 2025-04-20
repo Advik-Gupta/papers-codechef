@@ -53,7 +53,7 @@ export interface IUpcomingSlot {
 }
 export interface IUpcomingSubject {
   subject: string;
-  slots: string [];
+  slots: string[];
 }
 export interface CloudinaryUploadWidgetProps {
   info: CloudinaryUploadResult;
@@ -74,7 +74,7 @@ export interface PaperResponse {
 export interface IAdminPaper {
   public_id_cloudinary: string;
   finalUrl: string;
-  thumbnailUrl: string;  
+  thumbnailUrl: string;
   subject: string;
   slot: string;
   year: string;
@@ -82,12 +82,12 @@ export interface IAdminPaper {
   semester: "Fall Semester" | "Winter Semester" | "Summer Semester" | "Weekend Semester";
   cloudinary_index: number;
   campus:
-    | "Vellore"
-    | "Chennai"
-    | "Andhra Pradesh"
-    | "Bhopal"
-    | "Bangalore"
-    | "Mauritius";
+  | "Vellore"
+  | "Chennai"
+  | "Andhra Pradesh"
+  | "Bhopal"
+  | "Bangalore"
+  | "Mauritius";
   answerKeyIncluded?: boolean;
   isSelected?: boolean;
 }
@@ -139,7 +139,7 @@ export interface DecryptedLoginResponse {
 }
 export interface IUpcomingPaper extends mongo.Document {
   subject: string;
-  slots: string [];
+  slots: string[];
 }
 export interface IPaper {
   _id: string;
@@ -148,12 +148,12 @@ export interface IPaper {
   thumbnailUrl: string;
   semester: "Fall Semester" | "Winter Semester" | "Summer Semester" | "Weekend Semester";
   campus:
-    | "Vellore"
-    | "Chennai"
-    | "Andhra Pradesh"
-    | "Bhopal"
-    | "Bangalore"
-    | "Mauritius";
+  | "Vellore"
+  | "Chennai"
+  | "Andhra Pradesh"
+  | "Bhopal"
+  | "Bangalore"
+  | "Mauritius";
   slot: string;
   subject: string;
   year: string;

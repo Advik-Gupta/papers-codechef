@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       screens: {
-        tall: { raw: "(min-height: 800px)" }, // You can adjust 800px as needed
+        tall: { raw: "(min-height: 800px)" }, // Adjust 800px as needed
       },
       fontFamily: {
         sans: ["var(--font-geist-sans)", ...fontFamily.sans],

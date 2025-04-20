@@ -33,11 +33,21 @@ export const FilterDialog = ({
   onReset: () => void;
   onApplyFilters: (exams: string[], slots: string[], years: string[]) => void;
 }) => {
-  const [selectedExams, setSelectedExams] = useState<string[]>(initialExams ?? []);
-  const [selectedSlots, setSelectedSlots] = useState<string[]>(initialSlots ?? []);
-  const [selectedYears, setSelectedYears] = useState<string[]>(initialYears ?? []);
-  const [selectedCampuses, setSelectedCampuses] = useState<string[]>(initialCampuses ?? []);
-  const [selectedSemesters, setSelectedSemesters] = useState<string[]>(initialSemesters ?? []);
+  const [selectedExams, setSelectedExams] = useState<string[]>(
+    initialExams ?? [],
+  );
+  const [selectedSlots, setSelectedSlots] = useState<string[]>(
+    initialSlots ?? [],
+  );
+  const [selectedYears, setSelectedYears] = useState<string[]>(
+    initialYears ?? [],
+  );
+  const [selectedCampuses, setSelectedCampuses] = useState<string[]>(
+    initialCampuses ?? [],
+  );
+  const [selectedSemesters, setSelectedSemesters] = useState<string[]>(
+    initialSemesters ?? [],
+  );
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -46,16 +56,24 @@ export const FilterDialog = ({
     setSelectedYears(initialYears ?? []);
     setSelectedCampuses(initialCampuses ?? []);
     setSelectedSemesters(initialSemesters ?? []);
-  }, [initialExams, initialSlots, initialYears, initialCampuses, initialSemesters]);
+  }, [
+    initialExams,
+    initialSlots,
+    initialYears,
+    initialCampuses,
+    initialSemesters,
+  ]);
 
   const exams = filterOptions.uniqueExams.map((exam) => ({
     label: exam,
     value: exam,
   }));
-  const slots = filterOptions.uniqueSlots.sort((a, b) => a.localeCompare(b)).map((slot) => ({
-    label: slot,
-    value: slot,
-  }));
+  const slots = filterOptions.uniqueSlots
+    .sort((a, b) => a.localeCompare(b))
+    .map((slot) => ({
+      label: slot,
+      value: slot,
+    }));
   const years = filterOptions.uniqueYears.map((year) => ({
     label: year,
     value: year,

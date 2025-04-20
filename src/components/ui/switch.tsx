@@ -3,7 +3,6 @@
 import * as React from "react";
 import * as SwitchPrimitives from "@radix-ui/react-switch";
 import { Sun, Moon } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 
 const Switch = React.forwardRef<

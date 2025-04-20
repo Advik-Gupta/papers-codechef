@@ -1,5 +1,3 @@
-// src/components/multi-select.tsx
-
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
@@ -9,7 +7,6 @@ import {
   XIcon,
   WandSparkles,
 } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -50,7 +47,7 @@ const multiSelectVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 /**
@@ -137,7 +134,7 @@ export const MultiSelect = React.forwardRef<
       className,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [selectedValues, setSelectedValues] =
       React.useState<string[]>(defaultValue);
@@ -145,7 +142,7 @@ export const MultiSelect = React.forwardRef<
     const [isAnimating, setIsAnimating] = React.useState(false);
 
     const handleInputKeyDown = (
-      event: React.KeyboardEvent<HTMLInputElement>
+      event: React.KeyboardEvent<HTMLInputElement>,
     ) => {
       if (event.key === "Enter") {
         setIsPopoverOpen(true);
@@ -202,12 +199,12 @@ export const MultiSelect = React.forwardRef<
             {...props}
             onClick={handleTogglePopover}
             className={cn(
-              "flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit",
-              className
+              "flex h-auto min-h-10 w-full items-center justify-between rounded-md border bg-inherit p-1 hover:bg-inherit",
+              className,
             )}
           >
             {selectedValues.length > 0 ? (
-              <div className="flex justify-between items-center w-full">
+              <div className="flex w-full items-center justify-between">
                 <div className="flex flex-wrap items-center">
                   {selectedValues.slice(0, maxCount).map((value) => {
                     const option = options.find((o) => o.value === value);
@@ -217,12 +214,12 @@ export const MultiSelect = React.forwardRef<
                         key={value}
                         className={cn(
                           isAnimating ? "animate-bounce" : "",
-                          multiSelectVariants({ variant })
+                          multiSelectVariants({ variant }),
                         )}
                         style={{ animationDuration: `${animation}s` }}
                       >
                         {IconComponent && (
-                          <IconComponent className="h-4 w-4 mr-2" />
+                          <IconComponent className="mr-2 h-4 w-4" />
                         )}
                         {option?.label}
                         <XCircle
@@ -238,9 +235,9 @@ export const MultiSelect = React.forwardRef<
                   {selectedValues.length > maxCount && (
                     <Badge
                       className={cn(
-                        "bg-transparent text-foreground border-foreground/1 hover:bg-transparent",
+                        "border-foreground/1 bg-transparent text-foreground hover:bg-transparent",
                         isAnimating ? "animate-bounce" : "",
-                        multiSelectVariants({ variant })
+                        multiSelectVariants({ variant }),
                       )}
                       style={{ animationDuration: `${animation}s` }}
                     >
@@ -257,7 +254,7 @@ export const MultiSelect = React.forwardRef<
                 </div>
                 <div className="flex items-center justify-between">
                   <XIcon
-                    className="h-4 mx-2 cursor-pointer text-muted-foreground"
+                    className="mx-2 h-4 cursor-pointer text-muted-foreground"
                     onClick={(event) => {
                       event.stopPropagation();
                       handleClear();
@@ -265,17 +262,17 @@ export const MultiSelect = React.forwardRef<
                   />
                   <Separator
                     orientation="vertical"
-                    className="flex min-h-6 h-full"
+                    className="flex h-full min-h-6"
                   />
-                  <ChevronDown className="h-4 mx-2 cursor-pointer text-muted-foreground" />
+                  <ChevronDown className="mx-2 h-4 cursor-pointer text-muted-foreground" />
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-between w-full mx-auto">
-                <span className="text-sm text-muted-foreground mx-3">
+              <div className="mx-auto flex w-full items-center justify-between">
+                <span className="mx-3 text-sm text-muted-foreground">
                   {placeholder}
                 </span>
-                <ChevronDown className="h-4 cursor-pointer text-muted-foreground mx-2" />
+                <ChevronDown className="mx-2 h-4 cursor-pointer text-muted-foreground" />
               </div>
             )}
           </Button>
@@ -303,7 +300,7 @@ export const MultiSelect = React.forwardRef<
                       "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
                       selectedValues.length === options.length
                         ? "bg-primary text-primary-foreground"
-                        : "opacity-50 [&_svg]:invisible"
+                        : "opacity-50 [&_svg]:invisible",
                     )}
                   >
                     <CheckIcon className="h-4 w-4" />
@@ -323,7 +320,7 @@ export const MultiSelect = React.forwardRef<
                           "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
                           isSelected
                             ? "bg-primary text-primary-foreground"
-                            : "opacity-50 [&_svg]:invisible"
+                            : "opacity-50 [&_svg]:invisible",
                         )}
                       >
                         <CheckIcon className="h-4 w-4" />
@@ -343,19 +340,19 @@ export const MultiSelect = React.forwardRef<
                     <>
                       <CommandItem
                         onSelect={handleClear}
-                        className="flex-1 justify-center cursor-pointer"
+                        className="flex-1 cursor-pointer justify-center"
                       >
                         Clear
                       </CommandItem>
                       <Separator
                         orientation="vertical"
-                        className="flex min-h-6 h-full"
+                        className="flex h-full min-h-6"
                       />
                     </>
                   )}
                   <CommandItem
                     onSelect={() => setIsPopoverOpen(false)}
-                    className="flex-1 justify-center cursor-pointer max-w-full"
+                    className="max-w-full flex-1 cursor-pointer justify-center"
                   >
                     Close
                   </CommandItem>
@@ -367,15 +364,15 @@ export const MultiSelect = React.forwardRef<
         {animation > 0 && selectedValues.length > 0 && (
           <WandSparkles
             className={cn(
-              "cursor-pointer my-2 text-foreground bg-background w-3 h-3",
-              isAnimating ? "" : "text-muted-foreground"
+              "my-2 h-3 w-3 cursor-pointer bg-background text-foreground",
+              isAnimating ? "" : "text-muted-foreground",
             )}
             onClick={() => setIsAnimating(!isAnimating)}
           />
         )}
       </Popover>
     );
-  }
+  },
 );
 
 MultiSelect.displayName = "MultiSelect";

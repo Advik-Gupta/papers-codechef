@@ -4,7 +4,7 @@ import Hero from "@/components/screens/Hero";
 
 const HomePage = () => {
   return (
-    <div >
+    <div>
       <Hero />
       <Info />
       <Faq />

@@ -1,9 +1,5 @@
 "use client";
 
-import meta_icon from "../assets/meta_icon.svg";
-import x_twitter_icon from "../assets/x_twitter_icon.svg";
-import meta_icon_dark from "../assets/meta_icon_dark.svg";
-import x_twitter_icon_dark from "../assets/x_twitter_icon_dark.svg";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";

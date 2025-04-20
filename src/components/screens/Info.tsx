@@ -18,7 +18,7 @@ function Info() {
           <span>repository of past </span>
           <span>exam papers</span>
         </div>
-        <div className="grid play gap-4 text-[12px] text-black dark:text-white md:grid-cols-3 xl:text-[16px]">
+        <div className="play grid gap-4 text-[12px] text-black dark:text-white md:grid-cols-3 xl:text-[16px]">
           <FeatureCard icon={<User size={32} />} text="No Sign-up required" />
           <FeatureCard
             isHighlight

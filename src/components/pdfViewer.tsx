@@ -1,17 +1,16 @@
 "use client";
+
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Download, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "./ui/button";
-import { extractBracketContent } from "@/util/utils";
 import { downloadFile } from "./CatalogueContent";
 import ShareButton from "./ShareButton";
 import Loader from "./ui/loader";
 import { FaGreaterThan, FaLessThan } from "react-icons/fa6";
 
-// Set up PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
   import.meta.url,
@@ -25,51 +24,98 @@ interface PdfViewerProps {
 export default function PdfViewer({ url, name }: PdfViewerProps) {
   const [numPages, setNumPages] = useState<number>();
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [scale, setScale] = useState<number>(1); // Default zoom level (100%)
+  const [scale, setScale] = useState<number>(1);
+  const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Handle document load success
   function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
     setNumPages(numPages);
-    setPageNumber(1); // Reset to page 1 when new document loads
+    setPageNumber(1);
+    pageRefs.current = Array(numPages).fill(null) as (HTMLDivElement | null)[];
   }
 
-  // Navigate to previous page
+  const scrollToPage = useCallback((page: number) => {
+    if (pageRefs.current[page - 1] && containerRef.current) {
+      const pageElement = pageRefs.current[page - 1];
+      const container = containerRef.current;
+      if (pageElement) {
+        const offset = pageElement.offsetTop - container.offsetTop;
+        container.scrollTo({ top: offset, behavior: "smooth" });
+        setPageNumber(page);
+      }
+    }
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    if (!containerRef.current || !pageRefs.current) return;
+    const container = containerRef.current;
+    const scrollTop = container.scrollTop + container.offsetTop;
+
+    for (let i = 0; i < pageRefs.current.length; i++) {
+      const pageEl = pageRefs.current[i];
+      if (pageEl) {
+        const pageTop = pageEl.offsetTop;
+        const pageBottom = pageTop + pageEl.offsetHeight;
+        if (scrollTop >= pageTop && scrollTop < pageBottom) {
+          setPageNumber(i + 1);
+          break;
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+      return () => container.removeEventListener("scroll", handleScroll);
+    }
+  }, [handleScroll]);
+
   const goToPreviousPage = () => {
-    setPageNumber((prev) => Math.max(1, prev - 1));
+    setPageNumber((prev) => {
+      const newPage = Math.max(1, prev - 1);
+      scrollToPage(newPage);
+      return newPage;
+    });
   };
 
-  // Navigate to next page
   const goToNextPage = () => {
-    setPageNumber((prev) => Math.min(numPages ?? 1, prev + 1));
+    setPageNumber((prev) => {
+      const newPage = Math.min(numPages ?? 1, prev + 1);
+      scrollToPage(newPage);
+      return newPage;
+    });
   };
 
-  // Handle page number input change
   const handlePageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
     if (!isNaN(value) && value >= 1 && value <= (numPages ?? 1)) {
       setPageNumber(value);
+      scrollToPage(value);
     }
   };
 
-  // Zoom in (increase scale)
   const zoomIn = () => {
-    setScale((prev) => Math.min(prev + 0.25, 3)); // Max scale: 300%
+    setScale((prev) => Math.min(prev + 0.25, 3));
   };
 
-  // Zoom out (decrease scale)
   const zoomOut = () => {
-    setScale((prev) => Math.max(prev - 0.25, 0.25)); // Min scale: 25%
+    setScale((prev) => Math.max(prev - 0.25, 0.25));
   };
+
   const downloadPDF = async () => {
     const fileName = `${name}.pdf`;
     await downloadFile(url, fileName);
   };
+
   return (
     <div className="flex flex-col items-center">
-      {/* PDF Document */}
-      <div className="max-h-[70vh] overflow-auto border border-gray-300 shadow-lg">
+      <div
+        ref={containerRef}
+        className="max-h-[70vh] overflow-auto border border-gray-300 shadow-lg"
+      >
         <Document
-          className="flex justify-center"
           file={url}
           onLoadSuccess={onDocumentLoadSuccess}
           error={
@@ -84,20 +130,27 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
             <div className="p-4 text-gray-500">No PDF file specified.</div>
           }
         >
-          <Page
-            pageNumber={pageNumber}
-            scale={scale}
-            renderAnnotationLayer={true}
-            renderTextLayer={true}
-            className="w-max-[75vw] shadow-md"
-          />
+          {numPages &&
+            Array.from({ length: numPages }, (_, index) => (
+              <div
+                key={`page_${index + 1}`}
+                ref={(el) => {
+                  pageRefs.current[index] = el;
+                }}
+              >
+                <Page
+                  pageNumber={index + 1}
+                  scale={scale}
+                  renderAnnotationLayer={true}
+                  renderTextLayer={true}
+                  className="w-max-[75vw] mb-4 shadow-md"
+                />
+              </div>
+            ))}
         </Document>
       </div>
 
-      {/* Controls */}
       <div className="mt-4 flex flex-col items-center gap-4 rounded-lg bg-[#262635] p-4 shadow sm:flex-row">
-        {/* Page Navigation */}
-
         <div className="flex items-center gap-2">
           <Button
             onClick={goToPreviousPage}
@@ -112,7 +165,7 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
             onChange={handlePageChange}
             min={1}
             max={numPages}
-            className="h-10 w-16 rounded border p-1 text-center"
+            className="h-10 w-16 rounded border p-1 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           />
           <span>of {numPages ?? 1}</span>
           <Button
@@ -124,9 +177,7 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
           </Button>
         </div>
 
-        {/* Zoom Controls */}
         <div className="flex items-center gap-2">
-          {" "}
           <Button
             onClick={zoomOut}
             disabled={scale <= 0.25}
@@ -140,7 +191,7 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
             disabled={scale >= 3}
             className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
           >
-            {<ZoomIn />}
+            <ZoomIn />
           </Button>
           <ShareButton />
           <Button onClick={downloadPDF} className="aspect-square h-10 w-10 p-0">

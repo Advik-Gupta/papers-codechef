@@ -1,15 +1,12 @@
 import { fetchPaperID } from "@/app/actions/get-papers-by-id";
-
 import PdfViewer from "@/components/pdfViewer";
 import RelatedPapers from "@/components/RelatedPaper";
-import ShareButton from "@/components/ShareButton";
-import { Button } from "@/components/ui/button";
 import Loader from "@/components/ui/loader";
 import { type ErrorResponse, type PaperResponse } from "@/interface";
 import { extractBracketContent } from "@/util/utils";
 import axios, { type AxiosResponse } from "axios";
 import { type Metadata } from "next";
-import { redirect } from "next/navigation"; // Import redirect
+import { redirect } from "next/navigation";
 
 export async function generateMetadata({
   params,
@@ -174,9 +171,8 @@ const PaperPage = async ({ params }: { params: { id: string } }) => {
           </center>
           <RelatedPapers />
         </>
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 };
 export default PaperPage;

@@ -77,6 +77,7 @@ function SearchBarChild({
           <button
             type="submit"
             className="absolute inset-y-0 right-0 flex items-center pr-3"
+            title="Search"
           >
             <Search className="h-5 w-5 text-black dark:text-white" />
           </button>

@@ -1,4 +1,5 @@
 "use client";
+
 import ccLogo from "../assets/codechef_logo.svg";
 import Image from "next/image";
 import ModeToggle from "@/components/toggle-theme";
@@ -12,7 +13,11 @@ function Navbar() {
   return (
     <div className="sticky top-0 z-10 flex h-[85px] w-full items-center justify-between gap-x-3 overflow-hidden bg-[#B2B8FF] px-2 py-6 dark:bg-[#130E1F] md:px-12">
       <div className="flex items-center gap-x-2 md:w-auto">
-        <a href="https://www.codechefvit.com/" className="inline-block">
+        <a
+          href="https://www.codechefvit.com/"
+          className="inline-block"
+          title="CodeChef VIT Homepage"
+        >
           <Image
             src={ccLogo as HTMLImageElement}
             alt="codechef-logo"
@@ -35,7 +40,7 @@ function Navbar() {
         <Link href={pathname == "/upload" ? "/" : "/upload"}>
           <div className="rounded-md bg-[#453D60] p-[1.5px] md:p-[2px]">
             <div className="flex items-center gap-1 rounded-md bg-slate-200 px-2 py-1 text-[9px] font-bold tracking-tight text-black transition-all duration-150 hover:bg-white active:scale-95 dark:bg-[#171720] dark:text-white dark:hover:bg-slate-700 sm:gap-2 sm:px-3 sm:py-2 sm:text-[10px] md:px-6 md:text-sm">
-              <ArrowDownLeftIcon className="h-3 w-3 sm:h-4 sm:w-4 rotate-90" />
+              <ArrowDownLeftIcon className="h-3 w-3 rotate-90 sm:h-4 sm:w-4" />
               <span className="text-center font-semibold">
                 {pathname === "/upload" ? "SEARCH PAPERS" : "UPLOAD PAPERS"}
               </span>

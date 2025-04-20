@@ -9,21 +9,11 @@ import Card from "./Card";
 import { extractBracketContent } from "@/util/utils";
 import { useRouter } from "next/navigation";
 import Loader from "./ui/loader";
-import filterIcon from "../assets/filterIcon.svg";
-import filterd from "@/assets/filterd.svg";
-import Image from "next/image";
 import SideBar from "../components/SideBar";
-import toast from "react-hot-toast";
 import Error from "./Error";
 import { Filter } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+
 export async function downloadFile(url: string, filename: string) {
   try {
     const response = await axios.get(url, { responseType: "blob" });
@@ -33,7 +23,7 @@ export async function downloadFile(url: string, filename: string) {
     link.download = filename;
     link.click();
     window.URL.revokeObjectURL(link.href);
-  } catch (error) { }
+  } catch (error) {}
 }
 
 const CatalogueContent = () => {
@@ -45,7 +35,8 @@ const CatalogueContent = () => {
   const years = searchParams.get("years")?.split(",");
   const campuses = searchParams.get("campus")?.split(",");
   const semesters = searchParams.get("semester")?.split(",");
-  const answerKeyIncluded = searchParams.get("answerkey")==="true"? true: false;
+  const answerKeyIncluded =
+    searchParams.get("answerkey") === "true" ? true : false;
   // Initialize state with searchParams
   const [selectedExams, setSelectedExams] = useState<string[]>(exams ?? []);
   const [selectedSlots, setSelectedSlots] = useState<string[]>(slots ?? []);
@@ -129,7 +120,7 @@ const CatalogueContent = () => {
     };
 
     void fetchPapers();
-  }, [subject]); // just run on initial page render
+  }, [subject]); // Just run on initial page render
 
   // Memoized handlers
   const handleSelectPaper = useCallback(
@@ -201,7 +192,7 @@ const CatalogueContent = () => {
           answerkeyCondition
         );
       });
-      setFilteredPapers(filtered );
+      setFilteredPapers(filtered);
     },
     [subject, router, papers],
   );
@@ -221,7 +212,6 @@ const CatalogueContent = () => {
   const handleDeselectAll = useCallback(() => {
     setSelectedPapers([]);
   }, []);
-
 
   return (
     <div className="relative flex min-h-screen justify-center p-0 md:justify-normal">

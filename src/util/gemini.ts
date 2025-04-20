@@ -1,16 +1,12 @@
 import "@ungap/with-resolvers";
-
 import { GoogleGenAI } from "@google/genai";
 import { type ExamDetail } from "@/interface";
-
-// Type definitions
 
 type AnalysisResult = {
   examDetail: ExamDetail;
   rawAnalysis: string;
 };
 
-// Custom error type
 class ProcessingError extends Error {
   constructor(message: string) {
     super(message);
@@ -32,10 +28,10 @@ export default async function processAndAnalyze({
   }
 }
 
-// Function to parse Gemini's response into ExamDetail format
+// Parse Gemini's response into the ExamDetail format
 function parseExamDetail(analysis: string): ExamDetail {
   try {
-    // Try to find JSON in the response
+    // Parse JSON from the response
     const jsonRegex = /\{[\s\S]*\}/;
     const jsonMatch = jsonRegex.exec(analysis);
     if (jsonMatch) {
@@ -76,7 +72,7 @@ function parseExamDetail(analysis: string): ExamDetail {
   }
 }
 
-// Function to analyze images using Gemini AI
+// Analyze images using the Gemini AI
 async function analyzeImage(dataUrl: string): Promise<AnalysisResult[]> {
   try {
     const apiKey = process.env.GEMINI_API_KEY;

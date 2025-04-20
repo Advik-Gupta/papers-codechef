@@ -32,7 +32,6 @@ function SearchBarChild({
   };
 
   const handleSelectSuggestion = (suggestion: string) => {
-    suggestion = suggestion.replace(/\[.*?\]/g, "").trim();
     router.push(`/catalogue?subject=${encodeURIComponent(suggestion)}`);
     setSearchText(suggestion);
     setSuggestions([]);

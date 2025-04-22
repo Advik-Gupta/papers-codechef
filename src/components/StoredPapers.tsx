@@ -61,11 +61,11 @@ function StoredPapers() {
     return <Loader prop="m-10" />;
   }
 
-  const plugins = [Autoplay({ delay: 5000, stopOnInteraction: true })];
+  const plugins = [Autoplay({ delay: 8000, stopOnInteraction: true })];
 
   return (
     <div className="px-4">
-      <p className="font-play my-8 text-center text-lg font-semibold">
+      <p className="my-8 text-center font-play text-lg font-semibold">
         Upcoming Papers
       </p>
 

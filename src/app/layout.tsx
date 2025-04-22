@@ -86,6 +86,7 @@ export const metadata: Metadata = {
   ],
   robots: "index, follow",
 };
+export const revalidate = 60;
 
 export default function RootLayout({
   children,

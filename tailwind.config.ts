@@ -12,6 +12,10 @@ export default {
       fontFamily: {
         sans: ["var(--font-geist-sans)", ...fontFamily.sans],
         yerk: ['"Yerk"', "sans-serif"],
+        jost: ['"jost"', "sans-serif"],
+        vipna: ['"vipna"', "sans-serif"],
+        vipnabd: ['"vipnabd"', "sans-serif"],
+        play: ['"play"', "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",

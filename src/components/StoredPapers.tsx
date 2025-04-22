@@ -65,7 +65,7 @@ function StoredPapers() {
 
   return (
     <div className="px-4">
-      <p className="play my-8 text-center text-lg font-semibold">
+      <p className="font-play my-8 text-center text-lg font-semibold">
         Upcoming Papers
       </p>
 

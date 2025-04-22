@@ -64,12 +64,12 @@ const RelatedPapers = () => {
   }, [id]);
 
   if (loading) return <Loader />;
-  if (!currentPaper) return <div className="vipna">Paper not found.</div>;
+  if (!currentPaper) return <div className="font-vipna">Paper not found.</div>;
 
   return (
-    <div className="vipna space-y-4 p-6">
+    <div className="font-vipna space-y-4 p-6">
       <div className="flex items-center justify-between">
-        <h2 className="play my-6 text-3xl font-semibold">Explore More</h2>
+        <h2 className="font-play my-6 text-3xl font-semibold">Explore More</h2>
 
         <Link
           href={`/catalogue?subject=${encodeURIComponent(currentPaper.subject)}`}
@@ -84,7 +84,7 @@ const RelatedPapers = () => {
         </Link>
       </div>
       {relatedPapers.length === 0 ? (
-        <p className="play">No related papers found.</p>
+        <p className="font-play">No related papers found.</p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {relatedPapers.map((paper) => (

@@ -10,7 +10,7 @@ function Info() {
       className="flex scroll-mt-24 flex-col items-center justify-between px-6 py-12 md:scroll-mt-32 lg:flex-row"
     >
       <div className="w-full text-center lg:w-[50%] lg:text-left">
-        <div className="vipnabd mb-8 block text-3xl font-extrabold text-black dark:text-white lg:text-5xl">
+        <div className="font-vipnabd mb-8 block text-3xl font-extrabold text-black dark:text-white lg:text-5xl">
           <span>Prepare to excel in </span>
           <span>your CATs and FATs </span>
           <span>with CodeChef-</span>
@@ -18,7 +18,7 @@ function Info() {
           <span>repository of past </span>
           <span>exam papers</span>
         </div>
-        <div className="play grid gap-4 text-[12px] text-black dark:text-white md:grid-cols-3 xl:text-[16px]">
+        <div className="font-play grid gap-4 text-[12px] text-black dark:text-white md:grid-cols-3 xl:text-[16px]">
           <FeatureCard icon={<User size={32} />} text="No Sign-up required" />
           <FeatureCard
             isHighlight

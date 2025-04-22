@@ -65,7 +65,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
   return (
     <div
       className={cn(
-        "play overflow-hidden rounded-sm border-2 border-[#734DFF] bg-[#FFFFFF] transition-all duration-150 hover:bg-[#EFEAFF] dark:border-[#36266D] dark:bg-[#171720] hover:dark:bg-[#262635]",
+        "font-play overflow-hidden rounded-sm border-2 border-[#734DFF] bg-[#FFFFFF] transition-all duration-150 hover:bg-[#EFEAFF] dark:border-[#36266D] dark:bg-[#171720] hover:dark:bg-[#262635]",
         checked && "bg-white",
       )}
     >
@@ -80,7 +80,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
 
         <div className="justify-center">
           <div className="flex flex-row items-center justify-between px-4 pb-2">
-            <div className="play text-md font-medium">
+            <div className="font-play text-md font-medium">
               {extractBracketContent(paper.subject)}
             </div>
             <div className="flex gap-2">
@@ -102,7 +102,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
           <div className="h-[1px] w-full bg-[#734DFF] dark:bg-[#36266D]" />
 
           <div className="space-y-2 p-4">
-            <div className="play text-lg font-semibold">
+            <div className="font-play text-lg font-semibold">
               {extractWithoutBracketContent(paper.subject)}
             </div>
             <div className="flex flex-wrap gap-2">
@@ -115,7 +115,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
         </div>
       </Link>
 
-      <div className="play hidden items-center justify-between gap-2 px-4 pb-4 md:flex">
+      <div className="font-play hidden items-center justify-between gap-2 px-4 pb-4 md:flex">
         <div className="flex items-center gap-2">
           <input
             checked={checked}

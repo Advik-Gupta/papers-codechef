@@ -173,7 +173,7 @@ const Page = () => {
   const isCurrentlyDragging = isDragging || isGlobalDragging;
 
   return (
-    <div className="play flex h-[calc(100vh-85px)] flex-col justify-center px-6">
+    <div className="font-play flex h-[calc(100vh-85px)] flex-col justify-center px-6">
       <div className="2xl:my-15 flex flex-col items-center">
         <fieldset className="mb-4 w-full max-w-md rounded-lg border-2 border-gray-300 p-4 pr-8">
           <div className="flex w-full flex-col 2xl:gap-y-4">

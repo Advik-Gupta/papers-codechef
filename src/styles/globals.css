@@ -87,11 +87,6 @@
 }
 
 @font-face {
-  font-family: "phonk";
-  src: url(/phonkfont.otf);
-}
-
-@font-face {
   font-family: "jost";
   src: url(/jostfont.ttf);
 }
@@ -109,26 +104,6 @@
 @font-face {
   font-family: "play";
   src: url(/play.ttf);
-}
-
-.jost {
-  font-family: "jost";
-}
-
-.phonk {
-  font-family: "phonk";
-}
-
-.vipna {
-  font-family: "vipna";
-}
-
-.vipnabd {
-  font-family: "vipnabd";
-}
-
-.play {
-  font-family: "play";
 }
 
 .dark ::-webkit-scrollbar {

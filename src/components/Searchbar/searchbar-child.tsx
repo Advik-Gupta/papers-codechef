@@ -55,7 +55,7 @@ function SearchBarChild({
   }, []);
 
   return (
-    <div className="play mx-auto w-full max-w-xl">
+    <div className="font-play mx-auto w-full max-w-xl">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -71,7 +71,7 @@ function SearchBarChild({
             value={searchText}
             onChange={handleSearchChange}
             placeholder="Search by subject..."
-            className={`text-md play rounded-lg bg-[#B2B8FF] px-4 py-6 pr-10 font-sans tracking-wider text-black shadow-sm ring-0 placeholder:text-black focus:outline-none focus:ring-0 dark:bg-[#7480FF66] dark:text-white placeholder:dark:text-white ${suggestions.length > 0 ? "rounded-b-none" : ""}`}
+            className={`text-md font-play rounded-lg bg-[#B2B8FF] px-4 py-6 pr-10 tracking-wider text-black shadow-sm ring-0 placeholder:text-black focus:outline-none focus:ring-0 dark:bg-[#7480FF66] dark:text-white placeholder:dark:text-white ${suggestions.length > 0 ? "rounded-b-none" : ""}`}
           />
           <button
             type="submit"

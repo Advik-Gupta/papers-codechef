@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import Fuse from "fuse.js";
 
 function SearchBarChild({
   initialSubjects,
@@ -16,15 +17,21 @@ function SearchBarChild({
   const [searchText, setSearchText] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const suggestionsRef = useRef<HTMLUListElement | null>(null);
+  const fuzzy = new Fuse(initialSubjects);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
     setSearchText(text);
 
     if (text.length > 1 && initialSubjects.length > 0) {
-      const filteredSuggestions = initialSubjects.filter((subject) =>
-        subject.toLowerCase().includes(text.toLowerCase()),
-      );
+      const filteredSuggestions = fuzzy
+        .search(text)
+        .sort((a, b) => {
+          return (a.score ?? Infinity) - (b.score ?? Infinity); // Use Infinity for undefined scores
+        })
+        .map((item) => item.item)
+        .slice(0, 10);
+
       setSuggestions(filteredSuggestions);
     } else {
       setSuggestions([]);

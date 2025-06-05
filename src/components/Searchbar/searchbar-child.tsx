@@ -5,6 +5,7 @@ import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import Fuse from "fuse.js";
+import axios from "axios";
 
 function SearchBarChild({
   initialSubjects,
@@ -19,7 +20,18 @@ function SearchBarChild({
   const suggestionsRef = useRef<HTMLUListElement | null>(null);
   const fuzzy = new Fuse(initialSubjects);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const fetchPaperQuantityByName = async (subjectName: string) => {
+    try {
+      const response = await axios.get("/api/papers", {
+        params: { subject: subjectName },
+      });
+      return response.data.papers.length; // Assuming the API returns an array of papers
+    } catch (error) {
+      return 0; // Return 0 if there's no papers found or an error occurs
+    }
+  };
+
+  const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
     setSearchText(text);
 
@@ -31,6 +43,15 @@ function SearchBarChild({
         })
         .map((item) => item.item)
         .slice(0, 10);
+
+      // add paper quantity to suggestions
+      // const suggestionsWithQuantity = await Promise.all(
+      //   filteredSuggestions.map(async (suggestion) => {
+      //     console.log("Fetching paper quantity for:", suggestion);
+      //     const paperQuantity = await fetchPaperQuantityByName(suggestion);
+      //     return `${suggestion} (Papers found: ${paperQuantity})`;
+      //   }),
+      // );
 
       setSuggestions(filteredSuggestions);
     } else {
@@ -55,6 +76,12 @@ function SearchBarChild({
   };
 
   useEffect(() => {
+    fetchPaperQuantityByName("Information Security [CBS3002]").catch(
+      (error) => {
+        console.error("Error fetching paper by name:", error);
+      },
+    );
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -62,7 +89,7 @@ function SearchBarChild({
   }, []);
 
   return (
-    <div className="font-play mx-auto w-full max-w-xl">
+    <div className="mx-auto w-full max-w-xl font-play">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -78,7 +105,7 @@ function SearchBarChild({
             value={searchText}
             onChange={handleSearchChange}
             placeholder="Search by subject..."
-            className={`text-md font-play rounded-lg bg-[#B2B8FF] px-4 py-6 pr-10 tracking-wider text-black shadow-sm ring-0 placeholder:text-black focus:outline-none focus:ring-0 dark:bg-[#7480FF66] dark:text-white placeholder:dark:text-white ${suggestions.length > 0 ? "rounded-b-none" : ""}`}
+            className={`text-md rounded-lg bg-[#B2B8FF] px-4 py-6 pr-10 font-play tracking-wider text-black shadow-sm ring-0 placeholder:text-black focus:outline-none focus:ring-0 dark:bg-[#7480FF66] dark:text-white placeholder:dark:text-white ${suggestions.length > 0 ? "rounded-b-none" : ""}`}
           />
           <button
             type="submit"

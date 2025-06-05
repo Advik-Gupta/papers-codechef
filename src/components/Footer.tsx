@@ -88,7 +88,7 @@ export default function Footer() {
           <Link href="https://ffcs.codechefvit.com">FFCS Combogen</Link>
         </div>
         <div className="flex flex-col gap-2 text-black dark:text-white md:items-start lg:text-left">
-          <h3 className="font-jost text-2xl font-semibold">Contact Us</h3>
+          <h3 className="font-jost text-2xl font-semibold">Drop Your Suggestions:</h3>
           <Link
             href={`mailto:codechefvit@gmail.com`}
             className="flex flex-row items-center gap-2"

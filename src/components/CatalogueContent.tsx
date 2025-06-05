@@ -74,11 +74,9 @@ const CatalogueContent = () => {
     const fetchPapers = async () => {
       setLoading(true);
       try {
-        console.log("Fetching papers for subject:", subject);
         const papersResponse = await axios.get<Filters>("/api/papers", {
           params: { subject },
         });
-        console.log("Papers fetched:", papersResponse.data);
         const data: Filters = papersResponse.data;
         const papersData = data.papers;
         setFilterOptions(data);

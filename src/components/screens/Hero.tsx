@@ -1,16 +1,18 @@
 import React from "react";
 import SearchBar from "../Searchbar/searchbar";
 import StoredPapers from "../StoredPapers";
+import UsersPapers from "../UsersPapers";
 
 const Hero = () => {
   return (
     <div id="hero" className="flex flex-col justify-between">
-      <h1 className="font-vipnabd mx-auto my-8 text-center text-3xl font-extrabold">
+      <h1 className="mx-auto my-8 text-center font-vipnabd text-3xl font-extrabold">
         Built by Students for Students
       </h1>
       <div className="px-6">
         <SearchBar />
       </div>
+      <UsersPapers />
       <StoredPapers />
       {/* <div className="hidden lg:flex flex-col items-center whitespace-nowrap text-center">
         <h1 className="font-play text-md">Learn More</h1>

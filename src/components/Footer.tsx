@@ -95,6 +95,25 @@ export default function Footer() {
           >
             <Mail /> codechefvit@gmail.com
           </Link>
+
+          <div className="mt-4 flex flex-col gap-2 w-full max-w-xs">
+            <h3 htmlFor="email" className="font-jost text-2xl font-semibold">
+              Subscribe For Updates:
+            </h3>
+            <div className="relative w-full">
+              <input
+                id="email"
+                type="email"
+                placeholder="Enter Your Email"
+                className="w-full rounded-md border border-gray-300 px-4 py-2 pr-24 text-black focus:outline-none focus:ring-2 focus:ring-[#562EE7] dark:bg-white dark:text-black"
+              />
+              <Button
+                className="absolute right-0 top-0 h-full rounded-l-none rounded-r-md bg-[#562EE7] px-4 text-white hover:bg-[#4531b3]"
+              >
+                Subscribe!
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
       <p className="font-play mt-4 border-t border-[#130E1F] pt-12 text-center text-lg text-black dark:border-white/10 dark:text-white">

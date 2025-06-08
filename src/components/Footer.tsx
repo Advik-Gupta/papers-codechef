@@ -96,7 +96,7 @@ export default function Footer() {
             <Mail /> codechefvit@gmail.com
           </Link>
 
-          <div className="mt-4 flex flex-col gap-2 w-full max-w-xs">
+          <div className="mt-4 flex flex-col gap-3 w-full max-w-xs">
             <h3 htmlFor="email" className="font-jost text-2xl font-semibold">
               Subscribe For Updates:
             </h3>
@@ -116,7 +116,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
-      <p className="font-play mt-4 border-t border-[#130E1F] pt-12 text-center text-lg text-black dark:border-white/10 dark:text-white">
+      <p className="font-play mt-8 border-t border-[#130E1F] pt-12 text-center text-lg text-black dark:border-white/10 dark:text-white">
         Made with ❤️ by Codechef-VIT
       </p>
     </footer>

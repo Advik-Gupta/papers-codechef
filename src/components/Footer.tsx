@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
+import { Input } from "@/components/ui/input";
 import {
   FaFacebook,
   FaGithub,
@@ -101,11 +102,11 @@ export default function Footer() {
               Subscribe For Updates:
             </h3>
             <div className="relative w-full">
-              <input
+              <Input
                 id="email"
                 type="email"
                 placeholder="Enter Your Email"
-                className="w-full rounded-md border border-gray-300 px-4 py-2 pr-24 text-black focus:outline-none focus:ring-2 focus:ring-[#562EE7] dark:bg-white dark:text-black"
+                className="pr-24"
               />
               <Button
                 className="absolute right-0 top-0 h-full rounded-l-none rounded-r-md bg-[#562EE7] px-4 text-white hover:bg-[#4531b3]"

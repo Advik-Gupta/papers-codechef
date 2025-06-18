@@ -16,9 +16,9 @@ import Autoplay from "embla-carousel-autoplay";
 import { chunkArray } from "@/util/utils";
 
 function PapersCarousel({
-  carouselType,
+  carouselType = "upcoming",
 }: {
-  carouselType: "users" | "default";
+  carouselType: "users" | "upcoming";
 }) {
   const [displayPapers, setDisplayPapers] = useState<IUpcomingPaper[]>([]);
   const [isLoading, setIsLoading] = useState(true);

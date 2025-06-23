@@ -15,6 +15,7 @@ function SearchBarChild({
   filtersNotPulled?: () => void;
 }) {
   const router = useRouter();
+  const [count, setCount] = useState(0);
   const [searchText, setSearchText] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const suggestionsRef = useRef<HTMLUListElement | null>(null);

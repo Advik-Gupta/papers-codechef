@@ -4,18 +4,21 @@ import Paper from "@/db/papers";
 
 export const dynamic = "force-dynamic";
 
+interface TransformedPaper {
+  subject: string;
+  slots: string[];
+}
+
 export async function POST(req: Request) {
   try {
     await connectToDatabase();
-    const body = await req.json();
-
-    const subjects: string[] = body;
+    const subjects: string[] = await req.json() as string[];
 
     const usersPapers = await Paper.find({
       subject: { $in: subjects },
     });
 
-    const transformedPapers = usersPapers.reduce((acc, paper) => {
+    const transformedPapers = usersPapers.reduce<TransformedPaper[]>((acc, paper) => {
       const existing = acc.find((item) => item.subject === paper.subject);
 
       if (existing) {
@@ -27,15 +30,7 @@ export async function POST(req: Request) {
       return acc;
     }, []);
 
-    // check duplicates
-    const seenSubjects = new Set();
-    const uniquePapers = transformedPapers.filter((paper) => {
-      if (seenSubjects.has(paper.subject)) return false;
-      seenSubjects.add(paper.subject);
-      return true;
-    });
-
-    return NextResponse.json(uniquePapers, {
+    return NextResponse.json(transformedPapers, {
       status: 200,
     });
   } catch (error) {

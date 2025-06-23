@@ -57,19 +57,19 @@ function SideBar({
   const exams = filterOptions?.uniqueExams.map((exam) => ({
     label: exam,
     value: exam,
-  }));
+  })) ?? [];
   const slots = filterOptions?.uniqueSlots.map((slot) => ({
     label: slot,
     value: slot,
-  }));
+  })) ?? [];
   const years = filterOptions?.uniqueYears.map((year) => ({
     label: year,
     value: year,
-  }));
+  }))  ?? [];
   const semesters = filterOptions?.uniqueSemesters.map((semester) => ({
     label: semester,
     value: semester,
-  }));
+  })) ?? [];
   // const campuses = filterOptions?.uniqueCampuses.map((campus) => ({
   //   label: campus,
   //   value: campus,

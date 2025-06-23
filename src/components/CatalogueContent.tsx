@@ -81,7 +81,7 @@ const CatalogueContent = () => {
         const papersData = data.papers;
         setFilterOptions(data);
         setPapers(papersData);
-        // Apply filters from URL params
+        // Apply filters from URL paramsfilterOptions?
         const filtered = papersData.filter((paper) => {
           const examCondition = selectedExams.length
             ? selectedExams.includes(paper.exam)

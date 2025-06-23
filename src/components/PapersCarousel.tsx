@@ -60,9 +60,9 @@ function PapersCarousel({
         setIsLoading(true);
         if (carouselType === "users") {
           const storedSubjects = JSON.parse(
-            localStorage.getItem("userSubjects"),
-          );
-          const response = await axios.post("/api/user-papers", storedSubjects);
+            localStorage.getItem("userSubjects") ?? "[]"
+          ) as string[];
+          const response = await axios.post<IUpcomingPaper []>("/api/user-papers", storedSubjects);
           setDisplayPapers(response.data);
         } else {
           const response = await axios.get<IUpcomingPaper[]>(

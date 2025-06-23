@@ -9,6 +9,7 @@ export async function fetchSubjects() {
     const response = await axios.get<ICourses[]>(
       `${process.env.SERVER_URL}/api/course-list`,
     );
+    console.log("Fetched subjects:", response.data);
     return response.data.map((course) => course.name);
   } catch (err) {
     console.error("Error fetching subjects:", err);

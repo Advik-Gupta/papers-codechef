@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { type IUpcomingPaper } from "@/interface";
-import Loader from "./ui/loader";
 import UpcomingPaper from "./UpcomingPaper";
 import {
   Carousel,
@@ -14,6 +13,7 @@ import {
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { chunkArray } from "@/util/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function PapersCarousel({
   carouselType,
@@ -41,7 +41,7 @@ function PapersCarousel({
         "Design and Analysis of Algorithms [MCSE502L]",
         "Complex Variables and Linear Algebra [BMAT201L]",
         "Differential Equations and Transforms [BMAT102L]",
-      ]),
+      ])
     );
 
     handleResize();
@@ -62,11 +62,14 @@ function PapersCarousel({
           const storedSubjects = JSON.parse(
             localStorage.getItem("userSubjects") ?? "[]"
           ) as string[];
-          const response = await axios.post<IUpcomingPaper []>("/api/user-papers", storedSubjects);
+          const response = await axios.post<IUpcomingPaper[]>(
+            "/api/user-papers",
+            storedSubjects
+          );
           setDisplayPapers(response.data);
         } else {
           const response = await axios.get<IUpcomingPaper[]>(
-            "/api/upcoming-papers",
+            "/api/upcoming-papers"
           );
           setDisplayPapers(response.data);
         }
@@ -81,7 +84,23 @@ function PapersCarousel({
   }, []);
 
   if (isLoading) {
-    return <Loader prop="m-10" />;
+    return (
+      <div className="px-4">
+        <p className="my-8 text-center font-play text-lg font-semibold">
+          {carouselType === "users" ? "Your Papers" : "Upcoming Papers"}
+        </p>
+
+        <div className="grid grid-cols-2 grid-rows-2 gap-4 md:grid-cols-4 lg:auto-rows-fr">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="space-y-4 p-2">
+              <Skeleton className="h-4 w-[70%]" />
+              <Skeleton className="h-4 w-[50%]" />
+              <Skeleton className="h-20 w-full rounded-lg" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   const plugins = [Autoplay({ delay: 8000, stopOnInteraction: true })];

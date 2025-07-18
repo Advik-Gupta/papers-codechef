@@ -48,10 +48,12 @@ function PinnedSearchBar({
       localStorage.getItem("userSubjects") ?? "[]",
     ) as StoredSubjects;
 
-    if (currentPinnedSubjects.subjects.includes(suggestion)) {
-      setPinned(true);
-    } else {
-      setPinned(false);
+    if (suggestion && Array.isArray(currentPinnedSubjects)) {
+      if (currentPinnedSubjects.includes(suggestion)) {
+        setPinned(true);
+      } else {
+        setPinned(false);
+      }
     }
 
     setSuggestions([]);
@@ -67,15 +69,17 @@ function PinnedSearchBar({
     }
   };
 
-  const hanglePinToggle = () => {
+  const handlePinToggle = () => {
     const current = !pinned;
     setPinned(current);
+
     const saved = JSON.parse(
       localStorage.getItem("userSubjects") ?? "[]",
-    ) as StoredSubjects;
+    ) as string[];
     const updated = current
-      ? [...new Set([...saved.subjects, searchText])]
-      : saved.subjects.filter((s: string) => s !== searchText);
+      ? [...new Set([...saved, searchText])]
+      : saved.filter((s) => s !== searchText);
+
     localStorage.setItem("userSubjects", JSON.stringify(updated));
     window.dispatchEvent(new Event("userSubjectsChanged"));
   };
@@ -131,7 +135,7 @@ function PinnedSearchBar({
               </ul>
             )}
           </div>
-          <PinButton isPinned={pinned} onToggle={hanglePinToggle} />
+          <PinButton isPinned={pinned} onToggle={handlePinToggle} />
         </div>
       </form>
     </div>

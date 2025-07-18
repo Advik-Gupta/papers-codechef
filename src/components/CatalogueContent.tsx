@@ -13,6 +13,8 @@ import SideBar from "../components/SideBar";
 import Error from "./Error";
 import { Filter } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { StarIcon } from "lucide-react";
+import { StoredSubjects } from "@/interface";
 
 export async function downloadFile(url: string, filename: string) {
   try {
@@ -48,23 +50,49 @@ const CatalogueContent = () => {
   const [filterOptions, setFilterOptions] = useState<Filters>();
   const [filtersPulled, setFiltersPulled] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<boolean>(false);
+  const [pinned, setPinned] = useState<boolean>(false);
 
   // Set initial state from searchParams on client-side mount
   useEffect(() => {
     setIsMounted(true);
     if (searchParams) {
-      setSubject(searchParams.get("subject"));
+      const currentPinnedSubjects = JSON.parse(
+        localStorage.getItem("userSubjects") ?? "[]",
+      ) as StoredSubjects;
+      const subjectName = searchParams.get("subject");
+      setSubject(subjectName);
       setSelectedExams(searchParams.get("exams")?.split(",") ?? []);
       setSelectedSlots(searchParams.get("slots")?.split(",") ?? []);
       setSelectedYears(searchParams.get("years")?.split(",") ?? []);
       setSelectedCampuses(searchParams.get("campus")?.split(",") ?? []);
       setSelectedSemesters(searchParams.get("semester")?.split(",") ?? []);
       setSelectedAnswerKeyIncluded(searchParams.get("answerkey") === "true");
+      if (subjectName && Array.isArray(currentPinnedSubjects)) {
+        if (currentPinnedSubjects.includes(subjectName)) {
+          setPinned(true);
+        } else {
+          setPinned(false);
+        }
+      }
     }
-  }, [searchParams]);
+  }, [searchParams, pinned]);
 
   const filtersNotPulled = () => {
     setFiltersPulled(false);
+  };
+
+  const handlePinToggle = () => {
+    const current = !pinned;
+    setPinned(current);
+
+    const saved = JSON.parse(
+      localStorage.getItem("userSubjects") ?? "[]",
+    ) as string[];
+    const updated = current
+      ? [...new Set([...saved, subject])]
+      : saved.filter((s) => s !== subject);
+
+    localStorage.setItem("userSubjects", JSON.stringify(updated));
   };
 
   // Fetch papers and apply filters
@@ -295,11 +323,29 @@ const CatalogueContent = () => {
           </SheetContent>
         </Sheet>
 
+        <div className="flex items-center gap-2 p-7">
+          <div>
+            <p className="text-s font-semibold text-white/80">
+              {subject?.split("[")[1]?.replace("]", "")}
+            </p>
+            <h2 className="text-2xl font-extrabold text-white md:text-3xl">
+              {subject?.split(" [")[0]}
+            </h2>
+          </div>
+          <div className="mt-7">
+            <button onClick={handlePinToggle}>
+              <StarIcon
+                className={`h-7 w-7 ${pinned ? "fill-[#A78BFA]" : ""} stroke-white`}
+              />
+            </button>
+          </div>
+        </div>
+
         {loading ? (
           <Loader />
         ) : papers.length > 0 ? (
           <div
-            className={`grid h-fit grid-cols-1 gap-8 px-[30px] py-[40px] md:grid-cols-2 lg:grid-cols-4 ${filtersPulled ? "blur-xl" : ""}`}
+            className={`grid h-fit grid-cols-1 gap-8 px-[30px] pb-[40px] md:grid-cols-2 lg:grid-cols-4 ${filtersPulled ? "blur-xl" : ""}`}
           >
             {appliedFilters ? (
               filteredPapers.length > 0 ? (

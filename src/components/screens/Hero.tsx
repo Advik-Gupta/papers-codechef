@@ -11,7 +11,6 @@ const Hero = () => {
       <div className="px-6">
         <SearchBar />
       </div>
-      <PapersCarousel carouselType="users" />
       <PapersCarousel carouselType="default" />
       {/* <div className="hidden lg:flex flex-col items-center whitespace-nowrap text-center">
         <h1 className="font-play text-md">Learn More</h1>

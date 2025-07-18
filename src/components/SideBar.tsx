@@ -54,19 +54,19 @@ function SideBar({
     anskey: boolean,
   ) => void;
 }) {
-  const exams = filterOptions?.uniqueExams.map((exam) => ({
+  const exams = filterOptions?.uniqueExams?.map((exam) => ({
     label: exam,
     value: exam,
   }));
-  const slots = filterOptions?.uniqueSlots.map((slot) => ({
+  const slots = filterOptions?.uniqueSlots?.map((slot) => ({
     label: slot,
     value: slot,
   }));
-  const years = filterOptions?.uniqueYears.map((year) => ({
+  const years = filterOptions?.uniqueYears?.map((year) => ({
     label: year,
     value: year,
   }));
-  const semesters = filterOptions?.uniqueSemesters.map((semester) => ({
+  const semesters = filterOptions?.uniqueSemesters?.map((semester) => ({
     label: semester,
     value: semester,
   }));
@@ -101,14 +101,14 @@ function SideBar({
             <Button
               variant="outline"
               onClick={handleSelectAll}
-              className="font-play mr-2 border-2 border-black font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
+              className="mr-2 border-2 border-black font-play font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
             >
               Select All
             </Button>
             <Button
               variant="outline"
               onClick={handleDeselectAll}
-              className="font-play border-2 border-black font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
+              className="border-2 border-black font-play font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
             >
               Deselect All
             </Button>
@@ -117,7 +117,7 @@ function SideBar({
             variant="outline"
             onClick={handleDownloadAll}
             disabled={selectedPapers.length === 0}
-            className="font-play border-2 border-black font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
+            className="border-2 border-black font-play font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
           >
             Download All ({selectedPapers.length})
           </Button>
@@ -130,7 +130,7 @@ function SideBar({
         </div>
         <div className="flex flex-col">
           <div
-            className="font-play cursor-pointer rounded-full border-2 border-black px-2 py-1 text-xs font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
+            className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
             onClick={() => {
               handleApplyFilters([], [], [], [], [], false);
             }}
@@ -151,7 +151,7 @@ function SideBar({
               !selectedAnswerKeyIncluded,
             );
           }}
-          className={`font-play flex cursor-pointer rounded-full border-2 border-black px-2 py-1 text-xs font-semibold hover:bg-slate-800 hover:text-white ${selectedAnswerKeyIncluded ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
+          className={`flex cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${selectedAnswerKeyIncluded ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
         >
           Answer Key Available
         </div>
@@ -194,7 +194,7 @@ function SideBar({
                         );
                       }
                     }}
-                    className={`font-play mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedExams.includes(exam.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
+                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedExams.includes(exam.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
                   >
                     {exam.label}
                   </div>
@@ -236,7 +236,7 @@ function SideBar({
                         );
                       }
                     }}
-                    className={`font-play mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedSlots.includes(slot.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
+                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedSlots.includes(slot.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
                   >
                     {slot.label}
                   </div>
@@ -278,7 +278,7 @@ function SideBar({
                         );
                       }
                     }}
-                    className={`font-play mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedYears.includes(year.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
+                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedYears.includes(year.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
                   >
                     {year.label}
                   </div>
@@ -320,7 +320,7 @@ function SideBar({
                         );
                       }
                     }}
-                    className={`font-play mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedSemesters.includes(semester.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
+                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedSemesters.includes(semester.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
                   >
                     {semester.label}
                   </div>

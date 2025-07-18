@@ -6,6 +6,7 @@ import ModeToggle from "@/components/toggle-theme";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowDownLeftIcon } from "lucide-react";
+import { StarIcon } from "lucide-react";
 
 function Navbar() {
   const pathname = usePathname();
@@ -27,9 +28,15 @@ function Navbar() {
         </a>
         <Link
           href="/"
-          className="font-jost bg-gradient-to-r from-[#562EE7] to-[rgba(116,128,255,0.8)] bg-clip-text text-left text-4xl font-bold tracking-wide text-transparent dark:from-[#562EE7] dark:to-[#FFC6E8] md:text-6xl"
+          className="bg-gradient-to-r from-[#562EE7] to-[rgba(116,128,255,0.8)] bg-clip-text text-left font-jost text-4xl font-bold tracking-wide text-transparent dark:from-[#562EE7] dark:to-[#FFC6E8] md:text-6xl"
         >
           Papers
+        </Link>
+        <Link href="/pinned">
+          <div className="ml-3 mt-4 flex items-center gap-1 rounded-full border border-white/20 bg-[#1A1921] px-4 py-[6px] text-xs font-semibold text-white shadow-sm transition hover:bg-[#2C2A36] dark:border-[#36266D] dark:bg-[#171720] dark:hover:bg-[#2A2635] sm:text-sm">
+            <StarIcon className="h-4 w-4" />
+            Pinned Subjects
+          </div>
         </Link>
       </div>
       <div className="md:w/[20%] flex items-center justify-end gap-x-2">

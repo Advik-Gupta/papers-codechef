@@ -20,6 +20,13 @@ function SideBar({
   selectedAnswerKeyIncluded,
   filterOptions,
   handleApplyFilters,
+  noAppliedFilters,
+  closeFilters,
+  subject,
+  selectedPapers,
+  handleSelectAll,
+  handleDeselectAll,
+  handleDownloadAll,
 }: {
   loading: boolean;
   selectedExams: string[];
@@ -41,6 +48,9 @@ function SideBar({
     semester: string[],
     anskey: boolean
   ) => void;
+  handleSelectAll: () => void;
+  handleDeselectAll: () => void;
+  handleDownloadAll: () => void;
 }) {
   const exams =
     filterOptions?.uniqueExams.map((exam) => ({
@@ -101,6 +111,28 @@ function SideBar({
           }`}
         >
           Answer Key Available
+        </div>
+      </div>
+
+      {/* Select/Deselect/Download All Buttons */}
+      <div className="flex w-full flex-wrap justify-between border-b-2 border-[#36266d] px-[10px] py-4 gap-2">
+        <div
+          onClick={handleSelectAll}
+          className="font-play cursor-pointer rounded-full border-2 border-black px-2 py-1 text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
+        >
+          Select All
+        </div>
+        <div
+          onClick={handleDeselectAll}
+          className="font-play cursor-pointer rounded-full border-2 border-black px-2 py-1 text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
+        >
+          Deselect All
+        </div>
+        <div
+          onClick={handleDownloadAll}
+          className="font-play cursor-pointer rounded-full border-2 border-black px-2 py-1 text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
+        >
+          Download All
         </div>
       </div>
 

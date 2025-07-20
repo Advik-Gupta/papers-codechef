@@ -129,7 +129,7 @@ function PapersCarousel() {
               </CarouselItem>
             ))
           )}
-        </CarouselContent>
+        </CarouselContent>  
       </Carousel>
     </div>
   );

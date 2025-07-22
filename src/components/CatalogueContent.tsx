@@ -23,7 +23,7 @@ export async function downloadFile(url: string, filename: string) {
     link.download = filename;
     link.click();
     window.URL.revokeObjectURL(link.href);
-  } catch (error) {}
+  } catch (error) { }
 }
 
 const CatalogueContent = () => {
@@ -99,7 +99,7 @@ const CatalogueContent = () => {
             ? selectedCampuses.includes(paper.campus)
             : true;
           const answerkeyCondition = selectedAnswerKeyIncluded
-            ? paper.answerKeyIncluded
+            ? paper.answerKeyIncluded === true
             : true;
           return (
             examCondition &&
@@ -118,7 +118,7 @@ const CatalogueContent = () => {
         setError(
           axios.isAxiosError(axiosError)
             ? ((axiosError.response?.data as { message?: string })?.message ??
-                "Error fetching papers")
+              "Error fetching papers")
             : "Error fetching papers",
         );
       } finally {

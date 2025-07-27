@@ -75,24 +75,26 @@ export interface IAdminPaper {
   public_id_cloudinary: string;
   finalUrl: string;
   thumbnailUrl: string;
-  subject: string;
-  slot: string;
-  year: string;
-  exam: "CAT-1" | "CAT-2" | "FAT" | "Model";
+  subject: string | null;
+  slot: string | null;
+  year: string | null;
+  exam: "CAT-1" | "CAT-2" | "FAT" | "Model" | null;
   semester:
     | "Fall Semester"
     | "Winter Semester"
     | "Summer Semester"
-    | "Weekend Semester";
-  cloudinary_index: number;
+    | "Weekend Semester"
+    | null;
   campus:
     | "Vellore"
     | "Chennai"
     | "Andhra Pradesh"
     | "Bhopal"
     | "Bangalore"
-    | "Mauritius";
-  answerKeyIncluded?: boolean;
+    | "Mauritius"
+    | null;
+  answerKeyIncluded?: boolean | null;
+  cloudinary_index: number;
   isSelected?: boolean;
 }
 

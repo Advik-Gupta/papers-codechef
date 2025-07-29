@@ -16,7 +16,6 @@ export default function PapersPage() {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
   const [selectedYear, setSelectedYear] = useState<string | null>(null)
 
-  // Fetch subjects from backend
   useEffect(() => {
     async function fetchSubjects() {
       try {
@@ -29,7 +28,7 @@ export default function PapersPage() {
     fetchSubjects()
   }, [])
 
-  // Update suggestions when typing
+
   useEffect(() => {
     if (!searchText.trim()) {
       setSuggestions([])
@@ -62,7 +61,7 @@ export default function PapersPage() {
       slot: selectedSlot,
       year: selectedYear,
     })
-    // Later: integrate backend request
+
   }
 
   return (
@@ -73,7 +72,7 @@ export default function PapersPage() {
             Specific Paper Request
           </h2>
 
-          {/* Subject Search Bar */}
+          {}
           <div className="relative max-w-xl mx-auto mb-8 font-play">
             <Input
               type="text"
@@ -117,7 +116,7 @@ export default function PapersPage() {
             )}
           </div>
 
-          {/* Dropdowns */}
+          {}
           <div className="flex justify-center gap-4 mb-8">
             <Select
               onValueChange={setSelectedExam}
@@ -168,7 +167,7 @@ export default function PapersPage() {
             </Select>
           </div>
 
-          {/* Submit Button */}
+          {}
           <Button
             className="px-8 py-3 rounded-lg text-base bg-[#4A55FF] hover:bg-[#3A44CC] text-white dark:bg-[#9EA8FF] dark:hover:bg-[#7D86E5] dark:text-black"
             onClick={handleSubmit}

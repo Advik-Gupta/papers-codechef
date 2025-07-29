@@ -76,7 +76,7 @@ const CatalogueContent = () => {
       try {
         const papersResponse = await axios.get<Filters>("/api/papers", {
           params: { subject },
-        });
+        });g
         const data: Filters = papersResponse.data;
         const papersData = data.papers;
         setFilterOptions(data);
@@ -149,12 +149,12 @@ const CatalogueContent = () => {
   );
 
   const handleDownloadAll = useCallback(async () => {
-    if (typeof window !== "undefined" && window.gtag) {
+/*    if (typeof window !== "undefined" && window.gtag) {
       window.gtag("event", "download_all_clicked", {
         event_category: "Paper Downloads",
         event_label: "Download All Clicked",
       });
-    }
+    } */
 
     for (const paper of selectedPapers) {
       const extension = paper.finalUrl.split(".").pop();

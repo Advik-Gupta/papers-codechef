@@ -3,6 +3,7 @@
 import axios from "axios";
 import { type ICourses } from "@/interface";
 import SearchBarChild from "./searchbar-child";
+import PinnedSearchBar from "./pinned-searchbar";
 
 export async function fetchSubjects() {
   try {
@@ -17,8 +18,12 @@ export async function fetchSubjects() {
   }
 }
 
-export default async function SearchBar() {
+export default async function SearchBar({ type = "default" }) {
   const subjects = await fetchSubjects();
 
-  return <SearchBarChild initialSubjects={subjects} />;
+  return type === "pinned" ? (
+    <PinnedSearchBar initialSubjects={subjects} />
+  ) : (
+    <SearchBarChild initialSubjects={subjects} />
+  );
 }

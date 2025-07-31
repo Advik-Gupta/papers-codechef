@@ -1,31 +1,15 @@
 import { NextResponse } from "next/server";
 import { PDFDocument } from "pdf-lib";
-import {
-  campuses,
-  exams,
-  semesters,
-  slots,
-  years,
-} from "@/components/select_options";
 import { connectToDatabase } from "@/lib/mongoose";
 import cloudinary from "cloudinary";
-import type {
-  ICourses,
-  CloudinaryUploadResult,
-  ExamDetail,
-  IAdminPaper,
-} from "@/interface";
+import type { CloudinaryUploadResult } from "@/interface";
 import { PaperAdmin } from "@/db/papers";
-import axios from "axios";
-import processAndAnalyze from "@/util/gemini";
-import Fuse from "fuse.js";
 
 cloudinary.v2.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_SECRET,
 });
-type SemesterType = IAdminPaper["semester"];
 
 const config1 = {
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_1,
@@ -38,6 +22,7 @@ const config2 = {
   api_key: process.env.CLOUDINARY_API_KEY_2,
   api_secret: process.env.CLOUDINARY_SECRET_2,
 };
+
 const cloudinaryConfigs = [config1, config2];
 
 export async function POST(req: Request) {
@@ -68,66 +53,6 @@ export async function POST(req: Request) {
       const pdfBuffer = Buffer.from(pdfBytes);
       pdfData = pdfBuffer.toString("base64");
     }
-    const tags = await processAndAnalyze({ pdfData });
-
-    console.log("tags generated:", tags);
-
-    const { data } = await axios.get<ICourses[]>(
-      `${process.env.SERVER_URL}/api/course-list`,
-    );
-    const courses = data.map((course: { name: string }) => course.name);
-
-    const finalTags = await setTagsFromCurrentLists(tags, courses);
-    console.log(" tags final:", finalTags);
-
-    const subject = finalTags.subject;
-    const slot = finalTags.slot;
-    const exam = finalTags.exam;
-    const year = finalTags.year;
-    const campus = formData.get("campus") as string;
-    const semester = finalTags.semester;
-    const answerKeyIncluded = finalTags.answerKeyIncluded;
-    if (!courses.includes(subject)) {
-      return NextResponse.json(
-        { message: "The course subject is invalid." },
-        { status: 400 },
-      );
-    }
-
-    if (!slots.includes(slot)) {
-      return NextResponse.json(
-        { message: "The slot is invalid." },
-        { status: 400 },
-      );
-    }
-
-    if (!exam.includes(exam)) {
-      return NextResponse.json(
-        { message: "The exam type is invalid." },
-        { status: 400 },
-      );
-    }
-
-    if (!years.includes(year)) {
-      return NextResponse.json(
-        { message: "The year is invalid." },
-        { status: 400 },
-      );
-    }
-
-    if (!campuses.includes(campus)) {
-      return NextResponse.json(
-        { message: `The ${campus} is invalid.` },
-        { status: 400 },
-      );
-    }
-
-    if (!semesters.includes(semester)) {
-      return NextResponse.json(
-        { message: "The semester is invalid." },
-        { status: 400 },
-      );
-    }
 
     let finalUrl: string | undefined = "";
     let public_id_cloudinary: string | undefined = "";
@@ -146,11 +71,15 @@ export async function POST(req: Request) {
           return;
         }
 
+        console.log("this is happening 1");
+
         const mergedPdfBytes = await CreatePDF(files);
         [public_id_cloudinary, finalUrl] = await uploadPDFFile(
           mergedPdfBytes,
           uploadPreset,
         );
+
+        console.log("this is happening 2");
       } catch (error) {
         console.error("Error creating PDF:", error);
         return NextResponse.json(
@@ -159,12 +88,13 @@ export async function POST(req: Request) {
         );
       }
     } else {
+      console.log("this is happening 3");
       [public_id_cloudinary, finalUrl] = await uploadPDFFile(
         files[0]!,
         uploadPreset,
       );
     }
-    console.log(finalUrl);
+
     const thumbnailResponse = cloudinary.v2.image(finalUrl!, {
       format: "jpg",
     });
@@ -172,20 +102,25 @@ export async function POST(req: Request) {
       .replace("pdf", "jpg")
       .replace("upload", "upload/w_400,h_400,c_fill")
       .replace(/<img src='|'\s*\/>/g, "");
+
+    console.log("this is happening 4");
+
     const paper = new PaperAdmin({
       cloudinary_index: configIndex,
       public_id_cloudinary,
-      answerKeyIncluded,
       finalUrl,
       thumbnailUrl,
-      subject,
-      slot,
-      year,
-      exam,
-      campus,
-      semester,
+      subject: null,
+      slot: null,
+      year: null,
+      exam: null,
+      semester: null,
+      campus: null,
     });
+
+    console.log("this is happening 5");
     await paper.save();
+    console.log("this is happening 6");
     return NextResponse.json({ status: "success" }, { status: 201 });
   } catch (error) {
     console.error(error);
@@ -197,6 +132,7 @@ export async function POST(req: Request) {
 }
 
 async function uploadPDFFile(file: File | ArrayBuffer, uploadPreset: string) {
+  console.log("this is happening 7");
   let bytes;
   if (file instanceof File) {
     bytes = await file.arrayBuffer();
@@ -212,12 +148,16 @@ async function uploadFile(
   fileType: string,
 ) {
   try {
+    console.log("this is happening 8");
     const buffer = Buffer.from(bytes);
+    console.log("this is happening 9");
     const dataUrl = `data:${fileType};base64,${buffer.toString("base64")}`;
+    console.log("this is happening 10");
     const uploadResult = (await cloudinary.v2.uploader.unsigned_upload(
       dataUrl,
       uploadPreset,
     )) as CloudinaryUploadResult;
+    console.log("this is happening 11");
     return [uploadResult.public_id, uploadResult.secure_url];
   } catch (e) {
     throw e;
@@ -251,63 +191,4 @@ async function CreatePDF(orderedFiles: File[]) {
 
   const mergedPdfBytes = await pdfDoc.save();
   return mergedPdfBytes;
-}
-
-// Sets course-name to corresponding course name from our api
-async function setTagsFromCurrentLists(
-  tags: ExamDetail | undefined,
-  courses: string[],
-): Promise<ExamDetail> {
-  if (!courses[0] || !slots[0] || !exams[0] || !semesters[0] || !years[0]) {
-    throw Error("Cannot fetch default value for courses/slot/exam/sem/year!");
-  }
-
-  const newTags: ExamDetail = {
-    subject: courses[0],
-    slot: slots[0],
-    "course-code": "notInUse",
-    exam: exams[0],
-    semester: semesters[0] as SemesterType,
-    year: years[0],
-    answerKeyIncluded: false,
-  };
-
-  const coursesFuzy = new Fuse(courses);
-  if (!tags) {
-    console.log("Anaylsis failed setting random courses as fields");
-    return newTags;
-  } else {
-    const subjectSearch = coursesFuzy.search(tags.subject)[0];
-    if (subjectSearch) {
-      newTags.subject = subjectSearch.item;
-    }
-    const slotSearchResult = findMatch(slots, tags.slot);
-    if (slotSearchResult) {
-      newTags.slot = slotSearchResult;
-    }
-    const examSearchResult = findMatch(exams, tags.exam);
-    if (examSearchResult) {
-      newTags.exam = examSearchResult;
-    }
-    const semesterSearchResult = findMatch(semesters, tags.semester);
-    if (semesterSearchResult) {
-      newTags.semester = semesterSearchResult as SemesterType;
-    }
-    const yearSearchResult = findMatch(years, tags.year);
-
-    if (yearSearchResult) {
-      newTags.year = yearSearchResult;
-    }
-    const answerkeySearchResults = tags.answerKeyIncluded ?? false;
-
-    if (yearSearchResult) {
-      newTags.answerKeyIncluded = answerkeySearchResults;
-    }
-  }
-  return newTags;
-}
-function findMatch<T>(arr: T[], value: string | undefined): T | undefined {
-  if (!value) return undefined;
-  const pattern = new RegExp(value, "i");
-  return arr.find((item) => pattern.test(String(item)));
 }

@@ -1,73 +1,98 @@
 "use client";
 
-import ccLogo from "../assets/codechef_logo.svg";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import ModeToggle from "@/components/toggle-theme";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowDownLeftIcon } from "lucide-react";
-import SearchbarChild from "./Searchbar/searchbar-child";
-import { fetchSubjects } from "./Searchbar/searchbar";
-import { useEffect, useState } from "react";
+import ccLogo from "../assets/codechef_logo.svg";
+import ModeToggle from "@/components/toggle-theme";
+import { ArrowDownLeftIcon, StarIcon } from "lucide-react";
+import NavDropdownButton from "./NavDropdownButton";
+import FloatingNavbar from "./FloatingNavbar";
 
 function Navbar() {
   const pathname = usePathname();
-  const [subjects, setSubjects] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
+  const dropdownContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const getSubjects = async () => {
-      const subs = await fetchSubjects();
-      setSubjects(subs);
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownContainerRef.current &&
+        !dropdownContainerRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-    getSubjects();
-  }, []);
+  }, [open]);
 
   return (
-    <div className="sticky top-0 z-10 flex h-[85px] w-full items-center justify-between gap-x-3 bg-[#B2B8FF] px-2 py-6 dark:bg-[#130E1F] md:px-12">
-      <div className="flex items-center gap-x-2 md:w-auto">
-        <a
-          href="https://www.codechefvit.com/"
-          className="inline-block"
-          title="CodeChef VIT Homepage"
-        >
-          <Image
-            src={ccLogo as HTMLImageElement}
-            alt="codechef-logo"
-            height={60}
-            width={60}
-          />
-        </a>
-        <Link
-          href="/"
-          className="font-jost bg-gradient-to-r from-[#562EE7] to-[rgba(116,128,255,0.8)] bg-clip-text text-left text-4xl font-bold tracking-wide text-transparent dark:from-[#562EE7] dark:to-[#FFC6E8] md:text-6xl"
-        >
-          Papers
-        </Link>
-      </div>
+    <div className="sticky top-0 z-10 w-full bg-[#B2B8FF] px-4 py-4 dark:bg-[#130E1F] md:px-8 md:py-5">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <a href="https://www.codechefvit.com/">
+            <Image
+              src={ccLogo as HTMLImageElement}
+              alt="codechef-logo"
+              height={60}
+              width={60}
+            />
+          </a>
 
-      {pathname === "/catalogue" && (
-        <div className="hidden flex-1 justify-center md:flex">
-          <div className="w-[60%] max-w-[500px]">
-            <SearchbarChild initialSubjects={subjects} />
+          <Link
+            href="/"
+            className="bg-gradient-to-r from-[#562EE7] to-[rgba(116,128,255,0.8)] bg-clip-text font-jost text-4xl font-bold tracking-wide text-transparent dark:from-[#562EE7] dark:to-[#FFC6E8] md:text-6xl"
+          >
+            Papers
+          </Link>
+
+          <div className="hidden md:flex">
+            <Link href="/pinned">
+              <div className="ml-2 flex items-center gap-2 rounded-full border border-[#3A3745] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1A1823]">
+                <StarIcon className="h-4 w-4" />
+                Pinned Subjects
+              </div>
+            </Link>
           </div>
         </div>
-      )}
 
-      <div className="md:w/[20%] flex items-center justify-end gap-x-2">
-        <div className="scale-75 sm:scale-100">
-          <ModeToggle />
-        </div>
+        <div className="hidden items-center gap-4 md:flex">
+          <div className="rounded-full border border-[#3A3745] p-1">
+            <ModeToggle />
+          </div>
 
-        <Link href={pathname == "/upload" ? "/" : "/upload"}>
-          <div className="rounded-md bg-[#453D60] p-[1.5px] md:p-[2px]">
-            <div className="flex items-center gap-1 rounded-md bg-slate-200 px-2 py-1 text-[9px] font-bold tracking-tight text-black transition-all duration-150 hover:bg-white active:scale-95 dark:bg-[#171720] dark:text-white dark:hover:bg-slate-700 sm:gap-2 sm:px-3 sm:py-2 sm:text-[10px] md:px-6 md:text-sm">
-              <ArrowDownLeftIcon className="h-3 w-3 rotate-90 sm:h-4 sm:w-4" />
-              <span className="text-center font-semibold">
-                {pathname === "/upload" ? "SEARCH PAPERS" : "UPLOAD PAPERS"}
+          <Link href={pathname === "/upload" ? "/" : "/upload"}>
+            <div className="flex items-center gap-2 rounded-full border border-[#3A3745] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1A1823]">
+              <ArrowDownLeftIcon className="h-4 w-4 rotate-90" />
+              <span>
+                {pathname === "/upload" ? "Search Papers" : "Upload Papers"}
               </span>
             </div>
+          </Link>
+        </div>
+
+        <div className="md:hidden" ref={dropdownContainerRef}>
+          <NavDropdownButton
+            isOpen={open}
+            onClick={() => setOpen((prev) => !prev)}
+          />
+
+          <div
+            className={`transition-all duration-300 ease-in-out ${
+              open ? "block" : "hidden"
+            }`}
+          >
+            <FloatingNavbar onNavigate={() => setOpen(false)} />
           </div>
-        </Link>
+        </div>
       </div>
     </div>
   );

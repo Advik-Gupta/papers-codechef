@@ -3,7 +3,6 @@ import { connectToDatabase } from "@/lib/mongoose";
 import Paper from "@/db/papers";
 
 export const dynamic = "force-dynamic";
-
 export async function GET(req: Request) {
   try {
     await connectToDatabase();

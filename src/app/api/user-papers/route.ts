@@ -5,6 +5,11 @@ import { StoredSubjects } from "@/interface";
 
 export const dynamic = "force-dynamic";
 
+interface TransformedPaper {
+  subject: string;
+  slots: string[];
+}
+
 export async function POST(req: Request) {
   try {
     await connectToDatabase();

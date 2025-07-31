@@ -17,8 +17,23 @@ function SearchBarChild({
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>({});
   const suggestionsRef = useRef<HTMLUListElement | null>(null);
   const fuzzy = new Fuse(initialSubjects);
+
+const fetchPaperCount = async (subjectName: string) => {
+  try {
+    const cleanSubject = subjectName.replace(/^"|"$/g, "");
+    const encodedSubject = encodeURIComponent(cleanSubject);
+
+    const response = await axios.get(`/api/papers/count?subject=${encodedSubject}`);
+
+    return response.data.count ?? 0;
+  } catch (error) {
+    console.error("Error fetching count for", subjectName, error);
+    return 0;
+  }
+};
 
   const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
@@ -34,8 +49,24 @@ function SearchBarChild({
         .slice(0, 10);
 
       setSuggestions(filteredSuggestions);
+
+      // Fetch counts in parallel for each suggestion
+      const counts = await Promise.all(
+        filteredSuggestions.map(async (subject) => {
+          const count = await fetchPaperCount(subject);
+          return { subject, count };
+        })
+      );
+
+      const countsMap = counts.reduce((acc, { subject, count }) => {
+        acc[subject] = count;
+        return acc;
+      }, {} as Record<string, number>);
+
+      setSubjectCounts(countsMap);
     } else {
       setSuggestions([]);
+      setSubjectCounts({});
     }
   };
 
@@ -97,9 +128,10 @@ function SearchBarChild({
                 <li
                   key={index}
                   onClick={() => handleSelectSuggestion(suggestion)}
-                  className="cursor-pointer truncate p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="flex items-center rounded cursor-pointer truncate p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
-                  {suggestion}
+                 <div id="paper_count" className="bg-[#171720] w-10 h-10 flex items-center justify-center rounded-md text-white text-sm font-semibold mr-4">{subjectCounts[suggestion] ?? "0"}</div>
+                 <span id="subject" className="text-white items-center text-sm sm:text-base tracking-wide">{suggestion}</span>
                 </li>
               ))}
             </ul>

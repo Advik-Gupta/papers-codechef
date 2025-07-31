@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const escapeRegExp = (text: string) => {
       return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     };
-    const escapedSubject = escapeRegExp(subject!);
+    const escapedSubject = escapeRegExp(subject ?? "");
 
     if (!subject) {
       return NextResponse.json(
@@ -28,8 +28,15 @@ export async function GET(req: NextRequest) {
 
     if (papers.length === 0) {
       return NextResponse.json(
-        { message: "No papers found for the specified subject" },
-        { status: 404 },
+        {
+          papers,
+          uniqueYears: [],
+          uniqueSlots: [],
+          uniqueExams: [],
+          uniqueCampuses: [],
+          uniqueSemesters: [],
+        },
+        { status: 200 },
       );
     }
 

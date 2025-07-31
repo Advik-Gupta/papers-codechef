@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { type IUpcomingPaper } from "@/interface";
-import Loader from "./ui/loader";
 import UpcomingPaper from "./UpcomingPaper";
 import {
   Carousel,
@@ -14,11 +13,13 @@ import {
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { chunkArray } from "@/util/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
+function PapersCarousel() {
 function PapersCarousel() {
   const [displayPapers, setDisplayPapers] = useState<IUpcomingPaper[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [chunkSize, setChunkSize] = useState<number>(4);
+  const [chunkSize, setChunkSize] = useState<number>(4); // dynamic chunk size
 
   useEffect(() => {
     const handleResize = () => {
@@ -29,15 +30,10 @@ function PapersCarousel() {
       }
     };
 
-    handleResize();
+    handleResize(); // initialize
     window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  const chunkedPapers = chunkArray(displayPapers, chunkSize);
 
   useEffect(() => {
     async function fetchPapers() {
@@ -57,10 +53,7 @@ function PapersCarousel() {
     void fetchPapers();
   }, []);
 
-  if (isLoading) {
-    return <Loader prop="m-10" />;
-  }
-
+  const chunkedPapers = chunkArray(displayPapers, chunkSize);
   const plugins = [Autoplay({ delay: 8000, stopOnInteraction: true })];
 
   return (
@@ -69,40 +62,66 @@ function PapersCarousel() {
         Upcoming Exams
       </p>
 
-      <div className="">
-        <Carousel
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          plugins={plugins}
-          className="w-full"
-        >
-          <div className="relative mt-4 flex justify-end gap-4">
-            <CarouselPrevious className="relative" />
-            <CarouselNext className="relative" />
-          </div>
-          <CarouselContent>
-            {chunkedPapers.map((paperGroup, index) => {
-              return (
-                <CarouselItem
-                  key={`carousel-item-${index}`}
-                  className="grid grid-cols-2 grid-rows-2 gap-4 md:grid-cols-4 lg:auto-rows-fr"
+      <Carousel
+        opts={{ align: "start", loop: true }}
+        plugins={plugins}
+        className="w-full"
+      >
+        <div className="relative mt-4 flex justify-end gap-4">
+          <CarouselPrevious className="relative" />
+          <CarouselNext className="relative" />
+        </div>
+
+        <CarouselContent>
+          {isLoading ? (
+            <CarouselItem
+              className={`grid ${
+                chunkSize === 4
+                  ? "grid-cols-2 grid-rows-2"
+                  : "grid-cols-4"
+              } gap-4 lg:auto-rows-fr`}
+            >
+              {Array.from({ length: chunkSize }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="cursor-pointer rounded-sm border-2 border-[#734DFF] bg-[#FFFFFF] text-black shadow-lg transition duration-150 ease-in-out hover:bg-[#EFEAFF] dark:border-[#36266D] dark:bg-[#171720] dark:text-white hover:dark:bg-[#262635]"
                 >
-                  {paperGroup.map((paper, subIndex) => (
-                    <div key={subIndex} className="h-full">
-                      <UpcomingPaper
-                        subject={paper.subject}
-                        slots={paper.slots}
-                      />
+                  <div className="border-b-2 border-[#453D60] p-2">
+                    <Skeleton className="h-6 w-24 rounded-md" />
+                  </div>
+                  <div className="flex flex-col justify-between p-4">
+                    <Skeleton className="mb-4 h-6 w-32 rounded-md" />
+                    <div className="flex gap-2">
+                      <Skeleton className="h-7 w-16 rounded-full" />
+                      <Skeleton className="h-7 w-16 rounded-full" />
                     </div>
-                  ))}
-                </CarouselItem>
-              );
-            })}
-          </CarouselContent>
-        </Carousel>
-      </div>
+                  </div>
+                </div>
+              ))}
+            </CarouselItem>
+          ) : (
+            chunkedPapers.map((paperGroup, index) => (
+              <CarouselItem
+                key={`carousel-item-${index}`}
+                className={`grid ${
+                  chunkSize === 4
+                    ? "grid-cols-2 grid-rows-2"
+                    : "grid-cols-4"
+                } gap-4 lg:auto-rows-fr`}
+              >
+                {paperGroup.map((paper, subIndex) => (
+                  <div key={subIndex} className="h-full">
+                    <UpcomingPaper
+                      subject={paper.subject}
+                      slots={paper.slots}
+                    />
+                  </div>
+                ))}
+              </CarouselItem>
+            ))
+          )}
+        </CarouselContent>  
+      </Carousel>
     </div>
   );
 }

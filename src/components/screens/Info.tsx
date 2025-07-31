@@ -11,6 +11,8 @@ import man from "@/assets/man.svg" assert { type: "image/svg" };
 import man1 from "@/assets/man1.svg" assert { type: "image/svg" };
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import PWAInstallButton from "../ui/PWAInstallButton";
+
 
 function Info() {
   return (
@@ -74,6 +76,27 @@ function Info() {
         />
       </div>
     </section>
+      </section>
+
+      {/* Create Request Section */}
+      <section className="flex flex-col items-center justify-center gap-4 px-6 py-12 text-center">
+        <h2 className="font-vipnabd text-2xl font-semibold text-black dark:text-white md:text-3xl">
+          Can’t Find a Specific Paper?
+        </h2>
+        <Link href="/request">
+          <Button
+            variant="outline"
+            className="group border-[1.5px] border-[#4A55FF] bg-transparent px-6 py-3 text-sm font-medium text-[#4A55FF] transition-all duration-200 hover:bg-[#4A55FF] hover:text-white dark:border-[#9EA8FF] dark:text-[#9EA8FF] dark:hover:bg-[#9EA8FF] dark:hover:text-black"
+          >
+            Create Request
+            <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </Button>
+        </Link>
+      </section>
+      <div className="flex justify-center py-4 z-50">
+  <PWAInstallButton />
+</div>
+    </>
   );
 }
 

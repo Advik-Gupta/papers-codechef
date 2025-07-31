@@ -43,7 +43,7 @@ const PWAInstallButton = () => {
   if (!showInstall) return null;
 
   return (
-    <div className="flex items-center justify-between rounded-full bg-[#2b2343] px-4 py-2 shadow-md text-white w-fit">
+    <div className="md:hidden flex items-center justify-between rounded-full bg-[#2b2343] px-4 py-2 shadow-md text-white w-fit">
       <div className="flex items-center gap-3">
         <Image src="/papers_logo.png" alt="Papers App" width={32} height={32} />
         <span className="font-semibold text-lg">Papers App</span>

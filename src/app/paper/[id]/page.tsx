@@ -159,14 +159,14 @@ const PaperPage = async ({ params }: { params: { id: string } }) => {
       ) : (
         <>
           <h1 className="my-6 flex justify-center gap-4 text-center font-play text-2xl font-semibold md:mb-10 md:text-3xl">
+          <h1 className="my-6 flex justify-center gap-4 text-center font-play text-2xl font-semibold md:mb-10 md:text-3xl">
             <div>
               {paper.subject} {paper.exam} {paper.slot} {paper.year}
             </div>
           </h1>
           <center>
             <PdfViewer
-              // url={paper.finalUrl}
-              url="https://res.cloudinary.com/dq6tapd4t/image/upload/v1746291007/sck2vipdklqaurwhipjl.pdf"
+              url={paper.final_url}
               name={`${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}`}
             ></PdfViewer>
           </center>

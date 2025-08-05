@@ -30,7 +30,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
     url.startsWith("http://") ? url.replace("http://", "https://") : url;
 
   const generateFileName = (paper: IPaper): string => {
-    const extension = paper.finalUrl.split(".").pop();
+    const extension = paper.final_url.split(".").pop();
     return `${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}.${extension}`;
   };
 
@@ -49,7 +49,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
   };
 
   const handleDownload = async (paper: IPaper) => {
-    await downloadFile(getSecureUrl(paper.finalUrl), generateFileName(paper));
+    await downloadFile(getSecureUrl(paper.final_url), generateFileName(paper));
   };
 
   const handleCheckboxChange = () => {
@@ -66,13 +66,13 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
     <div
       className={cn(
         "overflow-hidden rounded-sm border-2 border-[#734DFF] bg-[#FFFFFF] font-play transition-all duration-150 hover:bg-[#EFEAFF] dark:border-[#36266D] dark:bg-[#171720] hover:dark:bg-[#262635]",
+        "overflow-hidden rounded-sm border-2 border-[#734DFF] bg-[#FFFFFF] font-play transition-all duration-150 hover:bg-[#EFEAFF] dark:border-[#36266D] dark:bg-[#171720] hover:dark:bg-[#262635]",
         checked && "bg-white",
       )}
     >
       <Link href={paperLink} target="_blank" rel="noopener noreferrer">
         <Image
-          // src={paper.thumbnailUrl}
-          src="https://res.cloudinary.com/dq6tapd4t/image/upload/w_400,h_400,c_fill/v1746291007/sck2vipdklqaurwhipjl.jpg"
+          src={paper.thumbnail_url}
           alt={paper.subject}
           width={320}
           height={180}
@@ -81,6 +81,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
 
         <div className="justify-center">
           <div className="flex flex-row items-center justify-between px-4 pb-2">
+            <div className="text-md font-play font-medium">
             <div className="text-md font-play font-medium">
               {extractBracketContent(paper.subject)}
             </div>
@@ -117,6 +118,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
       </Link>
 
       <div className="hidden items-center justify-between gap-2 px-4 pb-4 font-play md:flex">
+      <div className="hidden items-center justify-between gap-2 px-4 pb-4 font-play md:flex">
         <div className="flex items-center gap-2">
           <input
             checked={checked}
@@ -126,7 +128,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
           />
           <p>Select</p>
         </div>
-        {paper.answerKeyIncluded && (
+        {paper.answer_key_included && (
           <div className="flex items-center gap-2 font-normal text-[#7480FF]">
             <Check color="#7480FF" />
             Answer Key

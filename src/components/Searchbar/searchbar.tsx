@@ -7,9 +7,7 @@ import PinnedSearchBar from "./pinned-searchbar";
 
 export async function fetchSubjects() {
   try {
-    const response = await axios.get<ICourses[]>(
-      `${process.env.SERVER_URL}/api/course-list`,
-    );
+    const response = await axios.get<ICourses[]>(`/api/course-list`);
     console.log("Fetched subjects:", response.data);
     return response.data.map((course) => course.name);
   } catch (err) {

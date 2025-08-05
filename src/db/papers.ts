@@ -4,8 +4,8 @@ import { type IPaper, type IAdminPaper, type ICourses } from "@/interface";
 const adminSchema = new Schema<IAdminPaper>({
   public_id_cloudinary: { type: String, required: true },
   cloudinary_index: { type: Number, required: true },
-  finalUrl: { type: String, required: true },
-  thumbnailUrl: { type: String, required: true },
+  final_url: { type: String, required: true },
+  thumbnail_url: { type: String, required: true },
   subject: { type: String || null, index: true },
   slot: { type: String || null },
   year: { type: String || null },
@@ -33,13 +33,13 @@ const adminSchema = new Schema<IAdminPaper>({
       "Mauritius",
     ],
   },
-  answerKeyIncluded: { type: Boolean || null, default: false },
-  isSelected: { type: Boolean, default: false },
+  answer_key_included: { type: Boolean || null, default: false },
+  is_selected: { type: Boolean, default: false },
 });
 
 const paperSchema = new Schema<IPaper>({
-  finalUrl: { type: String, required: true },
-  thumbnailUrl: { type: String, required: true },
+  final_url: { type: String, required: true },
+  thumbnail_url: { type: String, required: true },
   subject: { type: String, required: true, index: true },
   slot: { type: String, required: true },
   year: { type: String, required: true },
@@ -70,7 +70,7 @@ const paperSchema = new Schema<IPaper>({
     ],
     required: true,
   },
-  answerKeyIncluded: { type: Boolean, default: false },
+  answer_key_included: { type: Boolean, default: false },
 });
 
 const courseSchema = new Schema<ICourses>({

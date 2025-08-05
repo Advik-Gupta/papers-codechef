@@ -25,7 +25,7 @@ export async function downloadFile(url: string, filename: string) {
     link.download = filename;
     link.click();
     window.URL.revokeObjectURL(link.href);
-  } catch (error) { }
+  } catch (error) {}
 }
 
 const CatalogueContent = () => {
@@ -104,12 +104,11 @@ const CatalogueContent = () => {
       try {
         const papersResponse = await axios.get<Filters>("/api/papers", {
           params: { subject },
-        });g
+        });
         const data: Filters = papersResponse.data;
         const papersData = data.papers;
         setFilterOptions(data);
         setPapers(papersData);
-        // Apply filters from URL paramsfilterOptions?
         const filtered = papersData.filter((paper) => {
           const examCondition = selectedExams.length
             ? selectedExams.includes(paper.exam)
@@ -127,7 +126,7 @@ const CatalogueContent = () => {
             ? selectedCampuses.includes(paper.campus)
             : true;
           const answerkeyCondition = selectedAnswerKeyIncluded
-            ? paper.answerKeyIncluded === true
+            ? paper.answer_key_included === true
             : true;
           return (
             examCondition &&
@@ -146,7 +145,7 @@ const CatalogueContent = () => {
         setError(
           axios.isAxiosError(axiosError)
             ? ((axiosError.response?.data as { message?: string })?.message ??
-              "Error fetching papers")
+                "Error fetching papers")
             : "Error fetching papers",
         );
       } finally {
@@ -177,7 +176,7 @@ const CatalogueContent = () => {
   );
 
   const handleDownloadAll = useCallback(async () => {
-/*    if (typeof window !== "undefined" && window.gtag) {
+    /*    if (typeof window !== "undefined" && window.gtag) {
       window.gtag("event", "download_all_clicked", {
         event_category: "Paper Downloads",
         event_label: "Download All Clicked",
@@ -185,12 +184,11 @@ const CatalogueContent = () => {
     } */
 
     for (const paper of selectedPapers) {
-      const extension = paper.finalUrl.split(".").pop();
+      const extension = paper.final_url.split(".").pop();
       const fileName = `${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}.${extension}`;
-      await downloadFile(paper.finalUrl, fileName);
+      await downloadFile(paper.final_url, fileName);
     }
   }, [selectedPapers]);
-
 
   const handleApplyFilters = useCallback(
     (
@@ -234,7 +232,9 @@ const CatalogueContent = () => {
         const campusCondition = campus.length
           ? campus.includes(paper.campus)
           : true;
-        const answerkeyCondition = anskey ? paper.answerKeyIncluded === true : true;
+        const answerkeyCondition = anskey
+          ? paper.answer_key_included === true
+          : true;
         return (
           examCondition &&
           slotCondition &&

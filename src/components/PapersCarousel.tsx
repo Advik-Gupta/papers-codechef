@@ -16,7 +16,6 @@ import { chunkArray } from "@/util/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function PapersCarousel() {
-function PapersCarousel() {
   const [displayPapers, setDisplayPapers] = useState<IUpcomingPaper[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [chunkSize, setChunkSize] = useState<number>(4); // dynamic chunk size
@@ -76,9 +75,7 @@ function PapersCarousel() {
           {isLoading ? (
             <CarouselItem
               className={`grid ${
-                chunkSize === 4
-                  ? "grid-cols-2 grid-rows-2"
-                  : "grid-cols-4"
+                chunkSize === 4 ? "grid-cols-2 grid-rows-2" : "grid-cols-4"
               } gap-4 lg:auto-rows-fr`}
             >
               {Array.from({ length: chunkSize }).map((_, idx) => (
@@ -104,9 +101,7 @@ function PapersCarousel() {
               <CarouselItem
                 key={`carousel-item-${index}`}
                 className={`grid ${
-                  chunkSize === 4
-                    ? "grid-cols-2 grid-rows-2"
-                    : "grid-cols-4"
+                  chunkSize === 4 ? "grid-cols-2 grid-rows-2" : "grid-cols-4"
                 } gap-4 lg:auto-rows-fr`}
               >
                 {paperGroup.map((paper, subIndex) => (
@@ -120,7 +115,7 @@ function PapersCarousel() {
               </CarouselItem>
             ))
           )}
-        </CarouselContent>  
+        </CarouselContent>
       </Carousel>
     </div>
   );

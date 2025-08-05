@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/accordion";
 
 function SideBar({
-  loading,
   selectedExams,
   selectedSlots,
   selectedYears,
@@ -19,11 +18,8 @@ function SideBar({
   selectedSemesters,
   selectedAnswerKeyIncluded,
   filterOptions,
+  filtersNotPulled,
   handleApplyFilters,
-  noAppliedFilters,
-  closeFilters,
-  subject,
-  selectedPapers,
   handleSelectAll,
   handleDeselectAll,
   handleDownloadAll,
@@ -35,6 +31,7 @@ function SideBar({
   selectedCampuses: string[];
   selectedSemesters: string[];
   selectedAnswerKeyIncluded: boolean;
+  filtersNotPulled: () => void;
   noAppliedFilters: () => void;
   closeFilters: () => void;
   subject: string | null;
@@ -47,28 +44,29 @@ function SideBar({
     campus: string[],
     semester: string[],
     anskey: boolean,
+    anskey: boolean,
   ) => void;
   handleSelectAll: () => void;
   handleDeselectAll: () => void;
   handleDownloadAll: () => void;
 }) {
   const exams =
-    filterOptions?.uniqueExams.map((exam) => ({
+    filterOptions?.unique_exams.map((exam) => ({
       label: exam,
       value: exam,
     })) ?? [];
   const slots =
-    filterOptions?.uniqueSlots.map((slot) => ({
+    filterOptions?.unique_slots.map((slot) => ({
       label: slot,
       value: slot,
     })) ?? [];
   const years =
-    filterOptions?.uniqueYears.map((year) => ({
+    filterOptions?.unique_years.map((year) => ({
       label: year,
       value: year,
     })) ?? [];
   const semesters =
-    filterOptions?.uniqueSemesters.map((semester) => ({
+    filterOptions?.unique_semesters.map((semester) => ({
       label: semester,
       value: semester,
     })) ?? [];
@@ -82,6 +80,7 @@ function SideBar({
         </div>
         <div className="flex flex-col">
           <div
+            className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
             className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
             onClick={() => {
               handleApplyFilters([], [], [], [], [], false);
@@ -102,8 +101,10 @@ function SideBar({
               selectedCampuses,
               selectedSemesters,
               !selectedAnswerKeyIncluded,
+              !selectedAnswerKeyIncluded,
             );
           }}
+          className={`flex cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
           className={`flex cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
             selectedAnswerKeyIncluded
               ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]"
@@ -116,8 +117,10 @@ function SideBar({
 
       {/* Select/Deselect/Download All Buttons */}
       <div className="flex w-full flex-wrap justify-between gap-2 border-b-2 border-[#36266d] px-[10px] py-4">
+      <div className="flex w-full flex-wrap justify-between gap-2 border-b-2 border-[#36266d] px-[10px] py-4">
         <div
           onClick={handleSelectAll}
+          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
           className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
         >
           Select All
@@ -125,11 +128,13 @@ function SideBar({
         <div
           onClick={handleDeselectAll}
           className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
+          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
         >
           Deselect All
         </div>
         <div
           onClick={handleDownloadAll}
+          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
           className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
         >
           Download All
@@ -137,6 +142,12 @@ function SideBar({
       </div>
 
       <div className="flex w-full flex-col items-baseline justify-between border-b-2 border-[#36266d] px-[10px]">
+        <Accordion
+          className="w-full"
+          type="single"
+          collapsible
+          defaultValue="item-1"
+        >
         <Accordion
           className="w-full"
           type="single"
@@ -163,8 +174,10 @@ function SideBar({
                         selectedCampuses,
                         selectedSemesters,
                         selectedAnswerKeyIncluded,
+                        selectedAnswerKeyIncluded,
                       );
                     }}
+                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
                     className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
                       selectedExams.includes(exam.value)
                         ? "border-[#B2B8FF] bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba]"
@@ -202,8 +215,10 @@ function SideBar({
                         selectedCampuses,
                         selectedSemesters,
                         selectedAnswerKeyIncluded,
+                        selectedAnswerKeyIncluded,
                       );
                     }}
+                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
                     className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
                       selectedSlots.includes(slot.value)
                         ? "border-[#B2B8FF] bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba]"
@@ -241,8 +256,10 @@ function SideBar({
                         selectedCampuses,
                         selectedSemesters,
                         selectedAnswerKeyIncluded,
+                        selectedAnswerKeyIncluded,
                       );
                     }}
+                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
                     className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
                       selectedYears.includes(year.value)
                         ? "border-[#B2B8FF] bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba]"
@@ -280,8 +297,10 @@ function SideBar({
                         selectedCampuses,
                         newSems,
                         selectedAnswerKeyIncluded,
+                        selectedAnswerKeyIncluded,
                       );
                     }}
+                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
                     className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
                       selectedSemesters.includes(semester.value)
                         ? "border-[#B2B8FF] bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba]"
@@ -296,50 +315,9 @@ function SideBar({
           </AccordionItem>
         </Accordion>
       </div>
-      {/* <div className="flex w-full flex-col items-baseline justify-between border-b-2 border-[#36266d] px-[10px]">
-        <Accordion className="w-full" type="single" collapsible>
-          <AccordionItem className="border-none no-underline" value="item-1">
-            <AccordionTrigger className="w-full no-underline">
-              <div className="font-sans text-sm no-underline">Campuses</div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="my-2 flex w-full flex-wrap items-center">
-                {campuses?.map((campus) => (
-                  <div
-                    key={campus.value}
-                    onClick={() => {
-                      if (selectedCampuses.includes(campus.value)) {
-                        handleApplyFilters(
-                          selectedExams,
-                          selectedSlots,
-                          selectedYears,
-                          selectedCampuses.filter((c) => c !== campus.value),
-                          selectedSemesters,
-                          selectedAnswerKeyIncluded,
-                        );
-                      } else {
-                        handleApplyFilters(
-                          selectedExams,
-                          selectedSlots,
-                          selectedYears,
-                          [...selectedCampuses, campus.value],
-                          selectedSemesters,
-                          selectedAnswerKeyIncluded,
-                        );
-                      }
-                    }}
-                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-sans text-xs font-semibold hover:bg-slate-800 hover:text-white dark:hover:bg-slate-900 ${selectedCampuses.includes(campus.value) ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]" : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"}`}
-                  >
-                    {campus.label}
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div> */}
     </div>
   );
 }
 
 export default SideBar;
+

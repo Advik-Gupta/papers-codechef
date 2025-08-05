@@ -7,7 +7,6 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChildrenWrapper from "@/components/ChildrenWrapper";
-import Banner from "@/components/BannerAlert";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://papers.codechefvit.com/"),

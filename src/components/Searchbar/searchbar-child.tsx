@@ -17,23 +17,27 @@ function SearchBarChild({
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>({});
+  const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>(
+    {},
+  );
   const suggestionsRef = useRef<HTMLUListElement | null>(null);
   const fuzzy = new Fuse(initialSubjects);
 
-const fetchPaperCount = async (subjectName: string) => {
-  try {
-    const cleanSubject = subjectName.replace(/^"|"$/g, "");
-    const encodedSubject = encodeURIComponent(cleanSubject);
+  const fetchPaperCount = async (subjectName: string) => {
+    try {
+      const cleanSubject = subjectName.replace(/^"|"$/g, "");
+      const encodedSubject = encodeURIComponent(cleanSubject);
 
-    const response = await axios.get(`/api/papers/count?subject=${encodedSubject}`);
+      const response = await axios.get<{ count: number }>(
+        `/api/papers/count?subject=${encodedSubject}`,
+      );
 
-    return response.data.count ?? 0;
-  } catch (error) {
-    console.error("Error fetching count for", subjectName, error);
-    return 0;
-  }
-};
+      return response.data.count ?? 0;
+    } catch (error) {
+      console.error("Error fetching count for", subjectName, error);
+      return 0;
+    }
+  };
 
   const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
@@ -55,13 +59,16 @@ const fetchPaperCount = async (subjectName: string) => {
         filteredSuggestions.map(async (subject) => {
           const count = await fetchPaperCount(subject);
           return { subject, count };
-        })
+        }),
       );
 
-      const countsMap = counts.reduce((acc, { subject, count }) => {
-        acc[subject] = count;
-        return acc;
-      }, {} as Record<string, number>);
+      const countsMap = counts.reduce(
+        (acc, { subject, count }) => {
+          acc[subject] = count;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
 
       setSubjectCounts(countsMap);
     } else {
@@ -128,10 +135,20 @@ const fetchPaperCount = async (subjectName: string) => {
                 <li
                   key={index}
                   onClick={() => handleSelectSuggestion(suggestion)}
-                  className="flex items-center rounded cursor-pointer truncate p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="flex cursor-pointer items-center truncate rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
-                 <div id="paper_count" className="bg-[#171720] w-10 h-10 flex items-center justify-center rounded-md text-white text-sm font-semibold mr-4">{subjectCounts[suggestion] ?? "0"}</div>
-                 <span id="subject" className="text-white items-center text-sm sm:text-base tracking-wide">{suggestion}</span>
+                  <div
+                    id="paper_count"
+                    className="mr-4 flex h-10 w-10 items-center justify-center rounded-md bg-[#171720] text-sm font-semibold text-white"
+                  >
+                    {subjectCounts[suggestion] ?? "0"}
+                  </div>
+                  <span
+                    id="subject"
+                    className="items-center text-sm tracking-wide text-white sm:text-base"
+                  >
+                    {suggestion}
+                  </span>
                 </li>
               ))}
             </ul>

@@ -19,10 +19,15 @@ export async function POST(req: Request) {
       subject: { $in: subjects },
     });
 
-    const transformedPapers = usersPapers.reduce(
-      (acc: { subject: string; slots: string[] }[], paper) => {
+    const transformedPapers = usersPapers.reduce<TransformedPaper[]>(
+      (acc, paper) => {
         const existing = acc.find((item) => item.subject === paper.subject);
 
+        if (existing) {
+          existing.slots.push(paper.slot);
+        } else {
+          acc.push({ subject: paper.subject, slots: [paper.slot] });
+        }
         if (existing) {
           existing.slots.push(paper.slot);
         } else {
@@ -34,14 +39,7 @@ export async function POST(req: Request) {
       [],
     );
 
-    const seenSubjects = new Set();
-    const uniquePapers = transformedPapers.filter((paper) => {
-      if (seenSubjects.has(paper.subject)) return false;
-      seenSubjects.add(paper.subject);
-      return true;
-    });
-
-    return NextResponse.json(uniquePapers, {
+    return NextResponse.json(transformedPapers, {
       status: 200,
     });
   } catch (error) {

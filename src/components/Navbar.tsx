@@ -9,6 +9,7 @@ import ModeToggle from "@/components/toggle-theme";
 import { ArrowDownLeftIcon, StarIcon } from "lucide-react";
 import NavDropdownButton from "./NavDropdownButton";
 import FloatingNavbar from "./FloatingNavbar";
+import PWAInstallButton from "./ui/PWAInstallButton";
 
 function Navbar() {
   const pathname = usePathname();
@@ -69,6 +70,10 @@ function Navbar() {
             <ModeToggle />
           </div>
 
+          <div className="hidden md:block max-w-[200px]">
+            <PWAInstallButton />
+          </div>
+
           <Link href={pathname === "/upload" ? "/" : "/upload"}>
             <div className="flex items-center gap-2 rounded-full border border-[#3A3745] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1A1823]">
               <ArrowDownLeftIcon className="h-4 w-4 rotate-90" />
@@ -84,7 +89,6 @@ function Navbar() {
             isOpen={open}
             onClick={() => setOpen((prev) => !prev)}
           />
-
           <div
             className={`transition-all duration-300 ease-in-out ${
               open ? "block" : "hidden"

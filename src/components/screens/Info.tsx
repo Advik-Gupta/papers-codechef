@@ -92,7 +92,7 @@ function Info() {
           </Button>
         </Link>
       </section>
-      <div className="z-50 flex justify-center py-4">
+      <div className=" md:hidden z-50 flex justify-center py-4">
         <PWAInstallButton />
       </div>
     </>

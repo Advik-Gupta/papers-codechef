@@ -97,13 +97,19 @@ export default function Page() {
   }
 
   const reorderFiles = (from: number, to: number) => {
-    if (to < 0 || to >= previews.length) return
-    const newPreviews = [...previews]
-    const [moved] = newPreviews.splice(from, 1)
-    newPreviews.splice(to, 0, moved)
+    if (from < 0 || to < 0 || from >= previews.length || to >= previews.length) {
+      return; 
+    }
 
-    setPreviews(newPreviews)
-    setFiles(newPreviews.map(p => p.file))
+    const newPreviews = [...previews];
+    const [moved] = newPreviews.splice(from, 1);
+    
+   
+    if (moved) {
+      newPreviews.splice(to, 0, moved);
+      setPreviews(newPreviews);
+      setFiles(newPreviews.map(p => p.file));
+    }
   }
 
   const handleDelete = (index: number) => {
@@ -162,72 +168,68 @@ export default function Page() {
           </fieldset>
           
           {previews.length > 0 && (
-            <section className="mt-6 space-y-4 w-full max-w-md">
-              {previews.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-center gap-4 border p-8 rounded-md "
-                >
-                  {item.file.type.startsWith('image/') ? (
-                    <img
-                      src={item.preview}
-                      alt="preview"
-                      className="w-64 h-64 object-cover rounded-md mx-auto"
-                    />
-                  ) : (
-                    <iframe
-                      src={item.preview}
-                      className="w-64 h-64 border rounded-md mx-auto"
-                      title={`PDF preview ${index}`}
-                    />
-                  )}
-                  <div className="flex flex-col gap-2 items-center w-full">
-                    <p className="font-semibold break-words text-[#6D28D9] text-center">{item.file.name}</p>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => reorderFiles(index, index - 1)}
-                        disabled={index === 0}
-                        className="p-2 text-lg rounded bg-[#6D28D9] text-white disabled:opacity-50 flex items-center justify-center"
-                        title="Move Up"
-                      >
-                        <FiArrowUp />
-                      </button>
-                      <button
-                        onClick={() => reorderFiles(index, index + 1)}
-                        disabled={index === previews.length - 1}
-                        className="p-2 text-lg rounded bg-[#6D28D9] text-white disabled:opacity-50 flex items-center justify-center"
-                        title="Move Down"
-                      >
-                        <FiArrowDown />
-                      </button>
-                      <button
-                        onClick={() => setZoomIndex(index)}
-                        className="p-2 text-lg rounded bg-[#6D28D9] text-white hover:bg-purple-700 flex items-center justify-center"
-                        title="Zoom"
-                      >
-                        <FiZoomIn />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(index)}
-                        className="p-2 text-lg rounded bg-[#6D28D9] text-white hover:bg-red-600 flex items-center justify-center"
-                        title="Delete"
-                      >
-                        <FiTrash />
-                      </button>
+            <section className="mt-6 w-full max-w-4xl">
+              <div className="w-full p-8 bg-indigo-900/10 rounded-[40px] border-[6px] border-indigo-900">
+                <div className="flex flex-wrap gap-5 justify-center">
+                  {previews.map((item, index) => (
+                    <div key={index} className="relative w-48 h-60">
+                      <div className="w-full h-full rounded-2xl outline outline-2 outline-white/80 overflow-hidden">
+                        {/* Page number badge */}
+                        <div className="absolute left-0 top-0 w-10 h-10 bg-slate-600 rounded-tl-2xl rounded-br-2xl flex items-center justify-center">
+                          <span className="text-white text-xl">{index + 1}</span>
+                        </div>
+                        
+                        {/* Delete button */}
+                        <button
+                          onClick={() => handleDelete(index)}
+                          className="absolute right-0 top-0 w-10 h-10 bg-pink-800 rounded-tr-2xl rounded-bl-2xl flex items-center justify-center"
+                          title="Delete"
+                        >
+                          <FiTrash className="w-5 h-5 text-white" />
+                        </button>
+
+                        
+                        {item.file.type.startsWith('image/') ? (
+                          <img
+                            src={item.preview}
+                            alt={`Page ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <iframe
+                            src={item.preview}
+                            title={`PDF preview ${index + 1}`}
+                            className="w-full h-full"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Add more button */}
+                  <div className="relative w-20 h-20 cursor-pointer" {...getRootProps()}>
+                    <div className="absolute left-4 top-4 w-16 h-16 bg-violet-950 rounded-2xl" />
+                    <div className="absolute left-0 top-0 w-10 h-10 bg-violet-950 rounded-[20px]" />
+                    <div className="absolute left-1 top-1 w-8 h-8 bg-black/50 rounded-[20px]" />
+                    <div className="absolute left-7 top-7 text-white text-2xl">+</div>
+                    <div className="absolute left-4 top-3 text-white text-xs font-semibold">
+                      {previews.length}
                     </div>
                   </div>
                 </div>
-              ))}
+                
+                <p className="text-center text-white/50 text-xl mt-6">
+                  Drag to re-order pages.
+                </p>
+              </div>
             </section>
           )}
           <Button
             onClick={handlePrint}
             disabled={isUploading || files.length === 0}
-            className={`w-fit rounded-md px-4 py-3 text-base ${
-              isUploading || files.length === 0 ? "opacity-60" : ""
-            }`}
+            className="mt-8 px-8 py-3 bg-violet-950 rounded-[40px] text-white text-xl"
           >
-            {isUploading ? "Uploading..." : "Upload Papers"}
+            {isUploading ? "Uploading..." : "Upload"}
           </Button>
         </div>
       </div>
@@ -243,20 +245,24 @@ export default function Page() {
             >
               <FiX size={24} />
             </button>
-            {previews[zoomIndex].file.type.startsWith('image/') ? (
+            {previews[zoomIndex] && previews[zoomIndex].file.type.startsWith('image/') ? (
               <img
-                src={previews[zoomIndex].preview}
+                src={previews[zoomIndex]?.preview}
                 alt="zoomed preview"
                 className="max-w-[80vw] max-h-[80vh] rounded-md"
               />
-            ) : (
+            ) : previews[zoomIndex] ? (
               <iframe
-                src={previews[zoomIndex].preview}
+                src={previews[zoomIndex]?.preview}
                 className="w-[80vw] h-[80vh] border rounded-md"
                 title={`PDF zoom preview ${zoomIndex}`}
               />
+            ) : null}
+            {previews[zoomIndex] && (
+              <p className="mt-4 font-semibold text-[#6D28D9] text-center break-words">
+                {previews[zoomIndex].file.name}
+              </p>
             )}
-            <p className="mt-4 font-semibold text-[#6D28D9] text-center break-words">{previews[zoomIndex].file.name}</p>
           </div>
         </div>
       )}

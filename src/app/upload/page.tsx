@@ -6,12 +6,14 @@ import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import axios, { AxiosError } from 'axios';
 import { FiTrash, FiX } from 'react-icons/fi';
+import Image from 'next/image';
 import {
   DndContext,
   closestCenter,
   PointerSensor,
   useSensor,
   useSensors,
+  DragEndEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -53,10 +55,9 @@ export default function Page() {
 
   useEffect(() => {
     return () => {
-    
       previews.forEach((item) => URL.revokeObjectURL(item.preview));
     };
-  }, []); 
+  }, [previews]); 
 
   const fileCheckAndSelect = useCallback((acceptedFiles: File[]) => {
     const maxFileSize = 5 * 1024 * 1024;
@@ -131,7 +132,7 @@ export default function Page() {
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
-      zIndex: isDragging ? 50 : undefined,
+      //zIndex: 50,
     };
     return (
       <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
@@ -140,16 +141,25 @@ export default function Page() {
     );
   }
 
-  const handleDndKitDragEnd = (event: any) => {
-    const { active, over } = event;
-    if (active.id !== over?.id) {
-      const oldIndex = previews.findIndex((item) => item.id === active.id);
-      const newIndex = previews.findIndex((item) => item.id === over.id);
-      const newPreviews = arrayMove(previews, oldIndex, newIndex);
-      setPreviews(newPreviews);
-      setFiles(newPreviews.map((p) => p.file));
-    }
-  };
+  const handleDndKitDragEnd = (event: DragEndEvent) => {
+  const { active, over } = event;
+  if (over && active.id !== over.id) {
+    const oldIndex = previews.findIndex((item) => item.id === active.id);
+    const newIndex = previews.findIndex((item) => item.id === over.id);
+
+    const newFiles = arrayMove(previews.map((p) => p.file), oldIndex, newIndex);
+
+    previews.forEach((item) => URL.revokeObjectURL(item.preview));
+    const newPreviews = newFiles.map((file, idx) => ({
+      id: `${file.name}-${file.lastModified}-${idx}`,
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setFiles(newFiles);
+    setPreviews(newPreviews);
+  }
+};
 
   const handleDelete = (index: number) => {
     const deletedPreview = previews[index];
@@ -199,8 +209,8 @@ export default function Page() {
 
       setFiles([]);
       setPreviews([]);
-    } catch (error) {
-      // Optionally handle error
+    } catch {
+      // Handle error if needed
     } finally {
       setIsUploading(false);
     }
@@ -268,18 +278,26 @@ export default function Page() {
                         <SortablePreview key={item.id} id={item.id}>
                           <div className="relative w-48 h-60">
                             <div className="w-full h-full rounded-2xl outline outline-2 outline-white/80 overflow-hidden">
-                              <div className="absolute left-0 top-0 w-10 h-10 bg-slate-600 rounded-tl-2xl rounded-br-2xl flex items-center justify-center">
+                              <div className="z-10 absolute left-0 top-0 w-10 h-10 bg-slate-600 rounded-tl-2xl rounded-br-2xl flex items-center justify-center">
                                 <span className="text-white text-xl">{index + 1}</span>
                               </div>
                               <button
                                 onClick={() => handleDelete(index)}
-                                className="absolute right-0 top-0 w-10 h-10 bg-pink-800 rounded-tr-2xl rounded-bl-2xl flex items-center justify-center"
+                                className="z-10 absolute right-0 top-0 w-10 h-10 bg-pink-800 rounded-tr-2xl rounded-bl-2xl flex items-center justify-center"
                                 title="Delete"
                               >
                                 <FiTrash className="w-5 h-5 text-white" />
                               </button>
                               {item.file.type.startsWith('image/') ? (
-                                <img src={item.preview} alt={`Page ${index + 1}`} className="w-full h-full object-cover" />
+                                <div className="relative w-full h-full">
+                                  <Image
+                                    src={item.preview}
+                                    alt={`Page ${index + 1}`}
+                                    fill
+                                    className="object-cover"
+                                    unoptimized // Since we're using object URLs
+                                  />
+                                </div>
                               ) : (
                                 <iframe src={item.preview} title={`PDF preview ${index + 1}`} className="w-full h-full" />
                               )}
@@ -322,11 +340,18 @@ export default function Page() {
             >
               <FiX size={24} />
             </button>
-            {previews[zoomIndex] && previews[zoomIndex].file.type.startsWith('image/') ? (
-              <img src={previews[zoomIndex]?.preview} alt="zoomed preview" className="max-w-[80vw] max-h-[80vh] rounded-md" />
+            {previews[zoomIndex]?.file.type.startsWith('image/') ? (
+              <Image
+                src={previews[zoomIndex].preview}
+                alt="zoomed preview"
+                className="max-w-[80vw] max-h-[80vh] rounded-md"
+                width={800}
+                height={600}
+                unoptimized
+              />
             ) : previews[zoomIndex] ? (
               <iframe
-                src={previews[zoomIndex]?.preview}
+                src={previews[zoomIndex].preview}
                 className="w-[80vw] h-[80vh] border rounded-md"
                 title={`PDF zoom preview ${zoomIndex}`}
               />

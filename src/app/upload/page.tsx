@@ -194,7 +194,7 @@ export default function Page() {
           } catch (error) {
             if (error instanceof AxiosError && error.response?.data) {
               const errorData = error.response.data as APIResponse;
-              const errorMessage = errorData.message || 'Failed to upload papers';
+              const errorMessage = errorData.message ?? 'Failed to upload papers';
               throw new Error(errorMessage);
             }
             throw new Error('Failed to upload papers');

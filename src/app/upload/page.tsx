@@ -182,7 +182,7 @@ export default function Page() {
     });
 
     formData.append("campus", campus);
-    console.log("campus", campus);
+    //console.log("campus", campus);
     formData.append("isPdf", String(isPdf));
 
     setIsUploading(true);
@@ -191,9 +191,9 @@ export default function Page() {
       await toast.promise(
         async () => {
           try {
-            console.log("this is happening now");
+            //console.log("this is happening now");
             await axios.post<APIResponse>("/api/upload", formData);
-            console.log("this is happening after now");
+            //console.log("this is happening after now");
             return { message: "Papers uploaded successfully!" };
           } catch (error) {
             if (error instanceof AxiosError && error.response?.data) {
@@ -215,10 +215,9 @@ export default function Page() {
       );
 
       setFiles([]);
-     // setResetSearch(true);
-     // setTimeout(() => setResetSearch(false), 100);
+     
     } catch (error) {
-     // handleAPIError(error);
+     
     } finally {
       setIsUploading(false);
     }

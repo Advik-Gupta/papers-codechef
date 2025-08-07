@@ -60,53 +60,52 @@ export default function Page() {
   }, [previews]); 
 
   const fileCheckAndSelect = useCallback((acceptedFiles: File[]) => {
-    const maxFileSize = 5 * 1024 * 1024;
-    const allowedFileTypes = [
-      'application/pdf',
-      'image/jpeg',
-      'image/png',
-      'image/gif',
-    ];
+  const maxFileSize = 5 * 1024 * 1024;
+  const allowedFileTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif'];
 
-    const toastId = toast.loading('uploading your files');
-    if (!acceptedFiles || acceptedFiles.length === 0) {
-      toast.error('No files selected', { id: toastId });
-      return;
-    }
+  const toastId = toast.loading('Uploading your files...');
+  if (!acceptedFiles || acceptedFiles.length === 0) {
+    toast.error('No files selected', { id: toastId });
+    return;
+  }
 
-    if (acceptedFiles.length > 5) {
-      toast.error('More than 5 files selected', { id: toastId });
-      return;
-    }
+  const isNewPdf = acceptedFiles.some((file) => file.type === 'application/pdf');
+ // const isExistingPdf = files.some((file) => file.type === 'application/pdf');
 
-    const invalidFiles = acceptedFiles.filter(
-      (file) => file.size > maxFileSize || !allowedFileTypes.includes(file.type)
+  if ((isNewPdf && acceptedFiles.length > 1) || (isNewPdf && files.length > 0)) {
+    toast.error('PDFs must be uploaded separately', { id: toastId });
+    return;
+  }
+
+  const allFiles = [...files, ...acceptedFiles];
+  if (allFiles.length > 5) {
+    toast.error('You can upload up to 5 files only', { id: toastId });
+    return;
+  }
+
+  const invalidFiles = acceptedFiles.filter(
+    (file) => file.size > maxFileSize || !allowedFileTypes.includes(file.type)
+  );
+
+  if (invalidFiles.length > 0) {
+    toast.error(
+      'Some files are invalid. Make sure each is under 5MB and of allowed types (PDF, JPEG, PNG, GIF).',
+      { id: toastId }
     );
-    if (invalidFiles.length > 0) {
-      toast.error(
-        'Some files are invalid. Ensure each file is below 5MB and of an allowed type (PDF, JPEG, PNG, GIF).',
-        { id: toastId }
-      );
-      return;
-    }
+    return;
+  }
 
-    const isPdf = acceptedFiles.some((file) => file.type === 'application/pdf');
-    if (isPdf && acceptedFiles.length > 1) {
-      toast.error('PDFs must be uploaded separately', { id: toastId });
-      return;
-    }
+  const newPreviews = acceptedFiles.map((file, idx) => ({
+    id: `${file.name}-${file.lastModified}-${Date.now()}-${idx}`,
+    file,
+    preview: URL.createObjectURL(file),
+  }));
 
-    const orderedFiles = acceptedFiles.sort((a, b) => a.lastModified - b.lastModified);
-    setFiles(orderedFiles);
-    setPreviews(
-      orderedFiles.map((file, idx) => ({
-        id: `${file.name}-${file.lastModified}-${idx}`,
-        file,
-        preview: URL.createObjectURL(file),
-      }))
-    );
-    toast.success(`${orderedFiles.length} files selected!`, { id: toastId });
-  }, []);
+  setFiles((prev) => [...prev, ...acceptedFiles]);
+  setPreviews((prev) => [...prev, ...newPreviews]);
+
+  toast.success(`${acceptedFiles.length} file(s) added!`, { id: toastId });
+}, [files]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     fileCheckAndSelect(acceptedFiles);
@@ -170,19 +169,21 @@ export default function Page() {
     setPreviews(newPreviews);
     setFiles(newPreviews.map((p) => p.file));
   };
+ const handlePrint = async () => {
+    // if (!campus) {
+    //   Vellore
+    // }
 
-  const handlePrint = async () => {
-    if (files.length === 0) return;
+    const isPdf = files.length === 1 && files[0]?.type === "application/pdf";
 
-    const isPdf = files.length === 1 && files[0]?.type === 'application/pdf';
     const formData = new FormData();
-
     files.forEach((file) => {
-      formData.append('files', file);
+      formData.append("files", file);
     });
 
-    formData.append('campus', campus);
-    formData.append('isPdf', String(isPdf));
+    formData.append("campus", campus);
+    console.log("campus", campus);
+    formData.append("isPdf", String(isPdf));
 
     setIsUploading(true);
 
@@ -190,27 +191,34 @@ export default function Page() {
       await toast.promise(
         async () => {
           try {
-            await axios.post<APIResponse>('/api/ai-upload', formData);
+            console.log("this is happening now");
+            await axios.post<APIResponse>("/api/upload", formData);
+            console.log("this is happening after now");
+            return { message: "Papers uploaded successfully!" };
           } catch (error) {
             if (error instanceof AxiosError && error.response?.data) {
               const errorData = error.response.data as APIResponse;
-              const errorMessage = errorData.message ?? 'Failed to upload papers';
+              const errorMessage =
+                errorData.message ?? "Failed to upload papers";
               throw new Error(errorMessage);
             }
-            throw new Error('Failed to upload papers');
+            throw new Error("Failed to upload papers");
           }
         },
         {
-          loading: 'Uploading papers...',
-          success: 'Papers uploaded successfully!',
-          error: (error: Error) => error.message,
-        }
+          loading: "Uploading papers...",
+          success: "Papers uploaded successfully!",
+          error: (error: Error) => {
+            return error.message;
+          },
+        },
       );
 
       setFiles([]);
-      setPreviews([]);
-    } catch {
-      // Handle error if needed
+     // setResetSearch(true);
+     // setTimeout(() => setResetSearch(false), 100);
+    } catch (error) {
+     // handleAPIError(error);
     } finally {
       setIsUploading(false);
     }
@@ -306,6 +314,7 @@ export default function Page() {
                         </SortablePreview>
                       ))}
                       <div className="relative w-20 h-20 cursor-pointer" {...getRootProps()}>
+                          <input {...getInputProps()} />
                         <div className="absolute left-4 top-4 w-16 h-16 bg-violet-950 rounded-2xl" />
                         <div className="absolute left-0 top-0 w-10 h-10 bg-violet-950 rounded-[20px]" />
                         <div className="absolute left-1 top-1 w-8 h-8 bg-black/50 rounded-[20px]" />

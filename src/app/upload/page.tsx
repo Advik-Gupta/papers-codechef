@@ -4,19 +4,38 @@ import { useCallback, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { FiArrowUp, FiArrowDown, FiTrash, FiZoomIn, FiX } from "react-icons/fi"
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  horizontalListSortingStrategy
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+interface APIResponse {
+  status: string;
+  message?: string;
+}
 
 export default function Page() {
-  const [campus] = useState<'vellore' | 'chennai'>('vellore')
+  const campus = 'vellore' as const
   const [files, setFiles] = useState<File[]>([])
-  const [previews, setPreviews] = useState<{ file: File; preview: string }[]>([])
+  const [previews, setPreviews] = useState<{ id: string; file: File; preview: string }[]>([])
   const [isUploading, setIsUploading] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [isGlobalDragging, setIsGlobalDragging] = useState(false)
   const [zoomIndex, setZoomIndex] = useState<number | null>(null)
 
-  // Handle drag & drop global visual feedback
+  
   useEffect(() => {
     const onDragEnter = () => setIsGlobalDragging(true)
     const onDragLeave = () => setIsGlobalDragging(false)
@@ -33,31 +52,61 @@ export default function Page() {
     }
   }, [])
 
-  // Clean up URLs
+
   useEffect(() => {
     return () => {
-      previews.forEach((item) => URL.revokeObjectURL(item.preview))
-    }
-  }, [previews])
+      previews.forEach((item) => URL.revokeObjectURL(item.preview));
+    };
+  }, []);
 
   const fileCheckAndSelect = useCallback((acceptedFiles: File[]) => {
-    const filtered = acceptedFiles.filter((file) => {
-      const isValidType = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif'].includes(file.type)
-      const isValidSize = file.size <= 5 * 1024 * 1024
-      return isValidType && isValidSize
-    })
+    const maxFileSize = 5 * 1024 * 1024;
+    const allowedFileTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+    ];
 
-    if (filtered.length !== acceptedFiles.length) {
-      toast.error('Some files were rejected (invalid type or >5MB)')
+    const toastId = toast.loading("uploading your files");
+    if (!acceptedFiles || acceptedFiles.length === 0) {
+      toast.error("No files selected", { id: toastId });
+      return;
     }
 
-    filtered.sort((a, b) => b.lastModified - a.lastModified)
+    if (acceptedFiles.length > 5) {
+      toast.error("More than 5 files selected", { id: toastId });
+      return;
+    }
 
-    setFiles(filtered)
-    setPreviews(filtered.map((file) => ({
+    const invalidFiles = acceptedFiles.filter(
+      (file) => file.size > maxFileSize || !allowedFileTypes.includes(file.type)
+    );
+    if (invalidFiles.length > 0) {
+      toast.error(
+        `Some files are invalid. Ensure each file is below 5MB and of an allowed type (PDF, JPEG, PNG, GIF).`,
+        { id: toastId }
+      );
+      return;
+    }
+
+    const isPdf = acceptedFiles.reduce(
+      (reducer, file) => file.type === "application/pdf" || reducer,
+      false
+    );
+    if (isPdf && acceptedFiles.length > 1) {
+      toast.error("PDFs must be uploaded separately", { id: toastId });
+      return;
+    }
+
+    const orderedFiles = acceptedFiles.sort((a, b) => a.lastModified - b.lastModified);
+    setFiles(orderedFiles);
+    setPreviews(orderedFiles.map((file, idx) => ({
+      id: `${file.name}-${file.lastModified}-${idx}`,
       file,
       preview: URL.createObjectURL(file),
-    })))
+    })));
+    toast.success(`${orderedFiles.length} files selected!`, { id: toastId });
   }, [])
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -76,28 +125,54 @@ export default function Page() {
   })
 
   const handlePrint = async () => {
-    if (files.length === 0) return
+    if (files.length === 0) return;
 
-    setIsUploading(true)
-    const formData = new FormData()
+    const isPdf = files.length === 1 && files[0]?.type === "application/pdf";
+    const formData = new FormData();
+    
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
 
-    previews.forEach(({ file }) => formData.append('files', file))
-    formData.append('campus', campus)
-    formData.append('isPdf', 'true')
+    // Fix: Capitalize campus name to match validation
+    formData.append("campus", campus.charAt(0).toUpperCase() + campus.slice(1));
+    formData.append("isPdf", String(isPdf));
+
+    setIsUploading(true);
 
     try {
-      const toastId = toast.loading('Uploading files...')
-      await axios.post('/api/ai-upload', formData)
-      toast.success('Files uploaded successfully!', { id: toastId })
-    } catch (err) {
-      toast.error('Upload failed.')
+      await toast.promise(
+        async () => {
+          try {
+            await axios.post<APIResponse>("/api/ai-upload", formData);
+          } catch (error) {
+            if (error instanceof AxiosError && error.response?.data) {
+              const errorData = error.response.data as APIResponse;
+              const errorMessage = errorData.message || "Failed to upload papers";
+              throw new Error(errorMessage);
+            }
+            throw new Error("Failed to upload papers");
+          }
+        },
+        {
+          loading: "Uploading papers...",
+          success: "Papers uploaded successfully!",
+          error: (error: Error) => error.message,
+        }
+      );
+
+      // Reset state after successful upload
+      setFiles([]);
+      setPreviews([]);
+    } catch (error) {
+      console.error('Upload failed:', error);
     } finally {
-      setIsUploading(false)
+      setIsUploading(false);
     }
   }
 
   const reorderFiles = (from: number, to: number) => {
-    if (from < 0 || to < 0 || from >= previews.length || to >= previews.length) {
+    if (from < 0 || to < 0 || from >= previews.length || to >= previews.length) {//read nahi ho raha 
       return; 
     }
 
@@ -118,110 +193,156 @@ export default function Page() {
     setFiles(newPreviews.map(p => p.file))
   }
 
+  // Sortable item component
+  function SortablePreview({ id, children }: { id: string; children: React.ReactNode }) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      zIndex: isDragging ? 50 : undefined,
+    };
+    return (
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        {children}
+      </div>
+    );
+  }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
+
+  const handleDndKitDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      const oldIndex = previews.findIndex(item => item.id === active.id);
+      const newIndex = previews.findIndex(item => item.id === over.id);
+      const newPreviews = arrayMove(previews, oldIndex, newIndex);
+      setPreviews(newPreviews);
+      setFiles(newPreviews.map(p => p.file));
+    }
+  };
+
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
       <div className="font-play flex h-[calc(100vh-85px)] flex-col justify-center px-6">
         <div className="2xl:my-15 flex flex-col items-center">
-          <fieldset className="mb-4 w-full max-w-md rounded-lg border-2 border-gray-300 p-4 pr-8">
-            <div className="flex w-full flex-col 2xl:gap-y-4">
-              <div>
-                <section
-                  {...getRootProps()}
-                  className={`my-2 -mr-2 cursor-pointer rounded-2xl border-2 ${
-                    isDragging || isGlobalDragging
-                      ? "border-solid border-[#6D28D9] bg-purple-50 dark:bg-[#130E1F]"
-                      : "border-dashed border-gray-300"
-                  } p-8 text-center transition-all duration-200`}
-                  onDragEnter={() => setIsDragging(true)}
-                  onDragLeave={() => setIsDragging(false)}
-                >
-                  <input {...getInputProps()} />
-                  {isDragging || isGlobalDragging ? (
-                    <div className="flex flex-col items-center">
-                      <p className="text-lg font-medium text-[#6D28D9]">
-                        Drop files here
-                      </p>
-                      <svg className="mt-2 h-10 w-10 animate-bounce text-[#6D28D9]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" />
-                      </svg>
-                    </div>
-                  ) : (
-                    <p>
-                      Drag &apos;n&apos; drop some files here, or{" "}
-                      <span className="text-[#6D28D9]">click</span> to select files
-                    </p>
-                  )}
-                  <div
-                    className={`mt-2 text-xs ${
-                      files?.length === 0 ? "text-red-500" : "text-gray-600"
-                    }`}
+          {/* Only show dropzone if no previews */}
+          {previews.length === 0 && (
+            <fieldset className="mb-4 w-full max-w-md rounded-lg border-2 border-gray-300 p-4 pr-8">
+              <div className="flex w-full flex-col 2xl:gap-y-4">
+                <div>
+                  <section
+                    {...getRootProps()}
+                    className={`my-2 -mr-2 cursor-pointer rounded-2xl border-2 ${
+                      isDragging || isGlobalDragging
+                        ? "border-solid border-[#6D28D9] bg-purple-50 dark:bg-[#130E1F]"
+                        : "border-dashed border-gray-300"
+                    } p-8 text-center transition-all duration-200`}
+                    onDragEnter={() => setIsDragging(true)}
+                    onDragLeave={() => setIsDragging(false)}
                   >
-                    {files?.length || 0} files selected
-                  </div>
-                </section>
-                <label className="mx-2 -mr-2 block text-center text-xs font-medium text-gray-700">
-                  Only Images and PDF are allowed
-                  <sup className="text-red-500">*</sup>
-                </label>
+                    <input {...getInputProps()} />
+                    {isDragging || isGlobalDragging ? (
+                      <div className="flex flex-col items-center">
+                        <p className="text-lg font-medium text-[#6D28D9]">
+                          Drop files here
+                        </p>
+                        <svg className="mt-2 h-10 w-10 animate-bounce text-[#6D28D9]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" />
+                        </svg>
+                      </div>
+                    ) : (
+                      <p>
+                        Drag &apos;n&apos; drop some files here, or{" "}
+                        <span className="text-[#6D28D9]">click</span> to select files
+                      </p>
+                    )}
+                    <div
+                      className={`mt-2 text-xs ${
+                        files?.length === 0 ? "text-red-500" : "text-gray-600"
+                      }`}
+                    >
+                      {files?.length || 0} files selected
+                    </div>
+                  </section>
+                  <label className="mx-2 -mr-2 block text-center text-xs font-medium text-gray-700">
+                    Only Images and PDF are allowed
+                    <sup className="text-red-500">*</sup>
+                  </label>
+                </div>
               </div>
-            </div>
-          </fieldset>
-          
-          {previews.length > 0 && (
-            <section className="mt-6 w-full max-w-4xl">
-              <div className="w-full p-8 bg-indigo-900/10 rounded-[40px] border-[6px] border-indigo-900">
-                <div className="flex flex-wrap gap-5 justify-center">
-                  {previews.map((item, index) => (
-                    <div key={index} className="relative w-48 h-60">
-                      <div className="w-full h-full rounded-2xl outline outline-2 outline-white/80 overflow-hidden">
-                        {/* Page number badge */}
-                        <div className="absolute left-0 top-0 w-10 h-10 bg-slate-600 rounded-tl-2xl rounded-br-2xl flex items-center justify-center">
-                          <span className="text-white text-xl">{index + 1}</span>
-                        </div>
-                        
-                        {/* Delete button */}
-                        <button
-                          onClick={() => handleDelete(index)}
-                          className="absolute right-0 top-0 w-10 h-10 bg-pink-800 rounded-tr-2xl rounded-bl-2xl flex items-center justify-center"
-                          title="Delete"
-                        >
-                          <FiTrash className="w-5 h-5 text-white" />
-                        </button>
+            </fieldset>
+          )}
 
-                        
-                        {item.file.type.startsWith('image/') ? (
-                          <img
-                            src={item.preview}
-                            alt={`Page ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <iframe
-                            src={item.preview}
-                            title={`PDF preview ${index + 1}`}
-                            className="w-full h-full"
-                          />
-                        )}
+          {/* Preview container with fixed dimensions and horizontal scroll */}
+          {previews.length > 0 && (
+            <section className="mt-6 w-full flex flex-col items-center">
+              <div
+                className="w-full max-w-4xl aspect-[2/1] p-8 bg-indigo-900/10 rounded-[40px] border-[6px] border-indigo-900 overflow-x-auto overflow-y-hidden scrollbar-hide flex items-center"
+                style={{ minHeight: 320 }}
+              >
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDndKitDragEnd}
+                >
+                  <SortableContext
+                    items={previews.map(item => item.id)}
+                    strategy={horizontalListSortingStrategy}
+                  >
+                    <div className="flex gap-5 w-max">
+                      {previews.map((item, index) => (
+                        <SortablePreview key={item.id} id={item.id}>
+                          <div className="relative w-48 h-60">
+                            <div className="w-full h-full rounded-2xl outline outline-2 outline-white/80 overflow-hidden">
+                              
+                              <div className="absolute left-0 top-0 w-10 h-10 bg-slate-600 rounded-tl-2xl rounded-br-2xl flex items-center justify-center">
+                                <span className="text-white text-xl">{index + 1}</span>
+                              </div>
+                              
+                              <button
+                                onClick={() => handleDelete(index)}
+                                className="absolute right-0 top-0 w-10 h-10 bg-pink-800 rounded-tr-2xl rounded-bl-2xl flex items-center justify-center"
+                                title="Delete"
+                              >
+                                <FiTrash className="w-5 h-5 text-white" />
+                              </button>
+                              
+                              {item.file.type.startsWith('image/') ? (
+                                <img
+                                  src={item.preview}
+                                  alt={`Page ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <iframe
+                                  src={item.preview}
+                                  title={`PDF preview ${index + 1}`}
+                                  className="w-full h-full"
+                                />
+                              )}
+                            </div>
+                          </div>
+                        </SortablePreview>
+                      ))}
+                      {/* Add more button */}
+                      <div className="relative w-20 h-20 cursor-pointer" {...getRootProps()}>
+                        <div className="absolute left-4 top-4 w-16 h-16 bg-violet-950 rounded-2xl" />
+                        <div className="absolute left-0 top-0 w-10 h-10 bg-violet-950 rounded-[20px]" />
+                        <div className="absolute left-1 top-1 w-8 h-8 bg-black/50 rounded-[20px]" />
+                        <div className="absolute left-7 top-7 text-white text-2xl">+</div>
+                        <div className="absolute left-4 top-3 text-white text-xs font-semibold">
+                          {previews.length}
+                        </div>
                       </div>
                     </div>
-                  ))}
-
-                  {/* Add more button */}
-                  <div className="relative w-20 h-20 cursor-pointer" {...getRootProps()}>
-                    <div className="absolute left-4 top-4 w-16 h-16 bg-violet-950 rounded-2xl" />
-                    <div className="absolute left-0 top-0 w-10 h-10 bg-violet-950 rounded-[20px]" />
-                    <div className="absolute left-1 top-1 w-8 h-8 bg-black/50 rounded-[20px]" />
-                    <div className="absolute left-7 top-7 text-white text-2xl">+</div>
-                    <div className="absolute left-4 top-3 text-white text-xs font-semibold">
-                      {previews.length}
-                    </div>
-                  </div>
-                </div>
-                
-                <p className="text-center text-white/50 text-xl mt-6">
-                  Drag to re-order pages.
-                </p>
+                  </SortableContext>
+                </DndContext>
               </div>
+              <p className="mt-4 text-center text-white/50 text-xl">
+                Drag to re-order pages.
+              </p>
             </section>
           )}
           <Button

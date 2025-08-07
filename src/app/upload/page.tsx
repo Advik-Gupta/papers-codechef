@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/button';
-import axios, { AxiosError } from 'axios';
-import { FiTrash, FiX } from 'react-icons/fi';
-import Image from 'next/image';
+import { useCallback, useEffect, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import axios, { AxiosError } from "axios";
+import { FiTrash, FiX } from "react-icons/fi";
+import Image from "next/image";
 import {
   DndContext,
   closestCenter,
@@ -14,14 +14,14 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   useSortable,
   horizontalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface APIResponse {
   status: string;
@@ -29,9 +29,11 @@ interface APIResponse {
 }
 
 export default function Page() {
-  const campus = 'Vellore';
+  const campus = "Vellore";
   const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<{ id: string; file: File; preview: string }[]>([]);
+  const [previews, setPreviews] = useState<
+    { id: string; file: File; preview: string }[]
+  >([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isGlobalDragging, setIsGlobalDragging] = useState(false);
@@ -42,14 +44,14 @@ export default function Page() {
     const onDragLeave = () => setIsGlobalDragging(false);
     const onDrop = () => setIsGlobalDragging(false);
 
-    document.addEventListener('dragenter', onDragEnter);
-    document.addEventListener('dragleave', onDragLeave);
-    document.addEventListener('drop', onDrop);
+    document.addEventListener("dragenter", onDragEnter);
+    document.addEventListener("dragleave", onDragLeave);
+    document.addEventListener("drop", onDrop);
 
     return () => {
-      document.removeEventListener('dragenter', onDragEnter);
-      document.removeEventListener('dragleave', onDragLeave);
-      document.removeEventListener('drop', onDrop);
+      document.removeEventListener("dragenter", onDragEnter);
+      document.removeEventListener("dragleave", onDragLeave);
+      document.removeEventListener("drop", onDrop);
     };
   }, []);
 
@@ -57,59 +59,76 @@ export default function Page() {
     return () => {
       previews.forEach((item) => URL.revokeObjectURL(item.preview));
     };
-  }, [previews]); 
+  }, [previews]);
 
-  const fileCheckAndSelect = useCallback((acceptedFiles: File[]) => {
-  const maxFileSize = 5 * 1024 * 1024;
-  const allowedFileTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif'];
+  const fileCheckAndSelect = useCallback(
+    (acceptedFiles: File[]) => {
+      const maxFileSize = 5 * 1024 * 1024;
+      const allowedFileTypes = [
+        "application/pdf",
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+      ];
 
-  const toastId = toast.loading('Uploading your files...');
-  if (!acceptedFiles || acceptedFiles.length === 0) {
-    toast.error('No files selected', { id: toastId });
-    return;
-  }
+      const toastId = toast.loading("Uploading your files...");
+      if (!acceptedFiles || acceptedFiles.length === 0) {
+        toast.error("No files selected", { id: toastId });
+        return;
+      }
 
-  const isNewPdf = acceptedFiles.some((file) => file.type === 'application/pdf');
- // const isExistingPdf = files.some((file) => file.type === 'application/pdf');
+      const isNewPdf = acceptedFiles.some(
+        (file) => file.type === "application/pdf",
+      );
+      // const isExistingPdf = files.some((file) => file.type === 'application/pdf');
 
-  if ((isNewPdf && acceptedFiles.length > 1) || (isNewPdf && files.length > 0)) {
-    toast.error('PDFs must be uploaded separately', { id: toastId });
-    return;
-  }
+      if (
+        (isNewPdf && acceptedFiles.length > 1) ||
+        (isNewPdf && files.length > 0)
+      ) {
+        toast.error("PDFs must be uploaded separately", { id: toastId });
+        return;
+      }
 
-  const allFiles = [...files, ...acceptedFiles];
-  if (allFiles.length > 5) {
-    toast.error('You can upload up to 5 files only', { id: toastId });
-    return;
-  }
+      const allFiles = [...files, ...acceptedFiles];
+      if (allFiles.length > 5) {
+        toast.error("You can upload up to 5 files only", { id: toastId });
+        return;
+      }
 
-  const invalidFiles = acceptedFiles.filter(
-    (file) => file.size > maxFileSize || !allowedFileTypes.includes(file.type)
+      const invalidFiles = acceptedFiles.filter(
+        (file) =>
+          file.size > maxFileSize || !allowedFileTypes.includes(file.type),
+      );
+
+      if (invalidFiles.length > 0) {
+        toast.error(
+          "Some files are invalid. Make sure each is under 5MB and of allowed types (PDF, JPEG, PNG, GIF).",
+          { id: toastId },
+        );
+        return;
+      }
+
+      const newPreviews = acceptedFiles.map((file, idx) => ({
+        id: `${file.name}-${file.lastModified}-${Date.now()}-${idx}`,
+        file,
+        preview: URL.createObjectURL(file),
+      }));
+
+      setFiles((prev) => [...prev, ...acceptedFiles]);
+      setPreviews((prev) => [...prev, ...newPreviews]);
+
+      toast.success(`${acceptedFiles.length} file(s) added!`, { id: toastId });
+    },
+    [files],
   );
 
-  if (invalidFiles.length > 0) {
-    toast.error(
-      'Some files are invalid. Make sure each is under 5MB and of allowed types (PDF, JPEG, PNG, GIF).',
-      { id: toastId }
-    );
-    return;
-  }
-
-  const newPreviews = acceptedFiles.map((file, idx) => ({
-    id: `${file.name}-${file.lastModified}-${Date.now()}-${idx}`,
-    file,
-    preview: URL.createObjectURL(file),
-  }));
-
-  setFiles((prev) => [...prev, ...acceptedFiles]);
-  setPreviews((prev) => [...prev, ...newPreviews]);
-
-  toast.success(`${acceptedFiles.length} file(s) added!`, { id: toastId });
-}, [files]);
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    fileCheckAndSelect(acceptedFiles);
-  }, [fileCheckAndSelect]);
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      fileCheckAndSelect(acceptedFiles);
+    },
+    [fileCheckAndSelect],
+  );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -117,17 +136,30 @@ export default function Page() {
     noClick: false,
     noKeyboard: false,
     accept: {
-      'application/pdf': ['.pdf'],
-      'image/*': ['.jpeg', '.jpg', '.png', '.gif'],
+      "application/pdf": [".pdf"],
+      "image/*": [".jpeg", ".jpg", ".png", ".gif"],
     },
   });
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
 
-  function SortablePreview({ id, children }: { id: string; children: React.ReactNode }) {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  function SortablePreview({
+    id,
+    children,
+  }: {
+    id: string;
+    children: React.ReactNode;
+  }) {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = useSortable({ id });
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
@@ -141,24 +173,28 @@ export default function Page() {
   }
 
   const handleDndKitDragEnd = (event: DragEndEvent) => {
-  const { active, over } = event;
-  if (over && active.id !== over.id) {
-    const oldIndex = previews.findIndex((item) => item.id === active.id);
-    const newIndex = previews.findIndex((item) => item.id === over.id);
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = previews.findIndex((item) => item.id === active.id);
+      const newIndex = previews.findIndex((item) => item.id === over.id);
 
-    const newFiles = arrayMove(previews.map((p) => p.file), oldIndex, newIndex);
+      const newFiles = arrayMove(
+        previews.map((p) => p.file),
+        oldIndex,
+        newIndex,
+      );
 
-    previews.forEach((item) => URL.revokeObjectURL(item.preview));
-    const newPreviews = newFiles.map((file, idx) => ({
-      id: `${file.name}-${file.lastModified}-${idx}`,
-      file,
-      preview: URL.createObjectURL(file),
-    }));
+      previews.forEach((item) => URL.revokeObjectURL(item.preview));
+      const newPreviews = newFiles.map((file, idx) => ({
+        id: `${file.name}-${file.lastModified}-${idx}`,
+        file,
+        preview: URL.createObjectURL(file),
+      }));
 
-    setFiles(newFiles);
-    setPreviews(newPreviews);
-  }
-};
+      setFiles(newFiles);
+      setPreviews(newPreviews);
+    }
+  };
 
   const handleDelete = (index: number) => {
     const deletedPreview = previews[index];
@@ -169,7 +205,7 @@ export default function Page() {
     setPreviews(newPreviews);
     setFiles(newPreviews.map((p) => p.file));
   };
- const handlePrint = async () => {
+  const handlePrint = async () => {
     // if (!campus) {
     //   Vellore
     // }
@@ -215,17 +251,15 @@ export default function Page() {
       );
 
       setFiles([]);
-     
     } catch (error) {
-     
     } finally {
       setIsUploading(false);
     }
   };
 
   return (
-    <main className="max-w-3xl mx-auto px-4 py-8">
-      <div className="font-play flex h-[calc(100vh-85px)] flex-col justify-center px-6">
+    <main className="mx-auto max-w-3xl px-4 py-8">
+      <div className="flex h-[calc(100vh-85px)] flex-col justify-center px-6 font-play">
         <div className="2xl:my-15 flex flex-col items-center">
           {previews.length === 0 && (
             <fieldset className="mb-4 w-full max-w-md rounded-lg border-2 border-gray-300 p-4 pr-8">
@@ -235,8 +269,8 @@ export default function Page() {
                     {...getRootProps()}
                     className={`my-2 -mr-2 cursor-pointer rounded-2xl border-2 ${
                       isDragging || isGlobalDragging
-                        ? 'border-solid border-[#6D28D9] bg-purple-50 dark:bg-[#130E1F]'
-                        : 'border-dashed border-gray-300'
+                        ? "border-solid border-[#6D28D9] bg-purple-50 dark:bg-[#130E1F]"
+                        : "border-dashed border-gray-300"
                     } p-8 text-center transition-all duration-200`}
                     onDragEnter={() => setIsDragging(true)}
                     onDragLeave={() => setIsDragging(false)}
@@ -244,18 +278,33 @@ export default function Page() {
                     <input {...getInputProps()} />
                     {isDragging || isGlobalDragging ? (
                       <div className="flex flex-col items-center">
-                        <p className="text-lg font-medium text-[#6D28D9]">Drop files here</p>
-                        <svg className="mt-2 h-10 w-10 animate-bounce text-[#6D28D9]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" />
+                        <p className="text-lg font-medium text-[#6D28D9]">
+                          Drop files here
+                        </p>
+                        <svg
+                          className="mt-2 h-10 w-10 animate-bounce text-[#6D28D9]"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12"
+                          />
                         </svg>
                       </div>
                     ) : (
                       <p>
-                        Drag &apos;n&apos; drop some files here, or{' '}
-                        <span className="text-[#6D28D9]">click</span> to select files
+                        Drag &apos;n&apos; drop some files here, or{" "}
+                        <span className="text-[#6D28D9]">click</span> to select
+                        files
                       </p>
                     )}
-                    <div className={`mt-2 text-xs ${files.length === 0 ? 'text-red-500' : 'text-gray-600'}`}>
+                    <div
+                      className={`mt-2 text-xs ${files.length === 0 ? "text-red-500" : "text-gray-600"}`}
+                    >
                       {files.length} files selected
                     </div>
                   </section>
@@ -269,9 +318,9 @@ export default function Page() {
           )}
 
           {previews.length > 0 && (
-            <section className="mt-6 w-full flex flex-col items-center">
+            <section className="mt-6 flex w-full flex-col items-center">
               <div
-                className="w-full max-w-4xl aspect-[2/1] p-8 bg-indigo-900/10 rounded-[40px] border-[6px] border-indigo-900 overflow-x-auto overflow-y-hidden scrollbar-hide flex flex-col justify-between"
+                className="scrollbar-hide flex aspect-[2/1] w-full max-w-4xl flex-col justify-between overflow-x-auto overflow-y-hidden rounded-[40px] border-[6px] border-indigo-900 bg-indigo-900/10 p-8"
                 style={{ minHeight: 320 }}
               >
                 <DndContext
@@ -279,24 +328,29 @@ export default function Page() {
                   collisionDetection={closestCenter}
                   onDragEnd={handleDndKitDragEnd}
                 >
-                  <SortableContext items={previews.map((item) => item.id)} strategy={horizontalListSortingStrategy}>
-                    <div className="flex gap-5 w-max">
+                  <SortableContext
+                    items={previews.map((item) => item.id)}
+                    strategy={horizontalListSortingStrategy}
+                  >
+                    <div className="flex w-max gap-5">
                       {previews.map((item, index) => (
                         <SortablePreview key={item.id} id={item.id}>
-                          <div className="relative w-48 h-60">
-                            <div className="w-full h-full rounded-2xl outline outline-2 outline-white/80 overflow-hidden">
-                              <div className="z-10 absolute left-0 top-0 w-10 h-10 bg-slate-600 rounded-tl-2xl rounded-br-2xl flex items-center justify-center">
-                                <span className="text-white text-xl">{index + 1}</span>
+                          <div className="relative h-60 w-48">
+                            <div className="h-full w-full overflow-hidden rounded-2xl outline outline-2 outline-white/80">
+                              <div className="absolute left-0 top-0 z-10 flex h-10 w-10 items-center justify-center rounded-br-2xl rounded-tl-2xl bg-slate-600">
+                                <span className="text-xl text-white">
+                                  {index + 1}
+                                </span>
                               </div>
                               <button
                                 onClick={() => handleDelete(index)}
-                                className="z-10 absolute right-0 top-0 w-10 h-10 bg-pink-800 rounded-tr-2xl rounded-bl-2xl flex items-center justify-center"
+                                className="absolute right-0 top-0 z-10 flex h-10 w-10 items-center justify-center rounded-bl-2xl rounded-tr-2xl bg-pink-800"
                                 title="Delete"
                               >
-                                <FiTrash className="w-5 h-5 text-white" />
+                                <FiTrash className="h-5 w-5 text-white" />
                               </button>
-                              {item.file.type.startsWith('image/') ? (
-                                <div className="relative w-full h-full">
+                              {item.file.type.startsWith("image/") ? (
+                                <div className="relative h-full w-full">
                                   <Image
                                     src={item.preview}
                                     alt={`Page ${index + 1}`}
@@ -306,24 +360,37 @@ export default function Page() {
                                   />
                                 </div>
                               ) : (
-                                <iframe src={item.preview} title={`PDF preview ${index + 1}`} className="w-full h-full" />
+                                <iframe
+                                  src={item.preview}
+                                  title={`PDF preview ${index + 1}`}
+                                  className="h-full w-full"
+                                />
                               )}
                             </div>
                           </div>
                         </SortablePreview>
                       ))}
-                      <div className="relative w-20 h-20 cursor-pointer" {...getRootProps()}>
-                          <input {...getInputProps()} />
-                        <div className="absolute left-4 top-4 w-16 h-16 bg-violet-950 rounded-2xl" />
-                        <div className="absolute left-0 top-0 w-10 h-10 bg-violet-950 rounded-[20px]" />
-                        <div className="absolute left-1 top-1 w-8 h-8 bg-black/50 rounded-[20px]" />
-                        <div className="absolute left-7 top-7 text-white text-2xl">+</div>
-                        <div className="absolute left-4 top-3 text-white text-xs font-semibold">{previews.length}</div>
+                      <div
+                        className="relative h-20 w-20 cursor-pointer"
+                        {...getRootProps()}
+                      >
+                        <input {...getInputProps()} />
+                        <div className="absolute left-4 top-4 h-16 w-16 rounded-2xl bg-violet-950" />
+                        <div className="absolute left-0 top-0 h-10 w-10 rounded-[20px] bg-violet-950" />
+                        <div className="absolute left-1 top-1 h-8 w-8 rounded-[20px] bg-black/50" />
+                        <div className="absolute left-7 top-7 text-2xl text-white">
+                          +
+                        </div>
+                        <div className="absolute left-4 top-3 text-xs font-semibold text-white">
+                          {previews.length}
+                        </div>
                       </div>
                     </div>
                   </SortableContext>
                 </DndContext>
-                <p className="mt-4 text-center text-white/50 text-xl">Drag to re-order.</p>
+                <p className="mt-4 text-center text-xl text-white/50">
+                  Drag to re-order.
+                </p>
               </div>
             </section>
           )}
@@ -331,28 +398,28 @@ export default function Page() {
           <Button
             onClick={handlePrint}
             disabled={isUploading || files.length === 0}
-            className="mt-8 px-8 py-3 bg-violet-950 rounded-[40px] text-white text-xl"
+            className="mt-8 rounded-[40px] bg-violet-950 px-8 py-3 text-xl text-white"
           >
-            {isUploading ? 'Uploading...' : 'Upload'}
+            {isUploading ? "Uploading..." : "Upload"}
           </Button>
         </div>
       </div>
 
       {zoomIndex !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
-          <div className="relative bg-white rounded-lg shadow-lg p-4 flex flex-col items-center">
+          <div className="relative flex flex-col items-center rounded-lg bg-white p-4 shadow-lg">
             <button
               onClick={() => setZoomIndex(null)}
-              className="absolute top-2 right-2 p-2 rounded-full bg-gray-200 hover:bg-gray-300"
+              className="absolute right-2 top-2 rounded-full bg-gray-200 p-2 hover:bg-gray-300"
               title="Close"
             >
               <FiX size={24} />
             </button>
-            {previews[zoomIndex]?.file.type.startsWith('image/') ? (
+            {previews[zoomIndex]?.file.type.startsWith("image/") ? (
               <Image
                 src={previews[zoomIndex].preview}
                 alt="zoomed preview"
-                className="max-w-[80vw] max-h-[80vh] rounded-md"
+                className="max-h-[80vh] max-w-[80vw] rounded-md"
                 width={800}
                 height={600}
                 unoptimized
@@ -360,12 +427,12 @@ export default function Page() {
             ) : previews[zoomIndex] ? (
               <iframe
                 src={previews[zoomIndex].preview}
-                className="w-[80vw] h-[80vh] border rounded-md"
+                className="h-[80vh] w-[80vw] rounded-md border"
                 title={`PDF zoom preview ${zoomIndex}`}
               />
             ) : null}
             {previews[zoomIndex] && (
-              <p className="mt-4 font-semibold text-[#6D28D9] text-center break-words">
+              <p className="mt-4 break-words text-center font-semibold text-[#6D28D9]">
                 {previews[zoomIndex].file.name}
               </p>
             )}
@@ -373,5 +440,5 @@ export default function Page() {
         </div>
       )}
     </main>
-  )
+  );
 }

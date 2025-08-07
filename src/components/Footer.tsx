@@ -110,7 +110,7 @@ export default function Footer() {
           <h3 className="font-jost text-2xl font-semibold">Our Projects</h3>
           <Link href="https://papers.codechefvit.com">Papers</Link>
           <Link href="https://contactify.codechefvit.com">Contactify</Link>
-          <Link href="https://ffcs.codechefvit.com">FFCS Combogen</Link>
+          <Link href="https://ffcs.codechefvit.com">FFCS-iniator</Link>
         </div>
         <div className="flex flex-col gap-2 text-black dark:text-white md:items-start lg:text-left">
           <h3 className="font-jost text-2xl font-semibold">Drop Your Suggestions:</h3>
@@ -122,7 +122,7 @@ export default function Footer() {
           </Link>
 
           <div className="mt-4 flex flex-col gap-2 w-full max-w-xs">
-            <h3 htmlFor="email" className="font-jost text-2xl font-semibold">
+            <h3 className="font-jost text-2xl font-semibold">
               Subscribe For Updates:
             </h3>
             <div className="relative w-full">

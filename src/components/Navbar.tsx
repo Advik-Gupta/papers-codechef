@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ccLogo from "../assets/codechef_logo.svg";
 import ModeToggle from "@/components/toggle-theme";
-import { ArrowDownLeftIcon, StarIcon } from "lucide-react";
+import { ArrowDownLeftIcon, Pin } from "lucide-react";
 import NavDropdownButton from "./NavDropdownButton";
 import FloatingNavbar from "./FloatingNavbar";
 import PWAInstallButton from "./ui/PWAInstallButton";
@@ -55,10 +55,10 @@ function Navbar() {
             Papers
           </Link>
 
-          <div className="hidden md:flex">
+          <div className="mt-3 hidden md:flex">
             <Link href="/pinned">
               <div className="ml-2 flex items-center gap-2 rounded-full border border-[#3A3745] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1A1823]">
-                <StarIcon className="h-4 w-4" />
+                <Pin className="h-4 w-4" />
                 Pinned Subjects
               </div>
             </Link>
@@ -70,7 +70,7 @@ function Navbar() {
             <ModeToggle />
           </div>
 
-          <div className="hidden md:block max-w-[200px]">
+          <div className="hidden max-w-[200px] md:block">
             <PWAInstallButton />
           </div>
 

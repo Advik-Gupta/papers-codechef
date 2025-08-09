@@ -106,7 +106,7 @@ export default function Footer() {
           <h3 className="font-jost text-xl font-semibold">Our Projects</h3>
           <Link href="https://papers.codechefvit.com">Papers</Link>
           <Link href="https://contactify.codechefvit.com">Contactify</Link>
-          <Link href="https://ffcs.codechefvit.com">FFCS Combogen</Link>
+          <Link href="https://ffcs.codechefvit.com">FFCS-inator</Link>
         </div>
 
         {/* Suggestions */}

@@ -13,7 +13,7 @@ import SideBar from "../components/SideBar";
 import Error from "./Error";
 import { Filter } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { StarIcon } from "lucide-react";
+import { Pin } from "lucide-react";
 import { StoredSubjects } from "@/interface";
 
 export async function downloadFile(url: string, filename: string) {
@@ -342,7 +342,7 @@ const CatalogueContent = () => {
           </div>
           <div className="mt-7">
             <button onClick={handlePinToggle}>
-              <StarIcon
+              <Pin
                 className={`h-7 w-7 ${pinned ? "fill-[#A78BFA]" : ""} stroke-white`}
               />
             </button>

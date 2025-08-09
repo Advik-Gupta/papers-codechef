@@ -14,9 +14,11 @@ const Pinned = () => {
           <SearchBar type="pinned" />
         </div>
       </div>
-      <PinnedPapersCarousel carouselType="users" />
+      <div className="min-h-[20vh]">
+        <PinnedPapersCarousel carouselType="users" />
+      </div>
       <div className="mt-6 flex w-full items-center justify-center">
-        <p>You can pin upto 8 Subjects</p>
+        <p>You can pin upto 8 Subjects here</p>
       </div>
     </div>
   );

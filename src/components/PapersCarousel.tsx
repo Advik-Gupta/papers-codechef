@@ -97,23 +97,38 @@ function PapersCarousel() {
               ))}
             </CarouselItem>
           ) : (
-            chunkedPapers.map((paperGroup, index) => (
-              <CarouselItem
-                key={`carousel-item-${index}`}
-                className={`grid ${
-                  chunkSize === 4 ? "grid-cols-2 grid-rows-2" : "grid-cols-4"
-                } gap-4 lg:auto-rows-fr`}
-              >
-                {paperGroup.map((paper, subIndex) => (
-                  <div key={subIndex} className="h-full">
-                    <UpcomingPaper
-                      subject={paper.subject}
-                      slots={paper.slots}
-                    />
-                  </div>
-                ))}
-              </CarouselItem>
-            ))
+            chunkedPapers.map((paperGroup, index) => {
+              const placeholdersNeeded = chunkSize - paperGroup.length;
+
+              return (
+                <CarouselItem
+                  key={`carousel-item-${index}`}
+                  className={`grid ${
+                    chunkSize === 4
+                      ? "grid-cols-2 grid-rows-2"
+                      : "grid-cols-4 grid-rows-2"
+                  } gap-4 lg:auto-rows-fr`}
+                >
+                  {paperGroup.map((paper, subIndex) => (
+                    <div key={subIndex} className="h-full">
+                      <UpcomingPaper
+                        subject={paper.subject}
+                        slots={paper.slots}
+                      />
+                    </div>
+                  ))}
+
+                  {Array.from({ length: placeholdersNeeded }).map(
+                    (_, placeholderIndex) => (
+                      <div
+                        key={`placeholder-${placeholderIndex}`}
+                        className="invisible h-full"
+                      ></div>
+                    ),
+                  )}
+                </CarouselItem>
+              );
+            })
           )}
         </CarouselContent>
       </Carousel>

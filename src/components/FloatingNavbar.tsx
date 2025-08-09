@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { StarIcon, UploadIcon } from "lucide-react";
+import { Pin, UploadIcon } from "lucide-react";
 import ModeToggle from "./toggle-theme";
 
 interface Props {
@@ -29,7 +29,7 @@ export default function FloatingNavbar({ onNavigate }: Props) {
 
         <Link href="/pinned" onClick={onNavigate}>
           <div className="flex items-center gap-2 rounded-full border border-[#3A3745] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1A1823]">
-            <StarIcon className="h-4 w-4" />
+            <Pin className="h-4 w-4" />
             <span>Pinned Subjects</span>
           </div>
         </Link>

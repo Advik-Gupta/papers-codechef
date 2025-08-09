@@ -116,7 +116,7 @@ export default function Footer() {
           </h3>
           <Link
             href={`mailto:codechefvit@gmail.com`}
-            className="mx-auto flex items-center justify-center gap-2 sm:mx-0"
+            className="mx-auto flex items-center center gap-2 sm:mx-0"
           >
             <Mail size={18} />
             <span>codechefvit@gmail.com</span>

@@ -16,18 +16,6 @@ import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Pin } from "lucide-react";
 import { StoredSubjects } from "@/interface";
 
-export async function downloadFile(url: string, filename: string) {
-  try {
-    const response = await axios.get(url, { responseType: "blob" });
-    const blob = new Blob([response.data]);
-    const link = document.createElement("a");
-    link.href = window.URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-    window.URL.revokeObjectURL(link.href);
-  } catch (error) {}
-}
-
 const CatalogueContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -175,18 +163,38 @@ const CatalogueContent = () => {
     [],
   );
 
-  const handleDownloadAll = useCallback(async () => {
-    /*    if (typeof window !== "undefined" && window.gtag) {
-      window.gtag("event", "download_all_clicked", {
-        event_category: "Paper Downloads",
-        event_label: "Download All Clicked",
-      });
-    } */
+  const getSecureUrl = (url: string): string =>
+    url.startsWith("http://") ? url.replace("http://", "https://") : url;
 
-    for (const paper of selectedPapers) {
-      const extension = paper.final_url.split(".").pop();
-      const fileName = `${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}.${extension}`;
-      await downloadFile(paper.final_url, fileName);
+  const generateFileName = (paper: IPaper): string => {
+    const extension = paper.final_url.split(".").pop();
+    return `${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}.${extension}`;
+  };
+
+  const downloadFile = async (url: string, filename: string): Promise<void> => {
+    try {
+      const response = await axios.get(url, { responseType: "blob" });
+      const blob = new Blob([response.data]);
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      window.URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  };
+
+  const handleDownloadAll = useCallback(async () => {
+    const uniquePapers = Array.from(
+      new Set(selectedPapers.map((paper) => paper._id)),
+    ).map((id) => selectedPapers.find((paper) => paper._id === id)) as IPaper[];
+
+    for (const paper of uniquePapers) {
+      await downloadFile(
+        getSecureUrl(paper.final_url),
+        generateFileName(paper),
+      );
     }
   }, [selectedPapers]);
 
@@ -272,7 +280,7 @@ const CatalogueContent = () => {
 
   return (
     <div className="relative flex min-h-screen justify-center p-0 md:justify-normal">
-      <div className="hidden w-[30%] min-w-fit md:block">
+      <div className="hidden !w-[22%] min-w-[22%] max-w-[22%] flex-shrink-0 md:block">
         <SideBar
           filtersNotPulled={filtersNotPulled}
           loading={loading}

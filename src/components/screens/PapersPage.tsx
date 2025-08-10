@@ -15,6 +15,10 @@ import axios from "axios";
 import Fuse from "fuse.js";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import { IUpcomingPaper } from "@/interface";
+import { Skeleton } from "../ui/skeleton";
+import { CarouselItem } from "@/components/ui/carousel";
+import UpcomingPaper from "../UpcomingPaper";
 
 type Course = {
   name?: string | null;
@@ -31,6 +35,8 @@ export default function PapersPage() {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const suggestionsRef = useRef<HTMLUListElement | null>(null);
+  const [displayPapers, setDisplayPapers] = useState<IUpcomingPaper[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchSubjects() {
@@ -47,6 +53,29 @@ export default function PapersPage() {
       }
     }
     void fetchSubjects();
+  }, []);
+
+  useEffect(() => {
+    async function fetchPapers() {
+      try {
+        setIsLoading(true);
+        const response = await axios.get<IUpcomingPaper[]>(
+          "/api/upcoming-papers",
+        );
+
+        const randomPapers = [...response.data]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 4);
+
+        setDisplayPapers(randomPapers);
+      } catch (error) {
+        console.error("Failed to fetch papers:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    void fetchPapers();
   }, []);
 
   const fuse = useMemo(
@@ -232,54 +261,34 @@ export default function PapersPage() {
           </Button>
         </div>
 
-        <div className="mx-auto mt-16 max-w-6xl text-center">
-          <div className="relative mb-8 text-center">
-            <h3 className="font-vipnabd text-2xl font-bold">Explore More</h3>
-            <div className="absolute right-0 top-1/2 -translate-y-1/2">
-              <Button
-                variant="outline"
-                className="border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-              >
-                View All
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="cursor-pointer rounded-md border border-[#734DFF] bg-[#171720] text-white shadow-lg transition duration-150 ease-in-out hover:bg-[#262635]"
+                >
+                  {/* Top section */}
+                  <div className="flex items-center justify-between border-b border-[#453D60] p-3">
+                    <Skeleton className="h-5 w-24 rounded-md" />
+                    <Skeleton className="h-5 w-5 rounded-full" />
+                  </div>
 
-          <div className="grid grid-cols-1 justify-center gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {[1, 2, 3, 4].map((index) => (
-              <div
-                key={index}
-                className="overflow-hidden rounded-lg bg-white shadow-md dark:bg-[#303771]"
-              >
-                <div className="relative aspect-[4/3] bg-gray-200 dark:bg-gray-700">
-                  <Image
-                    src="/placeholder.svg?height=200&width=300&text=Paper"
-                    alt={`Paper ${index}`}
-                    width={300}
-                    height={200}
-                    className="h-full w-full object-cover opacity-60"
-                  />
-                </div>
-                <div className="p-4">
-                  <div className="flex flex-wrap gap-2">
-                    <span className="rounded bg-[#4A55FF]/20 px-2 py-1 text-xs text-[#4A55FF] dark:bg-[#9EA8FF]/20 dark:text-[#9EA8FF]">
-                      C1
-                    </span>
-                    <span className="rounded bg-[#4A55FF]/20 px-2 py-1 text-xs text-[#4A55FF] dark:bg-[#9EA8FF]/20 dark:text-[#9EA8FF]">
-                      CAT-1
-                    </span>
-                    <span className="rounded bg-[#4A55FF]/20 px-2 py-1 text-xs text-[#4A55FF] dark:bg-[#9EA8FF]/20 dark:text-[#9EA8FF]">
-                      2024
-                    </span>
-                    <span className="rounded bg-[#4A55FF]/20 px-2 py-1 text-xs text-[#4A55FF] dark:bg-[#9EA8FF]/20 dark:text-[#9EA8FF]">
-                      Fall
-                    </span>
+                  {/* Middle section */}
+                  <div className="flex flex-col justify-between p-4">
+                    <Skeleton className="mb-4 h-6 w-36 rounded-md" />
+                    <div className="flex gap-2">
+                      <Skeleton className="h-7 w-12 rounded-md" />
+                      <Skeleton className="h-7 w-12 rounded-md" />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))
+            : displayPapers.map((paper, subIndex) => (
+                <div key={subIndex} className="h-full">
+                  <UpcomingPaper subject={paper.subject} slots={paper.slots} />
+                </div>
+              ))}
         </div>
       </main>
     </div>

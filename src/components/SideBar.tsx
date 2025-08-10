@@ -71,7 +71,7 @@ function SideBar({
     })) ?? [];
 
   return (
-    <div className="no-scrollbar mb-0 h-[100vh] min-w-fit flex-col items-baseline overflow-y-scroll border-r-2 border-[#36266d] bg-[#f3f5ff] pt-[10px] dark:bg-[#070114] md:flex">
+    <div className="no-scrollbar fixed sticky top-0 h-[100vh] flex-col items-baseline overflow-y-auto border-r-2 border-[#36266d] bg-[#f3f5ff] pt-[10px] dark:bg-[#070114] md:flex">
       <div className="flex w-full items-center justify-between border-b-2 border-[#36266d] px-[10px] py-4">
         <div className="flex items-center gap-1">
           <Filter size={24} />
@@ -133,169 +133,104 @@ function SideBar({
         </div>
       </div>
 
-      <div className="flex w-full flex-col items-baseline justify-between border-b-2 border-[#36266d] px-[10px]">
-        <Accordion
-          className="w-full"
-          type="single"
-          collapsible
-          defaultValue="item-1"
+      {/* Filters */}
+      {[
+        {
+          label: "Exams",
+          data: exams,
+          selected: selectedExams,
+          updater: (newVal: string[]) =>
+            handleApplyFilters(
+              newVal,
+              selectedSlots,
+              selectedYears,
+              selectedCampuses,
+              selectedSemesters,
+              selectedAnswerKeyIncluded,
+            ),
+        },
+        {
+          label: "Slots",
+          data: slots,
+          selected: selectedSlots,
+          updater: (newVal: string[]) =>
+            handleApplyFilters(
+              selectedExams,
+              newVal,
+              selectedYears,
+              selectedCampuses,
+              selectedSemesters,
+              selectedAnswerKeyIncluded,
+            ),
+        },
+        {
+          label: "Years",
+          data: years,
+          selected: selectedYears,
+          updater: (newVal: string[]) =>
+            handleApplyFilters(
+              selectedExams,
+              selectedSlots,
+              newVal,
+              selectedCampuses,
+              selectedSemesters,
+              selectedAnswerKeyIncluded,
+            ),
+        },
+        {
+          label: "Semesters",
+          data: semesters,
+          selected: selectedSemesters,
+          updater: (newVal: string[]) =>
+            handleApplyFilters(
+              selectedExams,
+              selectedSlots,
+              selectedYears,
+              selectedCampuses,
+              newVal,
+              selectedAnswerKeyIncluded,
+            ),
+        },
+      ].map((section) => (
+        <div
+          key={section.label}
+          className="flex w-full flex-col items-baseline justify-between border-b-2 border-[#36266d] px-[10px]"
         >
-          <AccordionItem className="border-none no-underline" value="item-1">
-            <AccordionTrigger className="w-full no-underline">
-              <div className="font-play text-sm no-underline">Exams</div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="my-2 flex w-full flex-wrap items-center">
-                {exams.map((exam) => (
-                  <div
-                    key={exam.value}
-                    onClick={() => {
-                      const newExams = selectedExams.includes(exam.value)
-                        ? selectedExams.filter((e) => e !== exam.value)
-                        : [...selectedExams, exam.value];
-                      handleApplyFilters(
-                        newExams,
-                        selectedSlots,
-                        selectedYears,
-                        selectedCampuses,
-                        selectedSemesters,
-                        selectedAnswerKeyIncluded,
-                      );
-                    }}
-                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
-                      selectedExams.includes(exam.value)
-                        ? "border-[#B2B8FF] bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba]"
-                        : "bg-none dark:border-white"
-                    }`}
-                  >
-                    {exam.label}
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-
-      <div className="flex w-full flex-col items-baseline justify-between border-b-2 border-[#36266d] px-[10px]">
-        <Accordion className="w-full" type="single" collapsible>
-          <AccordionItem className="border-none no-underline" value="item-1">
-            <AccordionTrigger className="w-full no-underline">
-              <div className="font-play text-sm no-underline">Slots</div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="my-2 flex w-full flex-wrap items-center">
-                {slots.map((slot) => (
-                  <div
-                    key={slot.value}
-                    onClick={() => {
-                      const newSlots = selectedSlots.includes(slot.value)
-                        ? selectedSlots.filter((s) => s !== slot.value)
-                        : [...selectedSlots, slot.value];
-                      handleApplyFilters(
-                        selectedExams,
-                        newSlots,
-                        selectedYears,
-                        selectedCampuses,
-                        selectedSemesters,
-                        selectedAnswerKeyIncluded,
-                      );
-                    }}
-                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
-                      selectedSlots.includes(slot.value)
-                        ? "border-[#B2B8FF] bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba]"
-                        : "bg-none dark:border-white"
-                    }`}
-                  >
-                    {slot.label}
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-
-      <div className="flex w-full flex-col items-baseline justify-between border-b-2 border-[#36266d] px-[10px]">
-        <Accordion className="w-full" type="single" collapsible>
-          <AccordionItem className="border-none no-underline" value="item-1">
-            <AccordionTrigger className="w-full no-underline">
-              <div className="font-play text-sm no-underline">Years</div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="my-2 flex w-full flex-wrap items-center">
-                {years.map((year) => (
-                  <div
-                    key={year.value}
-                    onClick={() => {
-                      const newYears = selectedYears.includes(year.value)
-                        ? selectedYears.filter((y) => y !== year.value)
-                        : [...selectedYears, year.value];
-                      handleApplyFilters(
-                        selectedExams,
-                        selectedSlots,
-                        newYears,
-                        selectedCampuses,
-                        selectedSemesters,
-                        selectedAnswerKeyIncluded,
-                      );
-                    }}
-                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
-                      selectedYears.includes(year.value)
-                        ? "border-[#B2B8FF] bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba]"
-                        : "bg-none dark:border-white"
-                    }`}
-                  >
-                    {year.label}
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-
-      <div className="flex w-full flex-col items-baseline justify-between border-b-2 border-[#36266d] px-[10px]">
-        <Accordion className="w-full" type="single" collapsible>
-          <AccordionItem className="border-none no-underline" value="item-1">
-            <AccordionTrigger className="w-full no-underline">
-              <div className="font-play text-sm no-underline">Semesters</div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="my-2 flex w-full flex-wrap items-center">
-                {semesters.map((semester) => (
-                  <div
-                    key={semester.value}
-                    onClick={() => {
-                      const newSems = selectedSemesters.includes(semester.value)
-                        ? selectedSemesters.filter((s) => s !== semester.value)
-                        : [...selectedSemesters, semester.value];
-                      handleApplyFilters(
-                        selectedExams,
-                        selectedSlots,
-                        selectedYears,
-                        selectedCampuses,
-                        newSems,
-                        selectedAnswerKeyIncluded,
-                      );
-                    }}
-                    className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
-                      selectedSemesters.includes(semester.value)
-                        ? "border-[#B2B8FF] bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba]"
-                        : "bg-none dark:border-white"
-                    }`}
-                  >
-                    {semester.label}
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
+          <Accordion className="w-full" type="single" collapsible>
+            <AccordionItem className="border-none no-underline" value="item-1">
+              <AccordionTrigger className="w-full no-underline">
+                <div className="font-play text-sm no-underline">
+                  {section.label}
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="my-2 flex w-full flex-wrap items-center">
+                  {section.data.map((item) => (
+                    <div
+                      key={item.value}
+                      onClick={() => {
+                        const newValues = section.selected.includes(item.value)
+                          ? section.selected.filter((v) => v !== item.value)
+                          : [...section.selected, item.value];
+                        section.updater(newValues);
+                      }}
+                      className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
+                        section.selected.includes(item.value)
+                          ? "border-[#B2B8FF] bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba]"
+                          : "bg-none dark:border-white"
+                      }`}
+                    >
+                      {item.label}
+                    </div>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      ))}
     </div>
   );
 }
 
 export default SideBar;
-

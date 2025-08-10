@@ -17,7 +17,6 @@
 - MongoDB & Mongoose : Database and object data modeling (ODM) for Node.js.
 - Cloudinary : Media storage and optimization service.
 - Shadcn : Collection of pre-built components using Radix UI and Tailwind CSS.
-
 ## 💡 Features:
 
 - Access a vast collection of past CAT and FAT papers

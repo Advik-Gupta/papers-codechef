@@ -64,21 +64,21 @@ export const FilterDialog = ({
     initialSemesters,
   ]);
 
-  const exams = filterOptions.uniqueExams.map((exam) => ({
+  const exams = filterOptions.unique_exams.map((exam) => ({
     label: exam,
     value: exam,
   }));
-  const slots = filterOptions.uniqueSlots
+  const slots = filterOptions.unique_slots
     .sort((a, b) => a.localeCompare(b))
     .map((slot) => ({
       label: slot,
       value: slot,
     }));
-  const years = filterOptions.uniqueYears.map((year) => ({
+  const years = filterOptions.unique_years.map((year) => ({
     label: year,
     value: year,
   }));
-  const semesters = filterOptions.uniqueSemesters.map((semester) => ({
+  const semesters = filterOptions.unique_semesters.map((semester) => ({
     label: semester,
     value: semester,
   }));

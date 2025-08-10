@@ -1,6 +1,6 @@
 <p align="center"><a href="https://www.codechefvit.com" target="_blank"><img src="https://i.ibb.co/4J9LXxS/cclogo.png" width=160 title="CodeChef-VIT" alt="Codechef-VIT"></a>
 </p>
-
+.
 <h2 align="center"> Papers </h2>
 <br/>
 
@@ -17,7 +17,6 @@
 - MongoDB & Mongoose : Database and object data modeling (ODM) for Node.js.
 - Cloudinary : Media storage and optimization service.
 - Shadcn : Collection of pre-built components using Radix UI and Tailwind CSS.
-
 ## 💡 Features:
 
 - Access a vast collection of past CAT and FAT papers

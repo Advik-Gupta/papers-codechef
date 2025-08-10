@@ -7,7 +7,6 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChildrenWrapper from "@/components/ChildrenWrapper";
-import Banner from "@/components/BannerAlert";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://papers.codechefvit.com/"),
@@ -122,9 +121,8 @@ export default function RootLayout({
           <Toaster position="top-right" reverseOrder={false} />
           <div className="bg-[#F3F5FF] dark:bg-[#070114]">
             <Navbar />
-            <ChildrenWrapper>
-            {children}</ChildrenWrapper>
-            {/* <div className="mx-auto max-w-[1440px] ">{children}</div> */}
+            <ChildrenWrapper>{children}</ChildrenWrapper>
+
             <Footer />
           </div>
         </ThemeProvider>

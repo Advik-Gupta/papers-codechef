@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const escapeRegExp = (text: string) => {
       return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     };
-    const escapedSubject = escapeRegExp(subject!);
+    const escapedSubject = escapeRegExp(subject ?? "");
 
     if (!subject) {
       return NextResponse.json(
@@ -28,29 +28,36 @@ export async function GET(req: NextRequest) {
 
     if (papers.length === 0) {
       return NextResponse.json(
-        { message: "No papers found for the specified subject" },
-        { status: 404 },
+        {
+          papers,
+          unique_years: [],
+          unique_slots: [],
+          unique_exams: [],
+          unique_campuses: [],
+          unique_semesters: [],
+        },
+        { status: 200 },
       );
     }
 
-    const uniqueYears = Array.from(new Set(papers.map((paper) => paper.year)));
-    const uniqueSlots = Array.from(new Set(papers.map((paper) => paper.slot)));
-    const uniqueExams = Array.from(new Set(papers.map((paper) => paper.exam)));
-    const uniqueCampuses = Array.from(
+    const unique_years = Array.from(new Set(papers.map((paper) => paper.year)));
+    const unique_slots = Array.from(new Set(papers.map((paper) => paper.slot)));
+    const unique_exams = Array.from(new Set(papers.map((paper) => paper.exam)));
+    const unique_campuses = Array.from(
       new Set(papers.map((paper) => paper.campus)),
     );
-    const uniqueSemesters = Array.from(
+    const unique_semesters = Array.from(
       new Set(papers.map((paper) => paper.semester)),
     );
 
     return NextResponse.json(
       {
         papers,
-        uniqueYears,
-        uniqueSlots,
-        uniqueExams,
-        uniqueCampuses,
-        uniqueSemesters,
+        unique_years,
+        unique_slots,
+        unique_exams,
+        unique_campuses,
+        unique_semesters,
       },
       { status: 200 },
     );

@@ -17,16 +17,24 @@ function SearchBarChild({
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>(
+    {},
+  );
   const suggestionsRef = useRef<HTMLUListElement | null>(null);
   const fuzzy = new Fuse(initialSubjects);
 
-  const fetchPaperQuantityByName = async (subjectName: string) => {
+  const fetchPaperCount = async (subjectName: string) => {
     try {
-      const response = await axios.get("/api/papers", {
-        params: { subject: subjectName },
-      });
-      return response.data.papers.length;
+      const cleanSubject = subjectName.replace(/^"|"$/g, "");
+      const encodedSubject = encodeURIComponent(cleanSubject);
+
+      const response = await axios.get<{ count: number }>(
+        `/api/papers/count?subject=${encodedSubject}`,
+      );
+
+      return response.data.count ?? 0;
     } catch (error) {
+      console.error("Error fetching count for", subjectName, error);
       return 0;
     }
   };
@@ -45,8 +53,27 @@ function SearchBarChild({
         .slice(0, 10);
 
       setSuggestions(filteredSuggestions);
+
+      // Fetch counts in parallel for each suggestion
+      const counts = await Promise.all(
+        filteredSuggestions.map(async (subject) => {
+          const count = await fetchPaperCount(subject);
+          return { subject, count };
+        }),
+      );
+
+      const countsMap = counts.reduce(
+        (acc, { subject, count }) => {
+          acc[subject] = count;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
+
+      setSubjectCounts(countsMap);
     } else {
       setSuggestions([]);
+      setSubjectCounts({});
     }
   };
 
@@ -108,9 +135,20 @@ function SearchBarChild({
                 <li
                   key={index}
                   onClick={() => handleSelectSuggestion(suggestion)}
-                  className="cursor-pointer truncate p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="flex cursor-pointer items-center truncate rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
-                  {suggestion}
+                  <div
+                    id="paper_count"
+                    className="mr-4 flex h-10 w-10 items-center justify-center rounded-md bg-[#171720] text-sm font-semibold text-white"
+                  >
+                    {subjectCounts[suggestion] ?? "0"}
+                  </div>
+                  <span
+                    id="subject"
+                    className="items-center text-sm tracking-wide text-white sm:text-base"
+                  >
+                    {suggestion}
+                  </span>
                 </li>
               ))}
             </ul>

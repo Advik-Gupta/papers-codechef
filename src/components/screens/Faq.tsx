@@ -57,29 +57,38 @@ function Faq() {
     <>
       <div
         id="faq"
-        className="font-vipnabd mb-8 w-full px-6 text-center text-4xl font-bold text-[#120020] dark:text-white lg:text-left lg:text-5xl"
+        className="mb-8 w-full px-6 pt-16 text-center font-vipnabd text-4xl font-bold text-[#120020] dark:text-white lg:text-left lg:text-5xl"
       >
         Frequently Asked Questions
       </div>
-      <div className="font-play mx-auto w-full space-y-6 px-6">
+      <div className="mx-auto w-full max-w-5xl space-y-4 px-4 font-play sm:space-y-6 sm:px-6 md:px-8">
         {faqs.map((faq, index) => (
           <div
             key={index}
-            className="cursor-pointer border-b-2 border-[#453D60] p-4"
+            className="cursor-pointer border-b border-[#453D60] px-2 py-3 sm:px-4 sm:py-4"
             onClick={() => handleClick(index)}
           >
-            <div className="flex w-full items-center justify-between">
+            <div className="flex w-full items-start justify-between gap-4 sm:gap-6">
               <h2
-                className={`w-full text-lg font-semibold ${faqActive === index ? "text-[#A47DE5]" : "text-black dark:text-white"}`}
+                className={`w-full text-sm font-semibold leading-snug transition-colors sm:text-base md:text-lg ${
+                  faqActive === index
+                    ? "text-[#A47DE5]"
+                    : "text-black dark:text-white"
+                }`}
               >
                 {faq.question}
               </h2>
               <button
-                className={`text-md flex h-6 w-11 items-center justify-center rounded-full font-bold transition-all duration-200 ${faqActive === index ? "bg-[#A47DE5] text-white" : "bg-white text-[#99979F]"}`}
+                className={`flex h-6 w-8 shrink-0 items-center justify-center rounded-full text-base font-bold transition-all duration-200 sm:h-7 sm:w-9 sm:text-lg ${
+                  faqActive === index
+                    ? "bg-[#A47DE5] text-white"
+                    : "bg-white text-[#99979F]"
+                }`}
               >
                 {faqActive === index ? "−" : "+"}
               </button>
             </div>
+
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
                 faqActive === index
@@ -87,7 +96,9 @@ function Faq() {
                   : "max-h-0 opacity-0"
               }`}
             >
-              <p className="mt-2 text-black dark:text-white">{faq.answer}</p>
+              <p className="mt-2 text-xs text-black dark:text-white sm:text-sm md:text-base">
+                {faq.answer}
+              </p>
             </div>
           </div>
         ))}

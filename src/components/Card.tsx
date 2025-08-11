@@ -9,7 +9,7 @@ import {
   extractBracketContent,
   extractWithoutBracketContent,
 } from "@/util/utils";
-import axios from "axios";
+import { getSecureUrl, generateFileName, downloadFile } from "@/util/download";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -25,28 +25,6 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
   useEffect(() => {
     setChecked(isSelected);
   }, [isSelected]);
-
-  const getSecureUrl = (url: string): string =>
-    url.startsWith("http://") ? url.replace("http://", "https://") : url;
-
-  const generateFileName = (paper: IPaper): string => {
-    const extension = paper.final_url.split(".").pop();
-    return `${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}.${extension}`;
-  };
-
-  const downloadFile = async (url: string, filename: string): Promise<void> => {
-    try {
-      const response = await axios.get(url, { responseType: "blob" });
-      const blob = new Blob([response.data]);
-      const link = document.createElement("a");
-      link.href = window.URL.createObjectURL(blob);
-      link.download = filename;
-      link.click();
-      window.URL.revokeObjectURL(link.href);
-    } catch (error) {
-      console.error("Download failed:", error);
-    }
-  };
 
   const handleDownload = async (paper: IPaper) => {
     await downloadFile(getSecureUrl(paper.final_url), generateFileName(paper));

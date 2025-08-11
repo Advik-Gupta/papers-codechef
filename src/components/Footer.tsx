@@ -110,38 +110,36 @@ export default function Footer() {
         </div>
 
         {/* Suggestions */}
-        <div className="flex w-full flex-col gap-2 text-black dark:text-white sm:w-[45%] lg:w-[25%]">
+        <div className="flex w-full flex-col gap-4 text-black dark:text-white sm:w-[45%] lg:w-[25%]">
           <h3 className="font-jost text-xl font-semibold">
             Drop Your Suggestions:
           </h3>
           <Link
             href={`mailto:codechefvit@gmail.com`}
-            className="mx-auto flex items-center justify-center gap-2 sm:mx-0"
+            className="flex items-center gap-2"
           >
             <Mail size={18} />
             <span>codechefvit@gmail.com</span>
           </Link>
 
-          <div className="mt-4 flex w-full max-w-xs flex-col gap-2">
-            <h3 className="font-jost text-2xl font-semibold">
-              Subscribe For Updates:
-            </h3>
-            <div className="relative w-full">
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter Your Email"
-                className="pr-24"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Button
-                onClick={handleSubscribe}
-                className="absolute right-0 top-0 h-full rounded-l-none rounded-r-md bg-[#562EE7] px-4 text-white hover:bg-[#4531b3]"
-              >
-                Subscribe!
-              </Button>
-            </div>
+          <h3 className="mt-4 font-jost text-xl font-semibold">
+            Subscribe For Updates:
+          </h3>
+          <div className="flex gap-2">
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter Your Email"
+              className="flex-1"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Button
+              onClick={handleSubscribe}
+              className="rounded-md bg-[#562EE7] px-4 text-white hover:bg-[#4531b3]"
+            >
+              Subscribe!
+            </Button>
           </div>
         </div>
       </div>

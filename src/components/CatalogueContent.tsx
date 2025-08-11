@@ -6,7 +6,6 @@ import axios, { type AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
 import { type IPaper, type Filters } from "@/interface";
 import Card from "./Card";
-import { extractBracketContent } from "@/util/utils";
 import { useRouter } from "next/navigation";
 import Loader from "./ui/loader";
 import SideBar from "../components/SideBar";
@@ -15,18 +14,7 @@ import { Filter } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Pin } from "lucide-react";
 import { StoredSubjects } from "@/interface";
-
-export async function downloadFile(url: string, filename: string) {
-  try {
-    const response = await axios.get(url, { responseType: "blob" });
-    const blob = new Blob([response.data]);
-    const link = document.createElement("a");
-    link.href = window.URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-    window.URL.revokeObjectURL(link.href);
-  } catch (error) {}
-}
+import { getSecureUrl, generateFileName, downloadFile } from "@/util/download";
 
 const CatalogueContent = () => {
   const router = useRouter();
@@ -176,17 +164,15 @@ const CatalogueContent = () => {
   );
 
   const handleDownloadAll = useCallback(async () => {
-    /*    if (typeof window !== "undefined" && window.gtag) {
-      window.gtag("event", "download_all_clicked", {
-        event_category: "Paper Downloads",
-        event_label: "Download All Clicked",
-      });
-    } */
+    const uniquePapers = Array.from(
+      new Set(selectedPapers.map((paper) => paper._id)),
+    ).map((id) => selectedPapers.find((paper) => paper._id === id)) as IPaper[];
 
-    for (const paper of selectedPapers) {
-      const extension = paper.final_url.split(".").pop();
-      const fileName = `${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}.${extension}`;
-      await downloadFile(paper.final_url, fileName);
+    for (const paper of uniquePapers) {
+      await downloadFile(
+        getSecureUrl(paper.final_url),
+        generateFileName(paper),
+      );
     }
   }, [selectedPapers]);
 
@@ -272,7 +258,7 @@ const CatalogueContent = () => {
 
   return (
     <div className="relative flex min-h-screen justify-center p-0 md:justify-normal">
-      <div className="hidden w-[30%] min-w-fit md:block">
+      <div className="hidden !w-[22%] min-w-[22%] max-w-[22%] flex-shrink-0 md:block">
         <SideBar
           filtersNotPulled={filtersNotPulled}
           loading={loading}

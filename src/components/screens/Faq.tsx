@@ -57,11 +57,11 @@ function Faq() {
     <>
       <div
         id="faq"
-        className="mb-8 w-full px-6 pt-16 text-center font-vipnabd text-4xl font-bold text-[#120020] dark:text-white lg:text-left lg:text-5xl"
+        className="mb-8 w-full px-6 pt-16 text-center font-vipnabd text-4xl font-bold text-[#120020] dark:text-white lg:text-center lg:text-5xl"
       >
         Frequently Asked Questions
       </div>
-      <div className="mx-auto w-full max-w-5xl space-y-4 px-4 font-play sm:space-y-6 sm:px-6 md:px-8">
+      <div className="mx-auto mb-5 w-full max-w-5xl space-y-4 px-4 font-play sm:space-y-6 sm:px-6 md:px-8">
         {faqs.map((faq, index) => (
           <div
             key={index}

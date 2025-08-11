@@ -40,14 +40,14 @@ function Navbar() {
     <div className="sticky top-0 z-10 w-full bg-[#B2B8FF] px-4 py-4 dark:bg-[#130E1F] md:px-8 md:py-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <a href="https://www.codechefvit.com/">
+            <Link href="https://www.codechefvit.com/" target="_blank">
             <Image
               src={ccLogo as HTMLImageElement}
               alt="codechef-logo"
               height={60}
               width={60}
             />
-          </a>
+          </Link>
 
           <Link
             href="/"

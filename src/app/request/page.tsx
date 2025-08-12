@@ -127,14 +127,19 @@ export default function PaperRequest() {
     }
 
     try {
-      await axios.post("/api/request", {
-        subject: selectedSubject,
-        exam: selectedExam,
-        slot: selectedSlot,
-        year: selectedYear,
-      });
-
-      alert("✅ Your paper request was submitted successfully 🎉");
+      await toast.promise(
+        axios.post("/api/request", {
+          subject: selectedSubject,
+          exam: selectedExam,
+          slot: selectedSlot,
+          year: selectedYear,
+        }),
+        {
+          loading: "Submitting your request...",
+          success: "Your paper request was submitted successfully",
+          error: "Failed to submit your request. Please try again later.",
+        }
+      );
 
       setSearchText("");
       setSelectedSubject(null);
@@ -143,7 +148,6 @@ export default function PaperRequest() {
       setSelectedYear(null);
     } catch (error) {
       console.error("Error submitting request:", error);
-      alert("❌ Failed to submit your request. Please try again later.");
     }
   };
 

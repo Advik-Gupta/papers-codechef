@@ -1,8 +1,9 @@
 <p align="center"><a href="https://www.codechefvit.com" target="_blank"><img src="https://i.ibb.co/4J9LXxS/cclogo.png" width=160 title="CodeChef-VIT" alt="Codechef-VIT"></a>
 </p>
-
+.
 <h2 align="center"> Papers </h2>
 <br/>
+
 
 > <p>Prepare to excel in your CATs and FATs with CodeChef-VIT's dedicated repository of past exam papers. Access key resources to review concepts, tackle challenging questions, and familiarize yourself with exam patterns. Boost your confidence, sharpen your strategy, and get ready to ace your exams!</p>
 
@@ -17,7 +18,6 @@
 - MongoDB & Mongoose : Database and object data modeling (ODM) for Node.js.
 - Cloudinary : Media storage and optimization service.
 - Shadcn : Collection of pre-built components using Radix UI and Tailwind CSS.
-
 ## 💡 Features:
 
 - Access a vast collection of past CAT and FAT papers

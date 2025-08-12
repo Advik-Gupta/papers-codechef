@@ -6,25 +6,15 @@ import axios, { type AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
 import { type IPaper, type Filters } from "@/interface";
 import Card from "./Card";
-import { extractBracketContent } from "@/util/utils";
 import { useRouter } from "next/navigation";
 import Loader from "./ui/loader";
 import SideBar from "../components/SideBar";
 import Error from "./Error";
 import { Filter } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-
-export async function downloadFile(url: string, filename: string) {
-  try {
-    const response = await axios.get(url, { responseType: "blob" });
-    const blob = new Blob([response.data]);
-    const link = document.createElement("a");
-    link.href = window.URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-    window.URL.revokeObjectURL(link.href);
-  } catch (error) {}
-}
+import { Pin } from "lucide-react";
+import { StoredSubjects } from "@/interface";
+import { getSecureUrl, generateFileName, downloadFile } from "@/util/download";
 
 const CatalogueContent = () => {
   const router = useRouter();
@@ -48,23 +38,49 @@ const CatalogueContent = () => {
   const [filterOptions, setFilterOptions] = useState<Filters>();
   const [filtersPulled, setFiltersPulled] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<boolean>(false);
+  const [pinned, setPinned] = useState<boolean>(false);
 
   // Set initial state from searchParams on client-side mount
   useEffect(() => {
     setIsMounted(true);
     if (searchParams) {
-      setSubject(searchParams.get("subject"));
+      const currentPinnedSubjects = JSON.parse(
+        localStorage.getItem("userSubjects") ?? "[]",
+      ) as StoredSubjects;
+      const subjectName = searchParams.get("subject");
+      setSubject(subjectName);
       setSelectedExams(searchParams.get("exams")?.split(",") ?? []);
       setSelectedSlots(searchParams.get("slots")?.split(",") ?? []);
       setSelectedYears(searchParams.get("years")?.split(",") ?? []);
       setSelectedCampuses(searchParams.get("campus")?.split(",") ?? []);
       setSelectedSemesters(searchParams.get("semester")?.split(",") ?? []);
       setSelectedAnswerKeyIncluded(searchParams.get("answerkey") === "true");
+      if (subjectName && Array.isArray(currentPinnedSubjects)) {
+        if (currentPinnedSubjects.includes(subjectName)) {
+          setPinned(true);
+        } else {
+          setPinned(false);
+        }
+      }
     }
-  }, [searchParams]);
+  }, [searchParams, pinned]);
 
   const filtersNotPulled = () => {
     setFiltersPulled(false);
+  };
+
+  const handlePinToggle = () => {
+    const current = !pinned;
+    setPinned(current);
+
+    const saved = JSON.parse(
+      localStorage.getItem("userSubjects") ?? "[]",
+    ) as string[];
+    const updated = current
+      ? [...new Set([...saved, subject])]
+      : saved.filter((s) => s !== subject);
+
+    localStorage.setItem("userSubjects", JSON.stringify(updated));
   };
 
   // Fetch papers and apply filters
@@ -81,7 +97,6 @@ const CatalogueContent = () => {
         const papersData = data.papers;
         setFilterOptions(data);
         setPapers(papersData);
-        // Apply filters from URL params
         const filtered = papersData.filter((paper) => {
           const examCondition = selectedExams.length
             ? selectedExams.includes(paper.exam)
@@ -99,7 +114,7 @@ const CatalogueContent = () => {
             ? selectedCampuses.includes(paper.campus)
             : true;
           const answerkeyCondition = selectedAnswerKeyIncluded
-            ? paper.answerKeyIncluded
+            ? paper.answer_key_included === true
             : true;
           return (
             examCondition &&
@@ -149,10 +164,15 @@ const CatalogueContent = () => {
   );
 
   const handleDownloadAll = useCallback(async () => {
-    for (const paper of selectedPapers) {
-      const extension = paper.finalUrl.split(".").pop();
-      const fileName = `${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}.${extension}`;
-      await downloadFile(paper.finalUrl, fileName);
+    const uniquePapers = Array.from(
+      new Set(selectedPapers.map((paper) => paper._id)),
+    ).map((id) => selectedPapers.find((paper) => paper._id === id)) as IPaper[];
+
+    for (const paper of uniquePapers) {
+      await downloadFile(
+        getSecureUrl(paper.final_url),
+        generateFileName(paper),
+      );
     }
   }, [selectedPapers]);
 
@@ -198,7 +218,9 @@ const CatalogueContent = () => {
         const campusCondition = campus.length
           ? campus.includes(paper.campus)
           : true;
-        const answerkeyCondition = anskey ? paper.answerKeyIncluded : true;
+        const answerkeyCondition = anskey
+          ? paper.answer_key_included === true
+          : true;
         return (
           examCondition &&
           slotCondition &&
@@ -236,7 +258,7 @@ const CatalogueContent = () => {
 
   return (
     <div className="relative flex min-h-screen justify-center p-0 md:justify-normal">
-      <div className="hidden w-[30%] min-w-fit md:block">
+      <div className="hidden !w-[22%] min-w-[22%] max-w-[22%] flex-shrink-0 md:block">
         <SideBar
           filtersNotPulled={filtersNotPulled}
           loading={loading}
@@ -295,11 +317,29 @@ const CatalogueContent = () => {
           </SheetContent>
         </Sheet>
 
+        <div className="flex items-center gap-2 p-7">
+          <div>
+            <p className="text-s font-semibold text-gray-700 dark:text-white/80">
+              {subject?.split("[")[1]?.replace("]", "")}
+            </p>
+            <h2 className="text-2xl font-extrabold text-gray-700 dark:text-white md:text-3xl">
+              {subject?.split(" [")[0]}
+            </h2>
+          </div>
+          <div className="mt-7">
+            <button onClick={handlePinToggle}>
+              <Pin
+                className={`h-7 w-7 ${pinned ? "fill-[#A78BFA]" : ""} stroke-gray-700 dark:stroke-white`}
+              />
+            </button>
+          </div>
+        </div>
+
         {loading ? (
           <Loader />
         ) : papers.length > 0 ? (
           <div
-            className={`grid h-fit grid-cols-1 gap-8 px-[30px] py-[40px] md:grid-cols-2 lg:grid-cols-4 ${filtersPulled ? "blur-xl" : ""}`}
+            className={`grid h-fit grid-cols-1 gap-8 px-[30px] pb-[40px] md:grid-cols-2 lg:grid-cols-4 ${filtersPulled ? "blur-xl" : ""}`}
           >
             {appliedFilters ? (
               filteredPapers.length > 0 ? (

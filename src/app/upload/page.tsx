@@ -140,7 +140,8 @@ const Page = () => {
       await toast.promise(
         async () => {
           try {
-            await axios.post<APIResponse>("/api/ai-upload", formData);
+            await axios.post<APIResponse>("/api/upload", formData);
+            return { message: "Papers uploaded successfully!" };
           } catch (error) {
             if (error instanceof AxiosError && error.response?.data) {
               const errorData = error.response.data as APIResponse;
@@ -173,7 +174,7 @@ const Page = () => {
   const isCurrentlyDragging = isDragging || isGlobalDragging;
 
   return (
-    <div className="font-play flex h-[calc(100vh-85px)] flex-col justify-center px-6">
+    <div className="flex h-[calc(100vh-85px)] flex-col justify-center px-6 font-play">
       <div className="2xl:my-15 flex flex-col items-center">
         <fieldset className="mb-4 w-full max-w-md rounded-lg border-2 border-gray-300 p-4 pr-8">
           <div className="flex w-full flex-col 2xl:gap-y-4">

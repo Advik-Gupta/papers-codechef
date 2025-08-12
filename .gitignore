@@ -36,7 +36,7 @@ yarn-error.log*
 .env
 .env.lcal
 .env*.local
-
+.env.prod
 # vercel
 .vercel
 .env.staging

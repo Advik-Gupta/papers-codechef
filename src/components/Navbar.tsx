@@ -1,22 +1,26 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ccLogo from "../assets/codechef_logo.svg";
 import ModeToggle from "@/components/toggle-theme";
-import { ArrowDownLeftIcon, Pin, ArrowUpRight } from "lucide-react";
-import NavDropdownButton from "./NavDropdownButton";
+import { ArrowDownLeftIcon, Pin, ArrowUpRight, ChevronDown } from "lucide-react";
 import FloatingNavbar from "./FloatingNavbar";
 import PWAInstallButton from "./ui/PWAInstallButton";
 import SearchBarChild from "./Searchbar/searchbar-child";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 function Navbar() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
   const [subjects, setSubjects] = useState<string[]>([]);
-  const dropdownContainerRef = useRef<HTMLDivElement>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     async function getSubjects() {
@@ -26,26 +30,6 @@ function Navbar() {
     }
     if (pathname === "/catalogue") getSubjects();
   }, [pathname]);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownContainerRef.current &&
-        !dropdownContainerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    }
-
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [open]);
-
 
   const renderHomePageButtons = () => (
     <>
@@ -85,39 +69,39 @@ function Navbar() {
           </Link>
 
           {pathname === "/catalogue" ? (
-            <div
-              ref={dropdownContainerRef}
-              className="ml-4 hidden md:block relative"
-            >
-              <NavDropdownButton
-                isOpen={open}
-                onClick={() => setOpen((prev) => !prev)}
-                variant="default"
-              />
-              {open && (
-                <div className="absolute left-0 mt-3 w-56 rounded-2xl bg-[#4B22D1] shadow-2xl border border-[rgba(255,255,255,0.1)] z-50 overflow-hidden backdrop-blur-sm">
-                  <div className="py-2">
-                    <Link href="/pinned">
-                      <button
-                        onClick={() => setOpen(false)}
-                        className="w-full px-4 py-3 text-left text-white hover:bg-[rgba(255,255,255,0.1)] transition-all duration-200 flex items-center gap-3 group"
-                      >
-                        <Pin className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-                        <span className="font-medium">Pinned Subjects</span>
-                      </button>
+            <div className="ml-4 hidden md:block relative">
+              <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[#4B22D1] text-white shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95"
+                    aria-label="Toggle dropdown"
+                  >
+                    <ChevronDown
+                      className={`h-5 w-5 transition-transform duration-200 ${
+                        dropdownOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                  className="w-56 rounded-2xl bg-[#4B22D1] text-white border border-[rgba(255,255,255,0.1)] shadow-2xl backdrop-blur-sm"
+                  align="start"
+                >
+                  <DropdownMenuItem asChild>
+                    <Link href="/pinned" className="flex items-center gap-3">
+                      <Pin className="h-4 w-4" />
+                      <span className="font-medium">Pinned Subjects</span>
                     </Link>
-                    <Link href="/request">
-                      <button
-                        onClick={() => setOpen(false)}
-                        className="w-full px-4 py-3 text-left text-white hover:bg-[rgba(255,255,255,0.1)] transition-all duration-200 flex items-center gap-3 group"
-                      >
-                        <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-                        <span className="font-medium">Paper Request</span>
-                      </button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/request" className="flex items-center gap-3">
+                      <ArrowUpRight className="h-4 w-4" />
+                      <span className="font-medium">Paper Request</span>
                     </Link>
-                  </div>
-                </div>
-              )}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           ) : (
             <div className="hidden md:flex items-center h-10">
@@ -151,18 +135,8 @@ function Navbar() {
           </Link>
         </div>
 
-        <div className="md:hidden" ref={dropdownContainerRef}>
-          <NavDropdownButton
-            isOpen={open}
-            onClick={() => setOpen((prev) => !prev)}
-            variant="default"
-          />
-          <div
-            className={`transition-all duration-300 ease-in-out ${open ? "block" : "hidden"
-              }`}
-          >
-            <FloatingNavbar onNavigate={() => setOpen(false)} />
-          </div>
+        <div className="md:hidden">
+          <FloatingNavbar onNavigate={() => { }} />
         </div>
       </div>
     </div>

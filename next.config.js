@@ -18,19 +18,6 @@ const config = {
     });
     return config;
   },
-    async headers() {
-        return [
-            {
-                source: "/api/upcoming-papers",
-                headers: [
-                    {
-                        key: "Cache-Control",
-                        value: "s-maxage=60, stale-while-revalidate=120",
-                    },
-                ],
-            },
-        ]
-  }
 };
 
 export default config;

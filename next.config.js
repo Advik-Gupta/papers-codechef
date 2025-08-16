@@ -7,7 +7,6 @@ await import("./src/env.js");
 /** @type {import("next").NextConfig} */
 const config = {
   swcMinify: false,
-
   images: {
     domains: ["res.cloudinary.com"],
   },

@@ -17,7 +17,7 @@ interface PaperCardProps {
 export default function PaperCard({ subject, slots }: PaperCardProps) {
   const courseName = extractWithoutBracketContent(subject);
   const courseCode = extractBracketContent(subject);
-  const [paperCount, setPaperCount] = useState<number | null>(0);
+  // const [paperCount, setPaperCount] = useState<number | null>(0);
   const [pinned, setPinned] = useState<boolean>(false);
 
   const handlePinToggle = () => {
@@ -36,19 +36,19 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
   };
 
   useEffect(() => {
-    const fetchPaperCount = async () => {
-      try {
-        const response = await axios.get<{ count: number }>(
-          "/api/papers/count",
-          {
-            params: { subject },
-          },
-        );
-        setPaperCount(response.data.count);
-      } catch (error) {
-        console.error("Failed to fetch paper count:", error);
-      }
-    };
+    // const fetchPaperCount = async () => {
+    //   try {
+    //     const response = await axios.get<{ count: number }>(
+    //       "/api/papers/count",
+    //       {
+    //         params: { subject },
+    //       },
+    //     );
+    //     setPaperCount(response.data.count);
+    //   } catch (error) {
+    //     console.error("Failed to fetch paper count:", error);
+    //   }
+    // };
 
     const currentPinnedSubjects = JSON.parse(
       localStorage.getItem("userSubjects") ?? "[]",
@@ -62,7 +62,7 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
       }
     }
 
-    void fetchPaperCount();
+    // void fetchPaperCount();
   }, [subject]);
 
   const router = useRouter();
@@ -82,9 +82,9 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
         <div className="flex items-start justify-between">
           <h2 className="rounded-t-lg px-2 py-1 font-play text-base font-bold md:text-lg md:tracking-widest">
             {courseCode}
-            <div className="text-sm font-normal">
+            {/* <div className="text-sm font-normal">
               {paperCount ? `Papers available: ${paperCount}` : "Click to explore"}
-            </div>
+            </div> */}
           </h2>
 
           <button

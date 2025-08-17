@@ -26,7 +26,7 @@ export default function SearchBar({
   displayPapers
 }: {
   type?: "default" | "pinned";
-  displayPapers: boolean;
+  displayPapers?: boolean;
 }) {
   const [subjects,setSubjects] = useState<string[]>([]);
 
@@ -37,8 +37,8 @@ export default function SearchBar({
     void getSubjects()
   },[])
 
-  return type === "pinned" ? (
-    <PinnedSearchBar initialSubjects={subjects} displayPapers = {displayPapers} />
+  return type === "pinned" && displayPapers !== undefined ? (
+    <PinnedSearchBar initialSubjects={subjects} displayPapers={displayPapers} />
   ) : (
     <SearchBarChild initialSubjects={subjects} />
   );

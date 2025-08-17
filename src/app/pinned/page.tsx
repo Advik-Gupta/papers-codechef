@@ -21,9 +21,9 @@ const Pinned = () => {
       <div className="min-h-[40vh]">
         <PinnedPapersCarousel carouselType="users" displayPapers = {displayPapers} setDisplayPapers = {setDisplayPapers} />
       </div>
-      <div className="mt-6 flex w-full items-center justify-center">
+      {/* <div className="mt-6 flex w-full items-center justify-center">
         <p>You can pin upto 8 Subjects here</p>
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -35,7 +35,7 @@ export default function SearchBar({
     async function getSubjects() {
       setSubjects(await fetchSubjects());
     }
-    getSubjects()
+    void getSubjects()
   },[])
 
   return type === "pinned" ? (

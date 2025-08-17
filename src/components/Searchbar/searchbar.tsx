@@ -7,7 +7,6 @@ import SearchBarChild from "./searchbar-child";
 import PinnedSearchBar from "./pinned-searchbar";
 import { type IUpcomingPaper } from "@/interface";
 import { useState, useEffect } from "react";
-import { string } from "zod";
 
 export async function fetchSubjects() {
   try {

@@ -122,7 +122,6 @@ export default function RootLayout({
           <div className="bg-[#F3F5FF] dark:bg-[#070114]">
             <Navbar />
             <ChildrenWrapper>{children}</ChildrenWrapper>
-
             <Footer />
           </div>
         </ThemeProvider>

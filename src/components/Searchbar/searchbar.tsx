@@ -1,15 +1,18 @@
-"use server";
+"use client";
 
 import React from "react";
 import axios from "axios";
 import { type ICourses } from "@/interface";
 import SearchBarChild from "./searchbar-child";
 import PinnedSearchBar from "./pinned-searchbar";
+import { type IUpcomingPaper } from "@/interface";
+import { useState, useEffect } from "react";
+import { string } from "zod";
 
 export async function fetchSubjects() {
   try {
     const response = await axios.get<ICourses[]>(
-      `${process.env.SERVER_URL}/api/course-list`,
+      `/api/course-list`,
     );
 
     return response.data.map((course) => course.name);
@@ -19,15 +22,24 @@ export async function fetchSubjects() {
   }
 }
 
-export default async function SearchBar({
+export default function SearchBar({
   type = "default",
+  displayPapers
 }: {
   type?: "default" | "pinned";
+  displayPapers: IUpcomingPaper[]
 }) {
-  const subjects = await fetchSubjects();
+  const [subjects,setSubjects] = useState<string[]>([]);
+
+  useEffect(() => {
+    async function getSubjects() {
+      setSubjects(await fetchSubjects());
+    }
+    getSubjects()
+  },[])
 
   return type === "pinned" ? (
-    <PinnedSearchBar initialSubjects={subjects} />
+    <PinnedSearchBar initialSubjects={subjects} displayPapers = {displayPapers} />
   ) : (
     <SearchBarChild initialSubjects={subjects} />
   );

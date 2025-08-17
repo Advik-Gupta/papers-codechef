@@ -26,7 +26,7 @@ export default function SearchBar({
   displayPapers
 }: {
   type?: "default" | "pinned";
-  displayPapers: IUpcomingPaper[]
+  displayPapers: boolean;
 }) {
   const [subjects,setSubjects] = useState<string[]>([]);
 

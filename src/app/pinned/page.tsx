@@ -15,7 +15,7 @@ const Pinned = () => {
       </h1>
       <div className="mb-3 flex w-full flex-col items-center gap-2 px-6">
         <div className="w-full">
-          <SearchBar type="pinned" displayPapers = {displayPapers} />
+          <SearchBar type="pinned" displayPapers = {displayPapers.length > 0} />
         </div>
       </div>
       <div className="min-h-[40vh]">

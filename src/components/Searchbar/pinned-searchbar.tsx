@@ -17,7 +17,7 @@ function PinnedSearchBar({
   filtersNotPulled,
 }: {
   initialSubjects: string[];
-  displayPapers: IUpcomingPaper[],
+  displayPapers: boolean;
   filtersNotPulled?: () => void;
 }) {
   const router = useRouter();
@@ -237,7 +237,7 @@ function PinnedSearchBar({
                       }}
                       disabled={!showControls || searchText.trim() === ""}
                     />
-                    {displayPapers.length > 0 &&
+                    {displayPapers &&
                     <button
                       onClick={() => {
                         handleRemoveAll();
@@ -254,7 +254,7 @@ function PinnedSearchBar({
           </form>
         </div>
       </div>
-      {displayPapers.length > 0 && 
+      {displayPapers && 
       <div className="mt-2 hidden w-full md:block">
         <div className="ml-auto w-fit">
           <button

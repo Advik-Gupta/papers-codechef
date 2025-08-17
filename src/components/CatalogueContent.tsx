@@ -160,7 +160,6 @@ const CatalogueContent = () => {
             answerkeyCondition
           );
         });
-        setFilteredPapers(filtered.length > 0 ? filtered : papersData);
         setAppliedFilters(true);
       } catch (error) {
         setPapers([]);
@@ -405,7 +404,7 @@ const CatalogueContent = () => {
                   />
                 ))
               ) : (
-                <p>No papers available with the applied filter</p>
+                <p className="w-full">No papers available with the applied filter</p>
               )
             ) : (
               papers.map((paper: IPaper) => (

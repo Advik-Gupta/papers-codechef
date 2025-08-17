@@ -19,12 +19,17 @@ import { chunkArray } from "@/util/utils";
 import { StoredSubjects } from "@/interface";
 import SkeletonPaperCard from "./SkeletonPaperCard";
 
+type PinnedPapersCarouselProps = {
+  carouselType: "users" | "upcoming",
+  displayPapers: IUpcomingPaper[],
+  setDisplayPapers: React.Dispatch<React.SetStateAction<IUpcomingPaper[]>> 
+}
+
 function PinnedPapersCarousel({
   carouselType = "upcoming",
-}: {
-  carouselType: "users" | "upcoming";
-}) {
-  const [displayPapers, setDisplayPapers] = useState<IUpcomingPaper[]>([]);
+  displayPapers,
+  setDisplayPapers
+} : PinnedPapersCarouselProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [chunkSize, setChunkSize] = useState<number>(4);
 
@@ -107,6 +112,7 @@ function PinnedPapersCarousel({
   return (
     <div className="px-4">
       <div className="">
+        {displayPapers.length > 0 ?
         <Carousel
           opts={{
             align: "start",
@@ -115,12 +121,13 @@ function PinnedPapersCarousel({
           plugins={plugins}
           className="w-full"
         >
+          {displayPapers.length > 8 &&
           <div
-            className={`relative mt-4 flex justify-end gap-4 ${displayPapers.length > 0 ? "block" : "hidden"}`}
+            className={`relative mt-4 flex justify-end gap-4`}
           >
             <CarouselPrevious className="relative" />
             <CarouselNext className="relative" />
-          </div>
+          </div>}
           <CarouselContent>
             {isLoading ? (
               <CarouselItem
@@ -167,7 +174,11 @@ function PinnedPapersCarousel({
               })
             )}
           </CarouselContent>
-        </Carousel>
+        </Carousel> : 
+        <div className={`relative flex justify-center gap-4 items-center h-max text-center mt-48 font-bold`}
+        >
+          Start pinning subjects for quick and easy access.
+        </div>}
       </div>
     </div>
   );

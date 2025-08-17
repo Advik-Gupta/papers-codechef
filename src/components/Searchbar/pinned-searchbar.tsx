@@ -9,12 +9,15 @@ import Fuse from "fuse.js";
 import NavDropdownButton from "../NavDropdownButton";
 import { StoredSubjects } from "@/interface";
 import FloatingControls from "./floating-controls";
+import { type IUpcomingPaper } from "@/interface";
 
 function PinnedSearchBar({
   initialSubjects,
+  displayPapers,
   filtersNotPulled,
 }: {
   initialSubjects: string[];
+  displayPapers: boolean;
   filtersNotPulled?: () => void;
 }) {
   const router = useRouter();
@@ -234,6 +237,7 @@ function PinnedSearchBar({
                       }}
                       disabled={!showControls || searchText.trim() === ""}
                     />
+                    {displayPapers &&
                     <button
                       onClick={() => {
                         handleRemoveAll();
@@ -242,7 +246,7 @@ function PinnedSearchBar({
                       className="flex items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
                     >
                       Remove All <X className="h-4 w-4" />
-                    </button>
+                    </button>}
                   </FloatingControls>
                 </div>
               </div>
@@ -250,7 +254,7 @@ function PinnedSearchBar({
           </form>
         </div>
       </div>
-
+      {displayPapers && 
       <div className="mt-2 hidden w-full md:block">
         <div className="ml-auto w-fit">
           <button
@@ -263,7 +267,7 @@ function PinnedSearchBar({
             Remove All <X className="h-4 w-4" />
           </button>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

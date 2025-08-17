@@ -50,7 +50,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full overflow-hidden bg-gradient-to-b from-[#F3F5FF] to-[#A599CE] px-6 py-10 text-white dark:from-[#070114] dark:to-[#1F0234]">
+    <footer className="w-full overflow-hidden bg-gradient-to-b from-[#F3F5FF] to-[#A599CE] px-6 py-10 pt-16 text-white dark:from-[#070114] dark:to-[#1F0234]">
       <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-y-10 text-center sm:text-left">
         {/* Branding & Socials */}
         <div className="flex w-full flex-col gap-4 sm:w-[45%] lg:w-[30%]">

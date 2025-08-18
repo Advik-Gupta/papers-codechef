@@ -10,6 +10,7 @@ import { ArrowDownLeftIcon, Pin, ArrowUpRight, ChevronDown } from "lucide-react"
 import FloatingNavbar from "./FloatingNavbar";
 import PWAInstallButton from "./ui/PWAInstallButton";
 import SearchBarChild from "./Searchbar/searchbar-child";
+import FresherBanner from "@/components/FreshersBanner"
 import type { ICourses } from "@/interface"; 
 import {
   DropdownMenu,
@@ -90,8 +91,9 @@ function Navbar() {
   );
 
   return (
-    <div className="sticky top-0 z-[50] w-full bg-[#B2B8FF] px-4 py-4 dark:bg-[#130E1F] md:px-8 md:py-5">
-      <div className="flex items-center justify-between">
+    <div className="sticky top-0 z-[50] w-full bg-[#B2B8FF] dark:bg-[#130E1F]">
+      <FresherBanner/>
+       <div className="flex items-center justify-between bg-inherit px-4 py-4 md:px-8 md:py-5">
         {}
         <div className="flex items-center gap-4 relative">
           <Link href="https://www.codechefvit.com/" target="_blank">

@@ -15,7 +15,7 @@ export default function FloatingNavbar({ onNavigate }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed right-6 top-2 flex flex-col items-end h-full pointer-events-none">
+    <div className="flex flex-col items-end h-full pointer-events-none">
       {}
       <button
         className="mt-[1.25rem] flex h-10 w-10 items-center justify-center rounded-full bg-[#4B22D1] text-white shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95 pointer-events-auto"
@@ -29,7 +29,7 @@ export default function FloatingNavbar({ onNavigate }: Props) {
 
       {}
       {isOpen && (
-        <div className="mt-2 flex flex-col items-center gap-4 rounded-3xl bg-[#110F18] px-6 py-6 shadow-xl ring-1 ring-white/5 pointer-events-auto">
+        <div className="absolute top-20 mt-2 flex flex-col items-center gap-4 rounded-3xl bg-[#110F18] px-6 py-6 shadow-xl ring-1 ring-white/5 pointer-events-auto">
           <Link
             href={pathname === "/upload" ? "/" : "/upload"}
             onClick={() => {

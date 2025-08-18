@@ -13,7 +13,7 @@ const Error = ({
     <div
       className={`flex h-[80%] flex-1 items-center justify-center ${filtersPulled ? "blur-xl" : ""}`}
     >
-      <div className="-mt-48 text-center text-lg">{message}</div>
+      <div className="-mt-48 text-center md:text-lg text-sm">{message}</div>
     </div>
   );
 };

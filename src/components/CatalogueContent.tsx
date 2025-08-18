@@ -17,21 +17,24 @@ import Error from "./Error";
 import { Filter } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Pin } from "lucide-react";
-
+import SearchBarChild from "./Searchbar/searchbar-child"
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   getSecureUrl,
   generateFileName,
   downloadFile,
 } from "@/util/download_paper";
+import type { ICourses } from "@/interface";
 
 const CatalogueContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isMounted, setIsMounted] = useState(false);
-
+  const pathname: string = usePathname() ?? "/";
   // Initialize state with defaults, set later in useEffect
   const [subject, setSubject] = useState<string | null>(null);
+  const [subjects, setSubjects] = useState<string[]>([]);
   const [selectedExams, setSelectedExams] = useState<string[]>([]);
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [selectedYears, setSelectedYears] = useState<string[]>([]);
@@ -75,6 +78,31 @@ const CatalogueContent = () => {
     void fetchRelatedSubjects();
   }, [subject]);
 
+    useEffect(() => {
+      if (pathname !== "/catalogue") return;
+  
+      const getSubjects = async () => {
+        try {
+          const res = await fetch("/api/course-list");
+          if (!res.ok) return;
+  
+          const json: unknown = await res.json();
+  
+          if (Array.isArray(json)) {
+            const filtered = json
+              .filter((item): item is ICourses => typeof item === "object" && item !== null && "name" in item)
+              .map(item => item.name);
+            setSubjects(filtered);
+          } else {
+            console.error("Invalid data returned from API:", json);
+          }
+        } catch (err) {
+          console.error("Failed to fetch courses", err);
+        }
+      };
+  
+      void getSubjects();
+    }, [pathname]);
   // Set initial state from searchParams on client-side mount
   useEffect(() => {
     setIsMounted(true);
@@ -352,7 +380,10 @@ const CatalogueContent = () => {
           </SheetContent>
         </Sheet>}
 
-        <div className="p-7">
+        <div className="p-7 flex flex-col items-start">
+          <div className="md:hidden flex flex-col items-start w-full mb-8">
+              <SearchBarChild initialSubjects={subjects} />
+          </div>
           <div className="flex items-center gap-2">
             <div>
               <p className="text-s font-semibold text-gray-700 dark:text-white/80">

@@ -101,7 +101,7 @@ function SearchBarChild({
   }, []);
 
   return (
-    <div className="mx-auto w-full max-w-xl font-play">
+    <div className="md:mx-auto w-full max-w-xl font-play">
       <form
         onSubmit={(e) => {
           e.preventDefault();

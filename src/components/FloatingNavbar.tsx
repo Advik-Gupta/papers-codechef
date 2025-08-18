@@ -15,7 +15,7 @@ export default function FloatingNavbar({ onNavigate }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed right-6 top-0 z-50 flex flex-col items-end h-full pointer-events-none">
+    <div className="fixed right-6 top-2 flex flex-col items-end h-full pointer-events-none">
       {}
       <button
         className="mt-[1.25rem] flex h-10 w-10 items-center justify-center rounded-full bg-[#4B22D1] text-white shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95 pointer-events-auto"

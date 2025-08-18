@@ -50,14 +50,14 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full overflow-hidden bg-gradient-to-b from-[#F3F5FF] to-[#A599CE] px-6 py-10 sm:pt-28 md:pt-36 text-white dark:from-[#070114] dark:to-[#1F0234]">
-      <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-y-10 text-center sm:text-left mb-16">
+    <footer className="w-full overflow-hidden bg-gradient-to-b from-[#F3F5FF] to-[#A599CE] px-6 py-10 pt-16 md:pt-20 lg:pt-36 text-white dark:from-[#070114] dark:to-[#1F0234]">
+      <div className="mx-auto flex max-w-7xl flex-col lg:flex-row justify-between gap-y-10 text-center lg:text-left mb-16">
         {/* Branding & Socials */}
-        <div className="flex w-full flex-col gap-4 sm:w-[45%] lg:w-[30%]">
+        <div className="flex w-full flex-col gap-4 lg:w-[30%]">
           <h1 className="bg-gradient-to-r from-[#562EE7] to-[rgba(116,128,255,0.8)] bg-clip-text font-jost text-5xl font-bold text-transparent dark:to-[#FFC6E8]">
             Papers
           </h1>
-          <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
+          <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
             {[
               [
                 "https://www.instagram.com/codechefvit/",
@@ -94,7 +94,7 @@ export default function Footer() {
         </div>
 
         {/* Events */}
-        <div className="flex w-full flex-col gap-2 text-black dark:text-white sm:w-[45%] lg:w-[15%]">
+        <div className="flex w-full flex-col gap-2 text-black dark:text-white  lg:w-[15%]">
           <h3 className="font-jost text-xl font-semibold">Events</h3>
           <Link href="https://devsoc25.codechefvit.com" target="_blank">DevSoc</Link>
           <Link href="https://gravitas.codechefvit.com" target="_blank">CookOff</Link>
@@ -102,7 +102,7 @@ export default function Footer() {
         </div>
 
         {/* Projects */}
-        <div className="flex w-full flex-col gap-2 text-black dark:text-white sm:w-[45%] lg:w-[20%]">
+        <div className="flex w-full flex-col gap-2 text-black dark:text-white  lg:w-[20%]">
           <h3 className="font-jost text-xl font-semibold">Our Projects</h3>
           <Link href="https://papers.codechefvit.com" target="_blank">Papers</Link>
           <Link href="https://contactify.codechefvit.com" target="_blank">Contactify</Link>
@@ -110,7 +110,7 @@ export default function Footer() {
         </div>
 
         {/* Suggestions */}
-        <div className="flex w-full flex-col gap-1 text-black dark:text-white sm:w-[45%] lg:w-[25%] items-center sm:items-start">
+        <div className="flex w-full flex-col gap-1 text-black dark:text-white lg:w-[25%] items-center lg:items-start">
           <Link
             href={`mailto:codechefvit@gmail.com`}
             className="flex items-center gap-2 font-jost text-xl font-semibold mb-2"

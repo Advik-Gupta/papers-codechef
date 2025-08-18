@@ -39,7 +39,7 @@ function Info() {
                   />
                   <FeatureCard
                     isHighlight
-                    highlightText="1200+"
+                    highlightText="1500+"
                     subText="Past Year Papers"
                   />
                   <FeatureCard

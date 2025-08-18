@@ -168,6 +168,26 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
     return () => window.removeEventListener("resize", calculateScale);
   }, []);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (e.deltaY < 0) {
+        // Scroll up: zoom in
+        setScale((prev) => prev + 0.1);
+        e.preventDefault();
+      } else if (e.deltaY > 0) {
+        // Scroll down: zoom out
+        setScale((prev) => (prev - 0.1 ));
+        e.preventDefault();
+      }
+    };
+
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    return () => container.removeEventListener("wheel", handleWheel);
+  }, []);
+
   return (
     <div className="flex flex-col items-center p-3 md:p-0">
       <div

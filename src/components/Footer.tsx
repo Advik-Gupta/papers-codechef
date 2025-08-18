@@ -13,7 +13,7 @@ import {
   FaXTwitter,
   FaYoutube,
 } from "react-icons/fa6";
-import { Mail } from "lucide-react";
+import { Bold, Mail } from "lucide-react";
 import toast from "react-hot-toast";
 export default function Footer() {
   const { theme } = useTheme();
@@ -50,8 +50,8 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full overflow-hidden bg-gradient-to-b from-[#F3F5FF] to-[#A599CE] px-6 py-10 pt-16 text-white dark:from-[#070114] dark:to-[#1F0234]">
-      <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-y-10 text-center sm:text-left">
+    <footer className="w-full overflow-hidden bg-gradient-to-b from-[#F3F5FF] to-[#A599CE] px-6 py-10 sm:pt-28 md:pt-36 text-white dark:from-[#070114] dark:to-[#1F0234]">
+      <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-y-10 text-center sm:text-left mb-16">
         {/* Branding & Socials */}
         <div className="flex w-full flex-col gap-4 sm:w-[45%] lg:w-[30%]">
           <h1 className="bg-gradient-to-r from-[#562EE7] to-[rgba(116,128,255,0.8)] bg-clip-text font-jost text-5xl font-bold text-transparent dark:to-[#FFC6E8]">
@@ -110,19 +110,18 @@ export default function Footer() {
         </div>
 
         {/* Suggestions */}
-        <div className="flex w-full flex-col gap-4 text-black dark:text-white sm:w-[45%] lg:w-[25%]">
-          <h3 className="font-jost text-xl font-semibold">
-            Drop Your Suggestions:
-          </h3>
+        <div className="flex w-full flex-col gap-1 text-black dark:text-white sm:w-[45%] lg:w-[25%] items-center sm:items-start">
           <Link
             href={`mailto:codechefvit@gmail.com`}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 font-jost text-xl font-semibold mb-2"
           >
-            <Mail size={18} />
+            <Mail size={20} 
+              fontWeight="Bold"
+            />
             <span>codechefvit@gmail.com</span>
           </Link>
 
-          <h3 className="mt-4 font-jost text-xl font-semibold">
+          <h3 className="my-2 font-jost text-xl font-semibold">
             Subscribe For Updates:
           </h3>
           <div className="flex gap-2">
@@ -143,9 +142,8 @@ export default function Footer() {
           </div>
         </div>
       </div>
-
       <p className="mt-8 border-t border-[#130E1F] pt-12 text-center font-play text-lg text-black dark:border-white/10 dark:text-white">
-        Made with ❤️ by Codechef-VIT
+        Made with 💜 by Codechef-VIT
       </p>
     </footer>
   );

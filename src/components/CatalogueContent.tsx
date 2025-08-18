@@ -293,7 +293,7 @@ const CatalogueContent = () => {
 
   return (
     <div className="relative flex min-h-screen justify-center p-0 md:justify-normal">
-      <div className="hidden !w-[22%] min-w-[22%] max-w-[22%] flex-shrink-0 md:block">
+      {papers.length > 0 && <div className="hidden !w-[22%] min-w-[22%] max-w-[22%] flex-shrink-0 md:block">
         <SideBar
           filtersNotPulled={filtersNotPulled}
           loading={loading}
@@ -313,10 +313,10 @@ const CatalogueContent = () => {
           handleDownloadAll={handleDownloadAll}
           closeFilters={closeFilters}
         />
-      </div>
+      </div>}
 
       <div className="w-full">
-        <Sheet>
+        {papers.length > 0 && <Sheet>
           <SheetTrigger className="mx-8 mt-8 block md:hidden">
             <Button
               variant="outline"
@@ -350,7 +350,7 @@ const CatalogueContent = () => {
               closeFilters={closeFilters}
             />
           </SheetContent>
-        </Sheet>
+        </Sheet>}
 
         <div className="p-7">
           <div className="flex items-center gap-2">

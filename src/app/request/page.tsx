@@ -65,7 +65,7 @@ export default function PaperRequest() {
 
         const randomPapers = [...response.data]
           .sort(() => Math.random() - 0.5)
-          .slice(0, 4);
+          .slice(0, 8);
 
         setDisplayPapers(randomPapers);
       } catch (error) {
@@ -251,10 +251,12 @@ export default function PaperRequest() {
             Submit
           </Button>
         </div>
-
+        <p className="my-8 text-center font-play text-lg font-semibold">
+          Upcoming Exams
+        </p>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {isLoading ? (
-            <SkeletonPaperCard length={4} />
+            <SkeletonPaperCard length={8} />
           ) : (
             displayPapers.map((paper, subIndex) => (
               <div key={subIndex} className="h-full">

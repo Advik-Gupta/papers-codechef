@@ -11,9 +11,9 @@ const Error = ({
 }: ErrorProps) => {
   return (
     <div
-      className={`flex h-full flex-1 items-center justify-center ${filtersPulled ? "blur-xl" : ""}`}
+      className={`flex h-[80%] flex-1 items-center justify-center ${filtersPulled ? "blur-xl" : ""}`}
     >
-      <div className="-mt-32 text-center text-lg">{message}</div>
+      <div className="-mt-48 text-center text-lg">{message}</div>
     </div>
   );
 };

@@ -67,7 +67,7 @@ function Navbar() {
   );
 
   return (
-    <div className="sticky top-0 z-10 w-full bg-[#B2B8FF] px-4 py-4 dark:bg-[#130E1F] md:px-8 md:py-5">
+    <div className="sticky top-0 z-[9999] w-full bg-[#B2B8FF] px-4 py-4 dark:bg-[#130E1F] md:px-8 md:py-5">
       <div className="flex items-center justify-between">
         {}
         <div className="flex items-center gap-4 relative">

@@ -4,12 +4,12 @@ import { Info, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Banner() {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const bannerStatus = localStorage.getItem("banner");
-    if (bannerStatus === "freshers") {
-      setVisible(false);
+    if (bannerStatus !== "freshers") {
+      setVisible(true);
     }
   }, []);
 

@@ -10,7 +10,7 @@ import { ArrowDownLeftIcon, Pin, ArrowUpRight, ChevronDown } from "lucide-react"
 import FloatingNavbar from "./FloatingNavbar";
 import PWAInstallButton from "./ui/PWAInstallButton";
 import SearchBarChild from "./Searchbar/searchbar-child";
-import FresherBanner from "@/components/FreshersBanner"
+import Banner from "@/components/bannerDismiss"
 import type { ICourses } from "@/interface"; 
 import {
   DropdownMenu,
@@ -92,7 +92,15 @@ function Navbar() {
 
   return (
     <div className="sticky top-0 z-[50] w-full bg-[#B2B8FF] dark:bg-[#130E1F]">
-      <FresherBanner/>
+        <Banner
+          bannerId="freshers"
+          bgColor="#fef3c7"
+          textColor="#5a3000"
+          iconColor="#d97706"
+          accentColor="#78350f"
+          title="Attention Freshers!"
+          message="If papers for your subject are not yet available, click on your subject and explore related subjects until papers become available, as these are newly introduced courses."
+        />
        <div className="flex items-center justify-between bg-inherit px-4 py-4 md:px-8 md:py-5">
         {}
         <div className="flex items-center gap-4 relative">

@@ -59,7 +59,6 @@ export async function POST(req: Request) {
 
     let final_url: string | undefined = "";
     let public_id_cloudinary: string | undefined = "";
-    let thumbnail_url: string | undefined = "";
 
     if (!files || files.length === 0) {
       return NextResponse.json(
@@ -93,19 +92,13 @@ export async function POST(req: Request) {
       );
     }
 
-    const thumbnailResponse = cloudinary.v2.image(final_url!, {
-      format: "jpg",
-    });
-    thumbnail_url = thumbnailResponse
-      .replace("pdf", "jpg")
-      .replace("upload", "upload/w_400,h_400,c_fill")
-      .replace(/<img src='|'\s*\/>/g, "");
 
     const paper = new PaperAdmin({
       cloudinary_index: configIndex,
+
       public_id_cloudinary,
       final_url,
-      thumbnail_url,
+      thumbnail_url: null,
       subject: null,
       slot: null,
       year: null,

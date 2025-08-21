@@ -174,7 +174,7 @@ const Page = () => {
   const isCurrentlyDragging = isDragging || isGlobalDragging;
 
   return (
-    <div className="flex h-[calc(100vh-85px)] flex-col justify-center px-6 font-play">
+    <div className="flex h-[calc(100vh-185px)] flex-col justify-center px-3 font-play">
       <div className="2xl:my-15 flex flex-col items-center">
         <fieldset className="mb-4 w-full max-w-md rounded-lg border-2 border-gray-300 p-4 pr-8">
           <div className="flex w-full flex-col 2xl:gap-y-4">
@@ -211,11 +211,18 @@ const Page = () => {
                         <Upload className="mt-2 h-10 w-10 animate-bounce text-[#6D28D9]" />
                       </div>
                     ) : (
-                      <p>
-                        Drag &apos;n&apos; drop some files here, or{" "}
-                        <span className="text-[#6D28D9]">click</span> to select
-                        files
-                      </p>
+                      <div>
+                        <p className="font-semibold text-lg">
+                          Drag &apos;n&apos; drop some files here, or{" "}
+                          <span className="text-[#6D28D9]">click</span> to select
+                          files
+                        </p>
+                        <div className="mx-auto my-6 w-full max-w-xl rounded-md text-sm text-black dark:text-white opacity-70">
+                        <p className="text-center">
+                            <strong>Note:</strong> Uploaded papers are first reviewed by our team before appearing on the website. If your paper doesn't show up immediately, please be patient,it's likely still under review.
+                          </p>
+                        </div>
+                      </div>
                     )}
                     <div
                       className={`mt-2 text-xs ${
@@ -225,7 +232,7 @@ const Page = () => {
                       {files?.length || 0} files selected
                     </div>
                   </section>
-                )}
+                )} 
               </Dropzone>
               <label className="mx-2 -mr-2 block text-center text-xs font-medium text-gray-700">
                 Only Images and PDF are allowed

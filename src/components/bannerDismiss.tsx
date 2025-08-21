@@ -52,11 +52,11 @@ export default function Banner({
 
         <button
           onClick={closeBanner}
-          className="absolute right-4 top-4 transition hover:opacity-75 sm:static sm:self-start"
+          className="absolute right-4 top-6 transition hover:opacity-75 sm:static sm:self-start"
           aria-label="Dismiss banner"
           style={{ color: accentColor }}
         >
-          <X className="h-5 w-5" />
+          <X className="text-sm"/>
         </button>
       </div>
     </div>

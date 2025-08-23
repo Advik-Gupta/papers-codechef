@@ -27,7 +27,7 @@ const Switch = React.forwardRef<
       {props.checked ? (
         <Moon className="h-4 w-4 text-black" />
       ) : (
-        <Sun className="black h-4 w-4" />
+        <Sun className="black h-4 w-4 text-black" />
       )}
     </SwitchPrimitives.Thumb>
   </SwitchPrimitives.Root>

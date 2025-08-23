@@ -219,7 +219,7 @@ const Page = () => {
                         </p>
                         <div className="mx-auto my-6 w-full max-w-xl rounded-md text-sm text-black dark:text-white opacity-70">
                         <p className="text-center">
-                            <strong>Note:</strong> Uploaded papers are first reviewed by our team before appearing on the website. If your paper doesn't show up immediately, please be patient,it's likely still under review.
+                            <strong>Note:</strong> Uploaded papers are first reviewed by our team before appearing on the website. If your paper doesn&apos;t show up immediately, please be patient,it&apos;s likely still under review.
                           </p>
                         </div>
                       </div>

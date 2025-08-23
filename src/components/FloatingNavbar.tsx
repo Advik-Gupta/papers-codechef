@@ -41,14 +41,14 @@ export default function FloatingNavbar({ onNavigate }: Props) {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
-          className="xl:hidden mt-2 w-72 space-y-1 rounded-3xl border border-white/10 bg-[#110F18] px-4 py-4 text-white shadow-xl backdrop-blur-sm pointer-events-auto"
+          className="xl:hidden mt-2 py-2 w-72 space-y-1 rounded-3xl bg-[#4B22D1] text-white border border-[rgba(255,255,255,0.1)] shadow-2xl backdrop-blur-sm pointer-events-auto"
           align="end"
         >
           <DropdownMenuItem asChild>
             <Link
               href={pathname === "/upload" ? "/" : "/upload"}
               onClick={() => onNavigate()}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-3 hover:bg-[#1A1823] transition"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-1 hover:bg-[#1A1823] transition"
             >
               <UploadIcon className="h-4 w-4" />
               <span className="text-sm font-medium">
@@ -61,7 +61,7 @@ export default function FloatingNavbar({ onNavigate }: Props) {
             <Link
               href="/pinned"
               onClick={() => onNavigate()}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-3 hover:bg-[#1A1823] transition"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-1 hover:bg-[#1A1823] transition"
             >
               <Pin className="h-4 w-4" />
               <span className="text-sm font-medium">Pinned Subjects</span>
@@ -72,18 +72,15 @@ export default function FloatingNavbar({ onNavigate }: Props) {
             <Link
               href="/request"
               onClick={() => onNavigate()}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-3 hover:bg-[#1A1823] transition"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-1 hover:bg-[#1A1823] transition"
             >
               <ArrowUpRight className="h-4 w-4" />
               <span className="text-sm font-medium">Paper Request</span>
             </Link>
           </DropdownMenuItem>
-
-          <div className="pt-2 border-t border-[#3A3745] mt-2">
-            <div className="flex justify-center pt-2">
-              <div className="rounded-full border border-[#3A3745] p-1">
-                <ModeToggle />
-              </div>
+          <div className="flex w-full items-center gap-3 rounded-lg px-3 py-1">
+            <div className="border rounded-full">
+              <ModeToggle />
             </div>
           </div>
         </DropdownMenuContent>

@@ -82,7 +82,7 @@ function Faq() {
                 className={`flex h-6 w-8 shrink-0 items-center justify-center rounded-full text-base font-bold transition-all duration-200 sm:h-7 sm:w-9 sm:text-lg ${
                   faqActive === index
                     ? "bg-[#A47DE5] text-white"
-                    : "bg-white text-[#99979F]"
+                    : "bg-black text-white"
                 }`}
               >
                 {faqActive === index ? "−" : "+"}

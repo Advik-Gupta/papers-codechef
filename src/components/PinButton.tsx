@@ -13,6 +13,7 @@ export default function PinButton({
 }) {
   return (
     <button
+      type="submit"
       onClick={onToggle}
       className={`ml-2 flex items-center gap-2 rounded-full border border-[#3A3745] px-4 py-2 text-sm font-medium transition ${
         isPinned

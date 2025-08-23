@@ -21,7 +21,7 @@ export async function generateMetadata({
         metadataBase: new URL("https://papers.codechefvit.com/"),
         title: `Papers | ${paper.subject} | ${paper.exam} | ${paper.slot}`,
         description: `Discover ${paper.subject}'s question paper created by CodeChef-VIT at Vellore Institute of Technology. Made with ♡ to help students excel.`,
-        icons: [{ rel: "icon", url: "/codechef_logo.svg" }],
+        icons: [{ rel: "icon", url: "/favicon.svg" }],
         openGraph: {
           title: `Papers | ${paper.subject} | ${paper.exam} | ${paper.slot}`,
           images: [{ url: "/papers.png" }],

@@ -5,7 +5,7 @@ const adminSchema = new Schema<IAdminPaper>({
   public_id_cloudinary: { type: String, required: true },
   cloudinary_index: { type: Number, required: true },
   final_url: { type: String, required: true },
-  thumbnail_url: { type: String, required: true },
+  thumbnail_url: { type: String, required: false },
   subject: { type: String || null, index: true },
   slot: { type: String || null },
   year: { type: String || null },

@@ -67,6 +67,10 @@ function PinnedSearchBar({
       setPinned(currentPinnedSubjects.includes(suggestion));
     }
 
+    setTimeout(() => {
+      searchRef.current?.focus();
+    }, 0);
+    
     setShowControls(true);
     setSuggestions([]);
     filtersNotPulled?.();
@@ -102,7 +106,7 @@ function PinnedSearchBar({
     const current = !pinned;
     setPinned(current);
 
-    if (searchText.trim() === "") {
+    if (searchText.trim() === "" || !initialSubjects.includes(searchText.trim())) {
       return;
     }
 
@@ -174,6 +178,9 @@ function PinnedSearchBar({
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              handlePinToggle();
+              if(searchText.trim()!=="")
+                setOpen(false);
             }}
           >
             <div className="flex items-center gap-2">
@@ -188,13 +195,9 @@ function PinnedSearchBar({
                     suggestions.length > 0 ? "rounded-b-none" : ""
                   }`}
                 />
-                <button
-                  type="submit"
-                  className="absolute inset-y-0 right-3 flex items-center"
-                  title="Search"
-                >
+                <div className="absolute inset-y-0 right-3 flex items-center">
                   <Search className="h-5 w-5 text-black dark:text-white" />
-                </button>
+                </div>
 
                 {suggestions.length > 0 && (
                   <ul

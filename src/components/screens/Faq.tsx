@@ -4,7 +4,7 @@ import React from "react";
 import { useState } from "react";
 
 function Faq() {
-  const faqs = [
+const faqs = [
     {
       question: "How do you source exam papers for the website?",
       answer:
@@ -27,18 +27,18 @@ function Faq() {
     },
     {
       question: "Do you provide papers for soft skills?",
-      answer: "lmao",
+      answer: "Lmao, we actually do have something for you now.",
     },
     {
       question: "How do I reach out for support or assistance?",
       answer:
-        'For any queries or issues, contact our support team via the "Contact Us" section on the website. We’re here to help with all your questions about exam papers and site features.',
+        'For any queries or issues, you can email us at the address mentioned below. You can also subscribe to our newsletter for the latest updates.',
     },
     {
       question:
         "What should I do if I can’t find a specific exam paper on the website?",
       answer:
-        "Our database is regularly updated with both new and older exam papers. If the paper you’re looking for isn’t available, you can upload it yourself to share with the community.",
+        "If the paper you're looking for isn’t available, you can head to our Paper Request section and submit a request by specifying the subject, year, slot, and type of exam.",
     },
     {
       question: "Are uploaded papers immediately visible on the website?",
@@ -46,6 +46,7 @@ function Faq() {
         "Once uploaded, our AI system identifies and categorizes the paper by subject, slot, and other relevant tags. The paper then undergoes a quick manual review to ensure quality before it becomes visible on the site.",
     },
   ];
+
 
   const [faqActive, setFaqActive] = useState<number | null>(null);
 

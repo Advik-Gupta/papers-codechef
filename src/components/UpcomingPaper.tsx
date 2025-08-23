@@ -47,10 +47,7 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
     );
 
     if (courseName && Array.isArray(courses)) {
-      console.log("Courses:", courses);
       const matchedCourse = courses.find((course) => course.name === subject);
-      console.log("Course:", matchedCourse);
-      console.log("Subject:", subject);
       setPaperCount(matchedCourse?.count ?? 0);
     } else {
       setPaperCount(0);

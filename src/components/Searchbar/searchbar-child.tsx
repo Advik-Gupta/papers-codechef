@@ -36,7 +36,7 @@ function SearchBarChild({
       const filteredSuggestions = fuzzy
         .search(text)
         .sort((a, b) => (a.score ?? Infinity) - (b.score ?? Infinity))
-        .map((res) => res.item) // ✅ store whole object
+        .map((res) => res.item)
         .slice(0, 10);
 
       setSuggestions(filteredSuggestions);
@@ -106,7 +106,6 @@ function SearchBarChild({
                   onClick={() => handleSelectSuggestion(suggestion)}
                   className="flex cursor-pointer items-center rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
-                  {/* ✅ Count badge */}
                   <div
                     id="paper_count"
                     className="mr-4 flex h-8 w-8 items-center justify-center rounded-md bg-[#171720] text-xs font-semibold text-white"
@@ -114,7 +113,6 @@ function SearchBarChild({
                     {suggestion.count}
                   </div>
 
-                  {/* ✅ Title */}
                   <span
                     id="subject"
                     className="items-center text-sm tracking-wide text-black dark:text-white sm:text-base"

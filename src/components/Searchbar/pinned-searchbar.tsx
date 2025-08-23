@@ -70,7 +70,7 @@ function PinnedSearchBar({
     setTimeout(() => {
       searchRef.current?.focus();
     }, 0);
-    
+
     setShowControls(true);
     setSuggestions([]);
     filtersNotPulled?.();
@@ -106,7 +106,10 @@ function PinnedSearchBar({
     const current = !pinned;
     setPinned(current);
 
-    if (searchText.trim() === "" || !initialSubjects.includes(searchText.trim())) {
+    if (
+      searchText.trim() === "" ||
+      !initialSubjects.find((s) => s.name === searchText)
+    ) {
       return;
     }
 
@@ -179,8 +182,7 @@ function PinnedSearchBar({
             onSubmit={(e) => {
               e.preventDefault();
               handlePinToggle();
-              if(searchText.trim()!=="")
-                setOpen(false);
+              if (searchText.trim() !== "") setOpen(false);
             }}
           >
             <div className="flex items-center gap-2">

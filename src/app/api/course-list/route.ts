@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongoose";
-import { Course } from "@/db/papers";
+import { Course } from "@/db/course";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +14,7 @@ export async function GET() {
     console.error(error);
     return NextResponse.json(
       { message: "Failed to fetch courses", error },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

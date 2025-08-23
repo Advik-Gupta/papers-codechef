@@ -73,14 +73,8 @@ const paperSchema = new Schema<IPaper>({
   answer_key_included: { type: Boolean, default: false },
 });
 
-const courseSchema = new Schema<ICourses>({
-  name: { type: String, required: true },
-});
-
 export const PaperAdmin: Model<IAdminPaper> =
   mongoose.models.Admin ?? mongoose.model<IAdminPaper>("Admin", adminSchema);
-export const Course: Model<ICourses> =
-  mongoose.models.Course ?? mongoose.model("Course", courseSchema);
 const Paper: Model<IPaper> =
   mongoose.models.Paper ?? mongoose.model<IPaper>("Paper", paperSchema);
 

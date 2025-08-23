@@ -1,45 +1,22 @@
 "use client";
 
 import React from "react";
-import axios from "axios";
-import { type ICourses } from "@/interface";
 import SearchBarChild from "./searchbar-child";
 import PinnedSearchBar from "./pinned-searchbar";
-import { type IUpcomingPaper } from "@/interface";
-import { useState, useEffect } from "react";
-
-export async function fetchSubjects() {
-  try {
-    const response = await axios.get<ICourses[]>(
-      `/api/course-list`,
-    );
-
-    return response.data.map((course) => course.name);
-  } catch (err) {
-    console.error("Error fetching subjects:", err);
-    return [];
-  }
-}
+import { useCourses } from "@/context/courseContext";
 
 export default function SearchBar({
   type = "default",
-  displayPapers
+  displayPapers,
 }: {
   type?: "default" | "pinned";
   displayPapers?: boolean;
 }) {
-  const [subjects,setSubjects] = useState<string[]>([]);
-
-  useEffect(() => {
-    async function getSubjects() {
-      setSubjects(await fetchSubjects());
-    }
-    void getSubjects()
-  },[])
+  const { courses, loading, error, refetch } = useCourses();
 
   return type === "pinned" && displayPapers !== undefined ? (
-    <PinnedSearchBar initialSubjects={subjects} displayPapers={displayPapers} />
+    <PinnedSearchBar initialSubjects={courses} displayPapers={displayPapers} />
   ) : (
-    <SearchBarChild initialSubjects={subjects} />
+    <SearchBarChild initialSubjects={courses} />
   );
 }

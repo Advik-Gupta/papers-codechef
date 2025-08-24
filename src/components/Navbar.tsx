@@ -27,37 +27,12 @@ import { useCourses } from "@/context/courseContext";
 
 function Navbar() {
   const pathname: string = usePathname() ?? "/";
-  const [subjects, setSubjects] = useState<string[]>([]);
+
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const { courses, loading, error, refetch } = useCourses();
 
   useEffect(() => {
     if (pathname !== "/catalogue") return;
-
-    const getSubjects = async () => {
-      try {
-        const res = await fetch("/api/course-list");
-        if (!res.ok) return;
-
-        const json: unknown = await res.json();
-
-        if (Array.isArray(json)) {
-          const filtered = json
-            .filter(
-              (item): item is ICourses =>
-                typeof item === "object" && item !== null && "name" in item,
-            )
-            .map((item) => item.name);
-          setSubjects(filtered);
-        } else {
-          console.error("Invalid data returned from API:", json);
-        }
-      } catch (err) {
-        console.error("Failed to fetch courses", err);
-      }
-    };
-
-    void getSubjects();
   }, [pathname]);
 
   const renderHomePageButtons = () => (

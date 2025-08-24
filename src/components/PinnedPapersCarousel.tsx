@@ -110,7 +110,7 @@ function PinnedPapersCarousel({
   const plugins = [Autoplay({ delay: 8000, stopOnInteraction: true })];
 
   return (
-    <div className="px-4">
+    <div className="px-4 sm:mt-4">
       <div className="">
         {displayPapers.length > 0 ?
         <Carousel

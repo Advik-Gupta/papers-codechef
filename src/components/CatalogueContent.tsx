@@ -25,6 +25,7 @@ import type { ICourses } from "@/interface";
 import JSZip from "jszip";
 import { toast } from "react-hot-toast";
 import { useCourses } from "@/context/courseContext";
+import EmptyState from "./ui/EmptyState";
 
 const CatalogueContent = () => {
   const router = useRouter();
@@ -440,7 +441,9 @@ const CatalogueContent = () => {
                   />
                 ))
               ) : (
-                <p>No papers available with the applied filter</p>
+                <div className="col-span-full flex justify-center">
+                  <EmptyState />
+                </div>
               )
             ) : (
               papers.map((paper: IPaper) => (

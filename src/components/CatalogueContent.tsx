@@ -22,6 +22,8 @@ import {
   downloadFile,
 } from "@/util/download_paper";
 import type { ICourses } from "@/interface";
+import JSZip from "jszip";
+import { toast } from "react-hot-toast";
 import { useCourses } from "@/context/courseContext";
 
 const CatalogueContent = () => {
@@ -205,17 +207,36 @@ const CatalogueContent = () => {
     [],
   );
 
-  const handleDownloadAll = useCallback(async () => {
+  const handleDownloadSelected = useCallback(async () => {
+    const zip = new JSZip();
     const uniquePapers = Array.from(
       new Set(selectedPapers.map((paper) => paper._id)),
     ).map((id) => selectedPapers.find((paper) => paper._id === id)) as IPaper[];
-
-    for (const paper of uniquePapers) {
-      await downloadFile(
-        getSecureUrl(paper.final_url),
-        generateFileName(paper),
-      );
+    if (!uniquePapers) {
+      toast.error("No papers selected for download.");
     }
+    for (const paper of uniquePapers) {
+      try {
+        const response = await fetch(getSecureUrl(paper.final_url));
+        const blob = await response.blob();
+        const filename = generateFileName(paper);
+        zip.file(filename, blob);
+      } catch (err) {
+        // Optionally handle individual download errors
+        console.error(`Failed to fetch ${paper.final_url}`, err);
+      }
+    }
+
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "papers.zip";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast.success("Download Initiated");
   }, [selectedPapers]);
 
   const handleApplyFilters = useCallback(
@@ -318,7 +339,7 @@ const CatalogueContent = () => {
             selectedPapers={selectedPapers}
             subject={subject}
             filterOptions={filterOptions}
-            handleDownloadAll={handleDownloadAll}
+            handleDownloadSelected={handleDownloadSelected}
             closeFilters={closeFilters}
           />
         </div>
@@ -356,7 +377,7 @@ const CatalogueContent = () => {
                 selectedPapers={selectedPapers}
                 subject={subject}
                 filterOptions={filterOptions}
-                handleDownloadAll={handleDownloadAll}
+                handleDownloadSelected={handleDownloadSelected}
                 closeFilters={closeFilters}
               />
             </SheetContent>

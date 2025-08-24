@@ -22,7 +22,7 @@ function SideBar({
   handleApplyFilters,
   handleSelectAll,
   handleDeselectAll,
-  handleDownloadAll,
+  handleDownloadSelected: handleDownloadAll,
 }: {
   loading: boolean;
   selectedExams: string[];
@@ -47,7 +47,7 @@ function SideBar({
   ) => void;
   handleSelectAll: () => void;
   handleDeselectAll: () => void;
-  handleDownloadAll: () => void;
+  handleDownloadSelected: () => void;
 }) {
   const exams =
     filterOptions?.unique_exams.map((exam) => ({
@@ -188,7 +188,7 @@ function SideBar({
           onClick={handleDownloadAll}
           className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
         >
-          Download All
+          Download Selected
         </div>
       </div>
 

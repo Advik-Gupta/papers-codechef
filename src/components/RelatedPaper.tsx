@@ -66,10 +66,14 @@ const RelatedPapers = () => {
   if (loading) return <Loader />;
   if (!currentPaper) return <div className="font-vipna">Paper not found.</div>;
 
+  if (relatedPapers.length === 0) {
+    return <></>;
+  }
+
   return (
-    <div className="font-vipna space-y-4 p-6">
+    <div className="space-y-4 p-6 font-vipna">
       <div className="flex items-center justify-between">
-        <h2 className="font-play my-6 text-3xl font-semibold">Explore More</h2>
+        <h2 className="my-6 font-play text-3xl font-semibold">Explore More</h2>
 
         <Link
           href={`/catalogue?subject=${encodeURIComponent(currentPaper.subject)}`}

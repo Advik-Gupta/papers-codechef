@@ -9,14 +9,14 @@ import Fuse from "fuse.js";
 import NavDropdownButton from "../NavDropdownButton";
 import { StoredSubjects } from "@/interface";
 import FloatingControls from "./floating-controls";
-import { type IUpcomingPaper } from "@/interface";
+import { type ICourseWithCount } from "@/interface";
 
 function PinnedSearchBar({
   initialSubjects,
   displayPapers,
   filtersNotPulled,
 }: {
-  initialSubjects: string[];
+  initialSubjects: ICourseWithCount[];
   displayPapers: boolean;
   filtersNotPulled?: () => void;
 }) {
@@ -29,8 +29,15 @@ function PinnedSearchBar({
   const [open, setOpen] = useState(false);
   const [showControls, setShowControls] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const [fuzzy, setFuzzy] = useState(
+    () => new Fuse<ICourseWithCount>([], { keys: ["name"], threshold: 0.3 }),
+  );
 
-  const fuzzy = new Fuse(initialSubjects);
+  useEffect(() => {
+    if (initialSubjects && initialSubjects.length > 0) {
+      setFuzzy(new Fuse(initialSubjects, { keys: ["name"], threshold: 0.3 }));
+    }
+  }, [initialSubjects]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
@@ -40,7 +47,7 @@ function PinnedSearchBar({
       const filteredSuggestions = fuzzy
         .search(text)
         .sort((a, b) => (a.score ?? Infinity) - (b.score ?? Infinity))
-        .map((item) => item.item)
+        .map((res) => res.item.name)
         .slice(0, 10);
 
       setSuggestions(filteredSuggestions);
@@ -63,7 +70,7 @@ function PinnedSearchBar({
     setTimeout(() => {
       searchRef.current?.focus();
     }, 0);
-    
+
     setShowControls(true);
     setSuggestions([]);
     filtersNotPulled?.();
@@ -99,7 +106,10 @@ function PinnedSearchBar({
     const current = !pinned;
     setPinned(current);
 
-    if (searchText.trim() === "" || !initialSubjects.includes(searchText.trim())) {
+    if (
+      searchText.trim() === "" ||
+      !initialSubjects.find((s) => s.name === searchText)
+    ) {
       return;
     }
 
@@ -172,8 +182,7 @@ function PinnedSearchBar({
             onSubmit={(e) => {
               e.preventDefault();
               handlePinToggle();
-              if(searchText.trim()!=="")
-                setOpen(false);
+              if (searchText.trim() !== "") setOpen(false);
             }}
           >
             <div className="flex items-center gap-2">
@@ -240,16 +249,17 @@ function PinnedSearchBar({
                       }}
                       disabled={!showControls || searchText.trim() === ""}
                     />
-                    {displayPapers &&
-                    <button
-                      onClick={() => {
-                        handleRemoveAll();
-                        setOpen(false);
-                      }}
-                      className="flex items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
-                    >
-                      Remove All <X className="h-4 w-4" />
-                    </button>}
+                    {displayPapers && (
+                      <button
+                        onClick={() => {
+                          handleRemoveAll();
+                          setOpen(false);
+                        }}
+                        className="flex items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
+                      >
+                        Remove All <X className="h-4 w-4" />
+                      </button>
+                    )}
                   </FloatingControls>
                 </div>
               </div>
@@ -257,20 +267,21 @@ function PinnedSearchBar({
           </form>
         </div>
       </div>
-      {displayPapers && 
-      <div className="mt-2 hidden w-full md:block">
-        <div className="ml-auto w-fit">
-          <button
-            onClick={() => {
-              handleRemoveAll();
-              setOpen(false);
-            }}
-            className="flex items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
-          >
-            Remove All <X className="h-4 w-4" />
-          </button>
+      {displayPapers && (
+        <div className="mt-2 hidden w-full md:block">
+          <div className="ml-auto w-fit">
+            <button
+              onClick={() => {
+                handleRemoveAll();
+                setOpen(false);
+              }}
+              className="flex items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
+            >
+              Remove All <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
-      </div>}
+      )}
     </div>
   );
 }

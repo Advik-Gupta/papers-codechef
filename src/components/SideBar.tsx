@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import clsx from "clsx";
 import { Filter } from "lucide-react";
 import { type Filters, type IPaper } from "@/interface";
 import {
@@ -12,7 +11,6 @@ import {
 } from "@/components/ui/accordion";
 
 function SideBar({
-  loading,
   selectedExams,
   selectedSlots,
   selectedYears,
@@ -20,6 +18,7 @@ function SideBar({
   selectedSemesters,
   selectedAnswerKeyIncluded,
   filterOptions,
+  filtersNotPulled,
   handleApplyFilters,
   handleSelectAll,
   handleDeselectAll,
@@ -32,46 +31,44 @@ function SideBar({
   selectedCampuses: string[];
   selectedSemesters: string[];
   selectedAnswerKeyIncluded: boolean;
+  filtersNotPulled: () => void;
+  noAppliedFilters: () => void;
+  closeFilters: () => void;
+  subject: string | null;
   filterOptions: Filters | undefined;
+  selectedPapers: IPaper[];
   handleApplyFilters: (
     exams: string[],
     slots: string[],
     years: string[],
     campus: string[],
     semester: string[],
-    anskey: boolean
+    anskey: boolean,
   ) => void;
   handleSelectAll: () => void;
   handleDeselectAll: () => void;
   handleDownloadSelected: () => void;
 }) {
-  // Reusable button with consistent hover styles
-  const SidebarButton: React.FC<{
-    label: string;
-    onClick: () => void;
-    selected?: boolean;
-    className?: string;
-  }> = ({ label, onClick, selected = false, className }) => (
-    <div
-      onClick={onClick}
-      className={clsx(
-        "cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white",
-        selected && "border-[#B2B8FF] bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba]",
-        className
-      )}
-    >
-      {label}
-    </div>
-  );
-
   const exams =
-    filterOptions?.unique_exams.map((exam) => ({ label: exam, value: exam })) ?? [];
+    filterOptions?.unique_exams.map((exam) => ({
+      label: exam,
+      value: exam,
+    })) ?? [];
   const slots =
-    filterOptions?.unique_slots.map((slot) => ({ label: slot, value: slot })) ?? [];
+    filterOptions?.unique_slots.map((slot) => ({
+      label: slot,
+      value: slot,
+    })) ?? [];
   const years =
-    filterOptions?.unique_years.map((year) => ({ label: year, value: year })) ?? [];
+    filterOptions?.unique_years.map((year) => ({
+      label: year,
+      value: year,
+    })) ?? [];
   const semesters =
-    filterOptions?.unique_semesters.map((semester) => ({ label: semester, value: semester })) ?? [];
+    filterOptions?.unique_semesters.map((semester) => ({
+      label: semester,
+      value: semester,
+    })) ?? [];
 
   const filtersForSidebar = [
     {
@@ -85,7 +82,7 @@ function SideBar({
           selectedYears,
           selectedCampuses,
           selectedSemesters,
-          selectedAnswerKeyIncluded
+          selectedAnswerKeyIncluded,
         ),
     },
     {
@@ -99,7 +96,7 @@ function SideBar({
           selectedYears,
           selectedCampuses,
           selectedSemesters,
-          selectedAnswerKeyIncluded
+          selectedAnswerKeyIncluded,
         ),
     },
     {
@@ -113,7 +110,7 @@ function SideBar({
           newVal,
           selectedCampuses,
           selectedSemesters,
-          selectedAnswerKeyIncluded
+          selectedAnswerKeyIncluded,
         ),
     },
     {
@@ -127,51 +124,75 @@ function SideBar({
           selectedYears,
           selectedCampuses,
           newVal,
-          selectedAnswerKeyIncluded
+          selectedAnswerKeyIncluded,
         ),
     },
   ];
 
   return (
     <div className="no-scrollbar fixed sticky top-0 h-[100vh] flex-col items-baseline overflow-y-auto border-r-2 border-[#36266d] bg-[#f3f5ff] pt-[10px] dark:bg-[#070114] md:flex">
-      {/* Header */}
       <div className="flex w-full items-center justify-between border-b-2 border-[#36266d] px-[10px] py-4">
         <div className="flex items-center gap-1">
           <Filter size={24} />
           <div className="font-play text-xl font-bold">Filters</div>
         </div>
-        <SidebarButton
-          label="Reset Filters"
-          onClick={() => handleApplyFilters([], [], [], [], [], false)}
-        />
+        <div className="flex flex-col">
+          <div
+            className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
+            onClick={() => {
+              handleApplyFilters([], [], [], [], [], false);
+            }}
+          >
+            Reset Filters
+          </div>
+        </div>
       </div>
 
-      {/* Answer Key Toggle */}
       <div className="flex w-full items-center justify-between border-b-2 border-[#36266d] px-[10px] py-4">
-        <SidebarButton
-          label="Answer Key Available"
-          onClick={() =>
+        <div
+          onClick={() => {
             handleApplyFilters(
               selectedExams,
               selectedSlots,
               selectedYears,
               selectedCampuses,
               selectedSemesters,
-              !selectedAnswerKeyIncluded
-            )
-          }
-          selected={selectedAnswerKeyIncluded}
-        />
+              !selectedAnswerKeyIncluded,
+            );
+          }}
+          className={`flex cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
+            selectedAnswerKeyIncluded
+              ? "border-[#B2B8FF] bg-[#B2B8FF] hover:border-black hover:bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba] dark:hover:border-[white] dark:hover:bg-[#434dba]"
+              : "bg-none hover:bg-[#B2B8FF] dark:border-white dark:hover:border-[#434dba]"
+          }`}
+        >
+          Answer Key Available
+        </div>
       </div>
 
       {/* Select/Deselect/Download All Buttons */}
       <div className="flex w-full flex-wrap justify-between gap-2 border-b-2 border-[#36266d] px-[10px] py-4">
-        <SidebarButton label="Select All" onClick={handleSelectAll} />
-        <SidebarButton label="Deselect All" onClick={handleDeselectAll} />
-        <SidebarButton label="Download Selected" onClick={handleDownloadAll} />
+        <div
+          onClick={handleSelectAll}
+          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
+        >
+          Select All
+        </div>
+        <div
+          onClick={handleDeselectAll}
+          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
+        >
+          Deselect All
+        </div>
+        <div
+          onClick={handleDownloadAll}
+          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
+        >
+          Download Selected
+        </div>
       </div>
 
-      {/* Filters Accordion */}
+      {/* Filters */}
       {filtersForSidebar.map((section) => (
         <div
           key={section.label}
@@ -180,23 +201,29 @@ function SideBar({
           <Accordion className="w-full" type="single" collapsible>
             <AccordionItem className="border-none no-underline" value="item-1">
               <AccordionTrigger className="w-full no-underline">
-                <div className="font-play text-sm no-underline">{section.label}</div>
+                <div className="font-play text-sm no-underline">
+                  {section.label}
+                </div>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="my-2 flex w-full flex-wrap items-center">
                   {section.data.map((item) => (
-                    <SidebarButton
+                    <div
                       key={item.value}
-                      label={item.label}
                       onClick={() => {
                         const newValues = section.selected.includes(item.value)
                           ? section.selected.filter((v) => v !== item.value)
                           : [...section.selected, item.value];
                         section.updater(newValues);
                       }}
-                      selected={section.selected.includes(item.value)}
-                      className="mb-2 mr-2"
-                    />
+                      className={`mb-2 mr-2 flex h-fit cursor-pointer items-center rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-slate-800 hover:text-white ${
+                        section.selected.includes(item.value)
+                          ? "border-[#B2B8FF] bg-[#B2B8FF] dark:border-[#434dba] dark:bg-[#434dba]"
+                          : "bg-none dark:border-white"
+                      }`}
+                    >
+                      {item.label}
+                    </div>
                   ))}
                 </div>
               </AccordionContent>

@@ -19,6 +19,7 @@ import UpcomingPaper from "../../components/UpcomingPaper";
 import toast from "react-hot-toast";
 import { Search } from "lucide-react";
 import SkeletonPaperCard from "@/components/SkeletonPaperCard";
+import { useCourses } from "@/context/courseContext";
 
 type Course = {
   name?: string | null;
@@ -37,23 +38,11 @@ export default function PaperRequest() {
   const suggestionsRef = useRef<HTMLUListElement | null>(null);
   const [displayPapers, setDisplayPapers] = useState<IUpcomingPaper[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { courses, loading, error, refetch } = useCourses();
 
   useEffect(() => {
-    async function fetchSubjects() {
-      try {
-        const response = await axios.get<Course[]>(`/api/course-list`);
-        const courses: Course[] = response.data;
-        const names = courses
-          .map((course) => course.name ?? course.courseName ?? course.title)
-          .filter(Boolean) as string[];
-
-        setSubjects(names);
-      } catch (err) {
-        console.error("Error fetching subjects:", err);
-      }
-    }
-    void fetchSubjects();
-  }, []);
+    setSubjects(courses.map((course) => course.name));
+  }, [courses]);
 
   useEffect(() => {
     async function fetchPapers() {
@@ -138,7 +127,7 @@ export default function PaperRequest() {
           loading: "Submitting your request...",
           success: "Your paper request was submitted successfully",
           error: "Failed to submit your request. Please try again later.",
-        }
+        },
       );
 
       setSearchText("");

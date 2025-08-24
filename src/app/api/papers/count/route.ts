@@ -1,22 +1,24 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongoose";
-import Paper from "@/db/papers";
+import CourseCount from "@/db/course";
 
 export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
     await connectToDatabase();
 
-    const { searchParams } = new URL(req.url);
-    const subject = searchParams.get("subject");
+    const count = await CourseCount.find().lean();
 
-    const filter = subject ? { subject } : {};
-    const count = await Paper.countDocuments(filter);
+    const formatted = count.map((item) => ({
+      name: item.name,
+      count: item.count,
+    }));
 
-    return NextResponse.json({ count }, { status: 200 });
+    return NextResponse.json(formatted, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { message: "Failed to fetch papers", error },
+      { message: "Failed to fetch course counts", error },
       { status: 500 },
     );
   }

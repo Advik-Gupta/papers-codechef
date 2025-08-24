@@ -19,6 +19,7 @@ import { IUpcomingPaper } from "@/interface";
 import { Skeleton } from "../ui/skeleton";
 import { CarouselItem } from "@/components/ui/carousel";
 import UpcomingPaper from "../UpcomingPaper";
+import { useCourses } from "@/context/courseContext";
 
 type Course = {
   name?: string | null;
@@ -37,23 +38,7 @@ export default function PapersPage() {
   const suggestionsRef = useRef<HTMLUListElement | null>(null);
   const [displayPapers, setDisplayPapers] = useState<IUpcomingPaper[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchSubjects() {
-      try {
-        const response = await axios.get<Course[]>(`/api/course-list`);
-        const courses: Course[] = response.data;
-        const names = courses
-          .map((course) => course.name ?? course.courseName ?? course.title)
-          .filter(Boolean) as string[];
-
-        setSubjects(names);
-      } catch (err) {
-        console.error("Error fetching subjects:", err);
-      }
-    }
-    void fetchSubjects();
-  }, []);
+  const { courses, loading, error, refetch } = useCourses();
 
   useEffect(() => {
     async function fetchPapers() {
@@ -79,8 +64,8 @@ export default function PapersPage() {
   }, []);
 
   const fuse = useMemo(
-    () => new Fuse(subjects, { includeScore: true, threshold: 0.3 }),
-    [subjects],
+    () => new Fuse(courses, { includeScore: true, threshold: 0.3 }),
+    [courses],
   );
 
   useEffect(() => {
@@ -95,7 +80,7 @@ export default function PapersPage() {
     }
 
     const results = fuse.search(searchText);
-    setSuggestions(results.map((r) => r.item).slice(0, 10));
+    setSuggestions(results.map((r) => r.item.name).slice(0, 10));
   }, [searchText, fuse, selectedSubject]);
 
   const handleSelectSubject = (subject: string) => {

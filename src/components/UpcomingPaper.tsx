@@ -5,9 +5,9 @@ import {
 } from "@/util/utils";
 import { useRouter } from "next/navigation";
 import { Pin } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 import { StoredSubjects } from "@/interface";
+import { useCourses } from "@/context/courseContext";
 
 interface PaperCardProps {
   subject: string;
@@ -17,8 +17,9 @@ interface PaperCardProps {
 export default function PaperCard({ subject, slots }: PaperCardProps) {
   const courseName = extractWithoutBracketContent(subject);
   const courseCode = extractBracketContent(subject);
-  // const [paperCount, setPaperCount] = useState<number | null>(0);
+  const { courses, loading, error, refetch } = useCourses();
   const [pinned, setPinned] = useState<boolean>(false);
+  const [paperCount, setPaperCount] = useState<number>(0);
 
   const handlePinToggle = () => {
     const current = !pinned;
@@ -36,34 +37,22 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
   };
 
   useEffect(() => {
-    // const fetchPaperCount = async () => {
-    //   try {
-    //     const response = await axios.get<{ count: number }>(
-    //       "/api/papers/count",
-    //       {
-    //         params: { subject },
-    //       },
-    //     );
-    //     setPaperCount(response.data.count);
-    //   } catch (error) {
-    //     console.error("Failed to fetch paper count:", error);
-    //   }
-    // };
-
     const currentPinnedSubjects = JSON.parse(
       localStorage.getItem("userSubjects") ?? "[]",
     ) as StoredSubjects;
 
-    if (subject && Array.isArray(currentPinnedSubjects)) {
-      if (currentPinnedSubjects.includes(subject)) {
-        setPinned(true);
-      } else {
-        setPinned(false);
-      }
-    }
+    setPinned(
+      Array.isArray(currentPinnedSubjects) &&
+        currentPinnedSubjects.includes(subject),
+    );
 
-    // void fetchPaperCount();
-  }, [subject]);
+    if (courseName && Array.isArray(courses)) {
+      const matchedCourse = courses.find((course) => course.name === subject);
+      setPaperCount(matchedCourse?.count ?? 0);
+    } else {
+      setPaperCount(0);
+    }
+  }, [subject, courseName]);
 
   const router = useRouter();
   return (
@@ -82,9 +71,11 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
         <div className="flex items-start justify-between">
           <h2 className="rounded-t-lg px-2 py-1 font-play text-base font-bold md:text-lg md:tracking-widest">
             {courseCode}
-            {/* <div className="text-sm font-normal">
-              {paperCount ? `Papers available: ${paperCount}` : "Click to explore"}
-            </div> */}
+            <div className="text-sm font-normal">
+              {paperCount
+                ? `Papers available: ${paperCount}`
+                : "Click to explore"}
+            </div>
           </h2>
 
           <button
@@ -110,11 +101,11 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
           {courseName}
         </h2>
 
-        { (
+        {
           <div className="mt-4 flex flex-wrap gap-2 font-play">
             {slots?.map((slotValue) => capsule(slotValue))}
           </div>
-        ) }
+        }
       </div>
     </div>
   );

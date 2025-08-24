@@ -9,14 +9,14 @@ import Fuse from "fuse.js";
 import NavDropdownButton from "../NavDropdownButton";
 import { StoredSubjects } from "@/interface";
 import FloatingControls from "./floating-controls";
-import { type IUpcomingPaper } from "@/interface";
+import { type ICourseWithCount } from "@/interface";
 
 function PinnedSearchBar({
   initialSubjects,
   displayPapers,
   filtersNotPulled,
 }: {
-  initialSubjects: string[];
+  initialSubjects: ICourseWithCount[];
   displayPapers: boolean;
   filtersNotPulled?: () => void;
 }) {
@@ -27,8 +27,15 @@ function PinnedSearchBar({
   const [pinned, setPinned] = useState<boolean>(false);
   const [showControls, setShowControls] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const [fuzzy, setFuzzy] = useState(
+    () => new Fuse<ICourseWithCount>([], { keys: ["name"], threshold: 0.3 }),
+  );
 
-  const fuzzy = new Fuse(initialSubjects);
+  useEffect(() => {
+    if (initialSubjects && initialSubjects.length > 0) {
+      setFuzzy(new Fuse(initialSubjects, { keys: ["name"], threshold: 0.3 }));
+    }
+  }, [initialSubjects]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
@@ -38,7 +45,7 @@ function PinnedSearchBar({
       const filteredSuggestions = fuzzy
         .search(text)
         .sort((a, b) => (a.score ?? Infinity) - (b.score ?? Infinity))
-        .map((item) => item.item)
+        .map((res) => res.item.name)
         .slice(0, 10);
 
       setSuggestions(filteredSuggestions);
@@ -61,7 +68,7 @@ function PinnedSearchBar({
     setTimeout(() => {
       searchRef.current?.focus();
     }, 0);
-    
+
     setShowControls(true);
     setSuggestions([]);
     filtersNotPulled?.();
@@ -84,7 +91,10 @@ function PinnedSearchBar({
     const current = !pinned;
     setPinned(current);
 
-    if (searchText.trim() === "" || !initialSubjects.includes(searchText.trim())) {
+    if (
+      searchText.trim() === "" ||
+      !initialSubjects.find((s) => s.name === searchText)
+    ) {
       return;
     }
 
@@ -193,26 +203,28 @@ function PinnedSearchBar({
                 onToggle={handlePinToggle}
                 disabled={!showControls || searchText.trim() === ""}
               />
-              <button
+              {displayPapers && <button
                 onClick={() => {
                   handleRemoveAll();
                 }}
                 className="items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] hidden sm:flex"
               >
+
                 Remove All <X className="h-4 w-4" />
-              </button>
+              </button>}
             </div>
           </form>
         </div>
       </div>
-      <button
+
+      {displayPapers && <button
         onClick={() => {
           handleRemoveAll();
         }}
         className="sm:hidden mt-4 flex items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
       >
         Remove All <X className="h-4 w-4" />
-      </button>
+      </button>}
     </div>
   );
 }

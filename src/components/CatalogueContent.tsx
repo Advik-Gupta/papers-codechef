@@ -4,11 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import axios, { type AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
-import {
-  type IPaper,
-  type Filters,
-  type StoredSubjects
-} from "@/interface";
+import { type IPaper, type Filters, type StoredSubjects } from "@/interface";
 import Card from "./Card";
 import { useRouter } from "next/navigation";
 import Loader from "./ui/loader";
@@ -17,7 +13,7 @@ import Error from "./Error";
 import { Filter } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Pin } from "lucide-react";
-import SearchBarChild from "./Searchbar/searchbar-child"
+import SearchBarChild from "./Searchbar/searchbar-child";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -26,6 +22,10 @@ import {
   downloadFile,
 } from "@/util/download_paper";
 import type { ICourses } from "@/interface";
+import JSZip from "jszip";
+import { toast } from "react-hot-toast";
+import { useCourses } from "@/context/courseContext";
+import EmptyState from "./ui/EmptyState";
 
 const CatalogueContent = () => {
   const router = useRouter();
@@ -52,6 +52,8 @@ const CatalogueContent = () => {
   const [appliedFilters, setAppliedFilters] = useState<boolean>(false);
   const [pinned, setPinned] = useState<boolean>(false);
   const [relatedSubjects, setRelatedSubjects] = useState<string[]>([]);
+  const { courses } = useCourses();
+
   // Fetch related subjects when subject changes
   useEffect(() => {
     if (!subject) return;
@@ -78,31 +80,11 @@ const CatalogueContent = () => {
     void fetchRelatedSubjects();
   }, [subject]);
 
-    useEffect(() => {
-      if (pathname !== "/catalogue") return;
-  
-      const getSubjects = async () => {
-        try {
-          const res = await fetch("/api/course-list");
-          if (!res.ok) return;
-  
-          const json: unknown = await res.json();
-  
-          if (Array.isArray(json)) {
-            const filtered = json
-              .filter((item): item is ICourses => typeof item === "object" && item !== null && "name" in item)
-              .map(item => item.name);
-            setSubjects(filtered);
-          } else {
-            console.error("Invalid data returned from API:", json);
-          }
-        } catch (err) {
-          console.error("Failed to fetch courses", err);
-        }
-      };
-  
-      void getSubjects();
-    }, [pathname]);
+  useEffect(() => {
+    if (pathname !== "/catalogue") return;
+    const filteredSubjects = courses.map((course) => course.name);
+    setSubjects(filteredSubjects);
+  }, [pathname, courses]);
   // Set initial state from searchParams on client-side mount
   useEffect(() => {
     setIsMounted(true);
@@ -226,17 +208,36 @@ const CatalogueContent = () => {
     [],
   );
 
-  const handleDownloadAll = useCallback(async () => {
+  const handleDownloadSelected = useCallback(async () => {
+    const zip = new JSZip();
     const uniquePapers = Array.from(
       new Set(selectedPapers.map((paper) => paper._id)),
     ).map((id) => selectedPapers.find((paper) => paper._id === id)) as IPaper[];
-
-    for (const paper of uniquePapers) {
-      await downloadFile(
-        getSecureUrl(paper.final_url),
-        generateFileName(paper),
-      );
+    if (!uniquePapers) {
+      toast.error("No papers selected for download.");
     }
+    for (const paper of uniquePapers) {
+      try {
+        const response = await fetch(getSecureUrl(paper.final_url));
+        const blob = await response.blob();
+        const filename = generateFileName(paper);
+        zip.file(filename, blob);
+      } catch (err) {
+        // Optionally handle individual download errors
+        console.error(`Failed to fetch ${paper.final_url}`, err);
+      }
+    }
+
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "papers.zip";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast.success("Download Initiated");
   }, [selectedPapers]);
 
   const handleApplyFilters = useCallback(
@@ -321,68 +322,72 @@ const CatalogueContent = () => {
 
   return (
     <div className="relative flex min-h-screen justify-center p-0 md:justify-normal">
-      {papers.length > 0 && <div className="hidden !w-[22%] min-w-[22%] max-w-[22%] flex-shrink-0 md:block">
-        <SideBar
-          filtersNotPulled={filtersNotPulled}
-          loading={loading}
-          selectedExams={selectedExams}
-          selectedSlots={selectedSlots}
-          selectedYears={selectedYears}
-          selectedSemesters={selectedSemesters}
-          selectedCampuses={selectedCampuses}
-          selectedAnswerKeyIncluded={selectedAnswerKeyIncluded}
-          noAppliedFilters={noAppliedFilters}
-          handleApplyFilters={handleApplyFilters}
-          handleSelectAll={handleSelectAll}
-          handleDeselectAll={handleDeselectAll}
-          selectedPapers={selectedPapers}
-          subject={subject}
-          filterOptions={filterOptions}
-          handleDownloadAll={handleDownloadAll}
-          closeFilters={closeFilters}
-        />
-      </div>}
+      {papers.length > 0 && (
+        <div className="hidden !w-[22%] min-w-[22%] max-w-[22%] flex-shrink-0 md:block">
+          <SideBar
+            filtersNotPulled={filtersNotPulled}
+            loading={loading}
+            selectedExams={selectedExams}
+            selectedSlots={selectedSlots}
+            selectedYears={selectedYears}
+            selectedSemesters={selectedSemesters}
+            selectedCampuses={selectedCampuses}
+            selectedAnswerKeyIncluded={selectedAnswerKeyIncluded}
+            noAppliedFilters={noAppliedFilters}
+            handleApplyFilters={handleApplyFilters}
+            handleSelectAll={handleSelectAll}
+            handleDeselectAll={handleDeselectAll}
+            selectedPapers={selectedPapers}
+            subject={subject}
+            filterOptions={filterOptions}
+            handleDownloadSelected={handleDownloadSelected}
+            closeFilters={closeFilters}
+          />
+        </div>
+      )}
 
       <div className="w-full">
-        {papers.length > 0 && <Sheet>
-          <SheetTrigger className="mx-8 mt-8 block md:hidden">
-            <Button
-              variant="outline"
-              className="flex gap-2 border-2 border-black font-sans font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
+        {papers.length > 0 && (
+          <Sheet>
+            <SheetTrigger className="mx-8 mt-8 block md:hidden">
+              <Button
+                variant="outline"
+                className="flex gap-2 border-2 border-black font-sans font-semibold hover:bg-slate-800 hover:text-white dark:border-[#434dba] dark:hover:border-white dark:hover:bg-slate-900"
+              >
+                <Filter size={18} />
+                Add Filters
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              side={"left"}
+              className="m-0 bg-[#f3f5ff] p-0 pt-4 dark:bg-[#070114]"
             >
-              <Filter size={18} />
-              Add Filters
-            </Button>
-          </SheetTrigger>
-          <SheetContent
-            side={"left"}
-            className="m-0 bg-[#f3f5ff] p-0 pt-4 dark:bg-[#070114]"
-          >
-            <SideBar
-              filtersNotPulled={filtersNotPulled}
-              loading={loading}
-              selectedExams={selectedExams}
-              selectedSlots={selectedSlots}
-              selectedYears={selectedYears}
-              selectedSemesters={selectedSemesters}
-              selectedCampuses={selectedCampuses}
-              selectedAnswerKeyIncluded={selectedAnswerKeyIncluded}
-              noAppliedFilters={noAppliedFilters}
-              handleApplyFilters={handleApplyFilters}
-              handleSelectAll={handleSelectAll}
-              handleDeselectAll={handleDeselectAll}
-              selectedPapers={selectedPapers}
-              subject={subject}
-              filterOptions={filterOptions}
-              handleDownloadAll={handleDownloadAll}
-              closeFilters={closeFilters}
-            />
-          </SheetContent>
-        </Sheet>}
+              <SideBar
+                filtersNotPulled={filtersNotPulled}
+                loading={loading}
+                selectedExams={selectedExams}
+                selectedSlots={selectedSlots}
+                selectedYears={selectedYears}
+                selectedSemesters={selectedSemesters}
+                selectedCampuses={selectedCampuses}
+                selectedAnswerKeyIncluded={selectedAnswerKeyIncluded}
+                noAppliedFilters={noAppliedFilters}
+                handleApplyFilters={handleApplyFilters}
+                handleSelectAll={handleSelectAll}
+                handleDeselectAll={handleDeselectAll}
+                selectedPapers={selectedPapers}
+                subject={subject}
+                filterOptions={filterOptions}
+                handleDownloadSelected={handleDownloadSelected}
+                closeFilters={closeFilters}
+              />
+            </SheetContent>
+          </Sheet>
+        )}
 
-        <div className="p-7 flex flex-col items-start">
-          <div className="md:hidden flex flex-col items-start w-full mb-8">
-              <SearchBarChild initialSubjects={subjects} />
+        <div className="flex flex-col items-start p-7">
+          <div className="mb-8 flex w-full flex-col items-start md:hidden">
+            <SearchBarChild initialSubjects={courses} />
           </div>
           <div className="flex items-center gap-2">
             <div>
@@ -436,7 +441,9 @@ const CatalogueContent = () => {
                   />
                 ))
               ) : (
-                <p>No papers available with the applied filter</p>
+                <div className="col-span-full flex justify-center">
+                  <EmptyState />
+                </div>
               )
             ) : (
               papers.map((paper: IPaper) => (

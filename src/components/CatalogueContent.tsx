@@ -53,6 +53,8 @@ const CatalogueContent = () => {
   const [pinned, setPinned] = useState<boolean>(false);
   const [relatedSubjects, setRelatedSubjects] = useState<string[]>([]);
   const { courses } = useCourses();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [papersPerPage, setPapersPerPage] = useState(12); // show 12 per page
 
   // Fetch related subjects when subject changes
   useEffect(() => {
@@ -315,6 +317,15 @@ const CatalogueContent = () => {
     setSelectedPapers([]);
   }, []);
 
+  const paginatedPapers = (appliedFilters ? filteredPapers : papers).slice(
+    (currentPage - 1) * papersPerPage,
+    currentPage * papersPerPage,
+  );
+
+  const totalPages = Math.ceil(
+    (appliedFilters ? filteredPapers.length : papers.length) / papersPerPage,
+  );
+
   // Render loading state until mounted to avoid hydration mismatch
   if (!isMounted) {
     return <Loader />;
@@ -427,12 +438,29 @@ const CatalogueContent = () => {
         {loading ? (
           <Loader />
         ) : papers.length > 0 ? (
-          <div
-            className={`grid h-fit grid-cols-1 gap-8 px-[30px] pb-[40px] md:grid-cols-2 lg:grid-cols-4 ${filtersPulled ? "blur-xl" : ""}`}
-          >
-            {appliedFilters ? (
-              filteredPapers.length > 0 ? (
-                filteredPapers.map((paper: IPaper) => (
+          <div className="flex flex-col items-center">
+            <div
+              className={`grid h-fit grid-cols-1 gap-8 px-[30px] pb-[40px] md:grid-cols-2 lg:grid-cols-4 ${filtersPulled ? "blur-xl" : ""}`}
+            >
+              {appliedFilters ? (
+                paginatedPapers.length > 0 ? (
+                  paginatedPapers.map((paper: IPaper) => (
+                    <Card
+                      key={paper._id}
+                      paper={paper}
+                      onSelect={handleSelectPaper}
+                      isSelected={selectedPapers.some(
+                        (p) => p._id === paper._id,
+                      )}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-full flex justify-center">
+                    <EmptyState />
+                  </div>
+                )
+              ) : (
+                papers.map((paper: IPaper) => (
                   <Card
                     key={paper._id}
                     paper={paper}
@@ -440,21 +468,29 @@ const CatalogueContent = () => {
                     isSelected={selectedPapers.some((p) => p._id === paper._id)}
                   />
                 ))
-              ) : (
-                <div className="col-span-full flex justify-center">
-                  <EmptyState />
-                </div>
-              )
-            ) : (
-              papers.map((paper: IPaper) => (
-                <Card
-                  key={paper._id}
-                  paper={paper}
-                  onSelect={handleSelectPaper}
-                  isSelected={selectedPapers.some((p) => p._id === paper._id)}
-                />
-              ))
-            )}
+              )}
+            </div>
+            <div className="mt-8 flex items-center justify-center gap-4">
+              <Button
+                variant="outline"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+              >
+                Previous
+              </Button>
+
+              <span className="text-gray-700 dark:text-gray-300">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <Button
+                variant="outline"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+              >
+                Next
+              </Button>
+            </div>
           </div>
         ) : (
           <Error

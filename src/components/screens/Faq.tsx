@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import Link from 'next/link';
+
 import { useState } from "react";
 
 function Faq() {
@@ -23,22 +25,59 @@ const faqs = [
     {
       question: "How can I upload an exam paper to the website?",
       answer:
-        'To upload a paper, click the "Upload" button located at the top-right corner of the page. You can submit papers in PDF or image formats, especially if they’re not already available on our site.',
+        <>
+      Click the {" "}
+      <Link
+        href="https://papers.codechefvit.com/upload"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="dark:text-blue-400 text-red-500"
+        style={{textDecoration: "underline" }}
+      >
+        Upload
+
+      </Link>
+      {" "}button at the top-right corner to submit your exam papers.
+    </>
     },
     {
       question: "Do you provide papers for soft skills?",
-      answer: "Lmao, we actually do have something for you now.",
+      answer: "We currently offer question banks for selected soft skill subjects.",
     },
     {
       question: "How do I reach out for support or assistance?",
       answer:
-        'For any queries or issues, you can email us at the address mentioned below. You can also subscribe to our newsletter for the latest updates.',
+       <>
+      For any queries or issues, you can mail us at{" "}
+      <Link
+        href="mailto:codechefvit@gmail.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="dark:text-blue-400 text-red-500"
+        style={{textDecoration: "underline" }}
+      >
+        codechefvit@gmail.com
+      </Link>
+      .
+    </>,
     },
     {
       question:
         "What should I do if I can’t find a specific exam paper on the website?",
       answer:
-        "If the paper you're looking for isn’t available, you can head to our Paper Request section and submit a request by specifying the subject, year, slot, and type of exam.",
+        <>
+      If the paper you're looking for isn’t available, you can{" "}
+      <Link
+        href="https://papers.codechefvit.com/request"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="dark:text-blue-400 text-red-500"
+        style={{textDecoration: "underline" }}
+      >
+        submit a request
+      </Link>
+      .
+    </>,
     },
     {
       question: "Are uploaded papers immediately visible on the website?",

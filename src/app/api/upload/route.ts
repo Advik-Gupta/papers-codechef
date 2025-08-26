@@ -104,7 +104,7 @@ export async function POST(req: Request) {
       exam: null,
       semester: null,
       campus: null,
-      ambiguousTags: [],
+      ambiguous_tags: [],
     });
 
     await paper.save();

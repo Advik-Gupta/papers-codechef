@@ -227,9 +227,9 @@ export default function Page() {
       await toast.promise(
         async () => {
           try {
-            //console.log("this is happening now");
+
             await axios.post<APIResponse>("/api/upload", formData);
-            //console.log("this is happening after now");
+
             return { message: "Papers uploaded successfully!" };
           } catch (error) {
             if (error instanceof AxiosError && error.response?.data) {

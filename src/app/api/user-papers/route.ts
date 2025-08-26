@@ -1,14 +1,10 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongoose";
 import Paper from "@/db/papers";
-import { StoredSubjects } from "@/interface";
+import { StoredSubjects, TransformedPaper } from "@/interface";
 
 export const dynamic = "force-dynamic";
 
-interface TransformedPaper {
-  subject: string;
-  slots: string[];
-}
 
 export async function POST(req: Request) {
   try {
@@ -19,17 +15,16 @@ export async function POST(req: Request) {
       subject: { $in: subjects },
     });
 
+    console.log("Fetched user papers:", usersPapers);
+
     const transformedPapers = usersPapers.reduce<TransformedPaper[]>(
       (acc, paper) => {
         const existing = acc.find((item) => item.subject === paper.subject);
 
         if (existing) {
-          existing.slots.push(paper.slot);
-        } else {
-          acc.push({ subject: paper.subject, slots: [paper.slot] });
-        }
-        if (existing) {
-          existing.slots.push(paper.slot);
+          if (!existing.slots.includes(paper.slot)) {
+            existing.slots.push(paper.slot);
+          }
         } else {
           acc.push({ subject: paper.subject, slots: [paper.slot] });
         }

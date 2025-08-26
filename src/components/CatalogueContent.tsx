@@ -4,29 +4,26 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import axios, { type AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
-import { type IPaper, type Filters } from "@/interface";
+import {
+  type IPaper,
+  type Filters,
+  type StoredSubjects
+} from "@/interface";
 import Card from "./Card";
-import { extractBracketContent } from "@/util/utils";
 import { useRouter } from "next/navigation";
 import Loader from "./ui/loader";
 import SideBar from "../components/SideBar";
 import Error from "./Error";
 import { Filter } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { StarIcon } from "lucide-react";
-import { StoredSubjects } from "@/interface";
+import { Pin } from "lucide-react";
 
-export async function downloadFile(url: string, filename: string) {
-  try {
-    const response = await axios.get(url, { responseType: "blob" });
-    const blob = new Blob([response.data]);
-    const link = document.createElement("a");
-    link.href = window.URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-    window.URL.revokeObjectURL(link.href);
-  } catch (error) {}
-}
+import Link from "next/link";
+import {
+  getSecureUrl,
+  generateFileName,
+  downloadFile,
+} from "@/util/download_paper";
 
 const CatalogueContent = () => {
   const router = useRouter();
@@ -51,6 +48,32 @@ const CatalogueContent = () => {
   const [filtersPulled, setFiltersPulled] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<boolean>(false);
   const [pinned, setPinned] = useState<boolean>(false);
+  const [relatedSubjects, setRelatedSubjects] = useState<string[]>([]);
+  // Fetch related subjects when subject changes
+  useEffect(() => {
+    if (!subject) return;
+    const fetchRelatedSubjects = async () => {
+      try {
+        const res = await axios.get<{ related_subjects: string[] }>(
+          "/api/related-subject",
+          {
+            params: { subject },
+          },
+        );
+        console.log(res.data);
+        const data = res.data.related_subjects;
+        console.log("data", data[0], data[1]);
+        if (data && data.length > 0) {
+          setRelatedSubjects(data);
+        } else {
+          setRelatedSubjects([]);
+        }
+      } catch (e) {
+        setRelatedSubjects([]);
+      }
+    };
+    void fetchRelatedSubjects();
+  }, [subject]);
 
   // Set initial state from searchParams on client-side mount
   useEffect(() => {
@@ -176,17 +199,15 @@ const CatalogueContent = () => {
   );
 
   const handleDownloadAll = useCallback(async () => {
-    /*    if (typeof window !== "undefined" && window.gtag) {
-      window.gtag("event", "download_all_clicked", {
-        event_category: "Paper Downloads",
-        event_label: "Download All Clicked",
-      });
-    } */
+    const uniquePapers = Array.from(
+      new Set(selectedPapers.map((paper) => paper._id)),
+    ).map((id) => selectedPapers.find((paper) => paper._id === id)) as IPaper[];
 
-    for (const paper of selectedPapers) {
-      const extension = paper.final_url.split(".").pop();
-      const fileName = `${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}.${extension}`;
-      await downloadFile(paper.final_url, fileName);
+    for (const paper of uniquePapers) {
+      await downloadFile(
+        getSecureUrl(paper.final_url),
+        generateFileName(paper),
+      );
     }
   }, [selectedPapers]);
 
@@ -272,7 +293,7 @@ const CatalogueContent = () => {
 
   return (
     <div className="relative flex min-h-screen justify-center p-0 md:justify-normal">
-      <div className="hidden w-[30%] min-w-fit md:block">
+      <div className="hidden !w-[22%] min-w-[22%] max-w-[22%] flex-shrink-0 md:block">
         <SideBar
           filtersNotPulled={filtersNotPulled}
           loading={loading}
@@ -331,22 +352,40 @@ const CatalogueContent = () => {
           </SheetContent>
         </Sheet>
 
-        <div className="flex items-center gap-2 p-7">
-          <div>
-            <p className="text-s font-semibold text-white/80">
-              {subject?.split("[")[1]?.replace("]", "")}
-            </p>
-            <h2 className="text-2xl font-extrabold text-white md:text-3xl">
-              {subject?.split(" [")[0]}
-            </h2>
+        <div className="p-7">
+          <div className="flex items-center gap-2">
+            <div>
+              <p className="text-s font-semibold text-gray-700 dark:text-white/80">
+                {subject?.split("[")[1]?.replace("]", "")}
+              </p>
+              <h2 className="text-2xl font-extrabold text-gray-700 dark:text-white md:text-3xl">
+                {subject?.split(" [")[0]}
+              </h2>
+            </div>
+            <div className="mt-7">
+              <button onClick={handlePinToggle}>
+                <Pin
+                  className={`h-7 w-7 ${pinned ? "fill-[#A78BFA]" : ""} stroke-gray-700 dark:stroke-white`}
+                />
+              </button>
+            </div>
           </div>
-          <div className="mt-7">
-            <button onClick={handlePinToggle}>
-              <StarIcon
-                className={`h-7 w-7 ${pinned ? "fill-[#A78BFA]" : ""} stroke-white`}
-              />
-            </button>
-          </div>
+          {relatedSubjects.length > 0 && (
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span className="mr-2 text-sm font-medium text-gray-500 dark:text-gray-300">
+                Related subjects:
+              </span>
+              {relatedSubjects.map((sub) => (
+                <Link
+                  key={sub}
+                  href={`/catalogue?subject=${encodeURIComponent(sub)}`}
+                  className="rounded-full bg-violet-100 px-3 py-1 text-sm font-semibold text-violet-700 transition-colors hover:bg-violet-200 dark:bg-violet-900 dark:text-violet-200 dark:hover:bg-violet-800"
+                >
+                  {sub}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         {loading ? (

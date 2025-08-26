@@ -13,7 +13,8 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const PWAInstallButton = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [canInstall, setCanInstall] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -53,34 +54,31 @@ const PWAInstallButton = () => {
 
   return (
     <>
-      
-      <div className="md:hidden flex items-center justify-between rounded-full bg-[#2b2343] px-4 py-2 shadow-md text-white w-fit">
+      <div className="flex w-fit items-center justify-between rounded-full border border-[#3A3745] bg-[#e8e9ff] px-4 py-2 text-gray-700 shadow-md transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#2b2b30] md:hidden">
         <div className="flex items-center gap-3">
-          <Image src="/papers_logo.png" alt="Papers App" width={32} height={32} />
-          <span className="font-semibold text-lg">Papers App</span>
+          <Image
+            src="/papers_logo.png"
+            alt="Papers App"
+            width={32}
+            height={32}
+          />
+          <span className="text-lg font-semibold">Papers App</span>
         </div>
         <button
           onClick={handleInstall}
-          className="ml-6 flex items-center gap-2 rounded-full border border-gray-500 bg-[#1e1e24] px-4 py-1 text-sm font-semibold transition hover:bg-[#2b2b30]"
+          className="ml-6 flex items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-4 py-1 text-sm font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
         >
           <Download className="h-4 w-4" />
           Install
         </button>
       </div>
 
-      
       <div
-  onClick={handleInstall}
-  className="hidden md:flex items-center gap-3 rounded-full px-5 py-2 text-white cursor-pointer bg-[#130e1f] border border-[#FFFFFF26] border-[1.5px]"
->
-
-        <Image
-          src="/papers_logo.png"
-          alt="Papers App"
-          width={28}
-          height={28}
-        />
-        <span className="font-semibold text-sm">Papers App</span>
+        onClick={handleInstall}
+        className="hidden cursor-pointer items-center gap-3 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-5 py-2 text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] md:flex"
+      >
+        <Image src="/papers_logo.png" alt="Papers App" width={28} height={28} />
+        <span className="text-sm font-semibold">Papers App</span>
       </div>
     </>
   );

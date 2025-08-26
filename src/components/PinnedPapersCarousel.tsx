@@ -12,10 +12,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Skeleton } from "./ui/skeleton";
 import AddPapers from "./AddPapers";
 import Autoplay from "embla-carousel-autoplay";
 import { chunkArray } from "@/util/utils";
 import { StoredSubjects } from "@/interface";
+import SkeletonPaperCard from "./SkeletonPaperCard";
 
 function PinnedPapersCarousel({
   carouselType = "upcoming",
@@ -57,6 +59,7 @@ function PinnedPapersCarousel({
         "/api/user-papers",
         storedSubjects,
       );
+
       const fetchedPapers = response.data;
 
       const fetchedSubjectsSet = new Set(
@@ -99,10 +102,6 @@ function PinnedPapersCarousel({
     };
   }, []);
 
-  if (isLoading) {
-    return <Loader prop="m-10" />;
-  }
-
   const plugins = [Autoplay({ delay: 8000, stopOnInteraction: true })];
 
   return (
@@ -116,36 +115,57 @@ function PinnedPapersCarousel({
           plugins={plugins}
           className="w-full"
         >
-          <div className="relative mt-4 flex justify-end gap-4">
+          <div
+            className={`relative mt-4 flex justify-end gap-4 ${displayPapers.length > 0 ? "block" : "hidden"}`}
+          >
             <CarouselPrevious className="relative" />
             <CarouselNext className="relative" />
           </div>
           <CarouselContent>
-            {chunkedPapers.map((paperGroup, index) => {
-              const isLastChunk = index === chunkedPapers.length - 1;
+            {isLoading ? (
+              <CarouselItem
+                className={`grid ${
+                  chunkSize === 4 ? "grid-cols-2 grid-rows-2" : "grid-cols-4"
+                } gap-4 lg:auto-rows-fr`}
+              >
+                <SkeletonPaperCard length={chunkSize} />
+              </CarouselItem>
+            ) : (
+              chunkedPapers.map((paperGroup, index) => {
+                const isLastChunk = index === chunkedPapers.length - 1;
 
-              return (
-                <CarouselItem
-                  key={`carousel-item-${index}`}
-                  className="grid grid-cols-2 grid-rows-2 gap-4 md:grid-cols-4 lg:auto-rows-fr"
-                >
-                  {paperGroup.map((paper, subIndex) => (
-                    <div key={subIndex} className="h-full">
-                      <UpcomingPaper
-                        subject={paper.subject}
-                        slots={paper.slots}
-                      />
-                    </div>
-                  ))}
+                return (
+                  <CarouselItem
+                    key={`carousel-item-${index}`}
+                    className={`grid ${
+                      chunkSize === 4
+                        ? "grid-cols-2 grid-rows-2"
+                        : "grid-cols-4"
+                    } gap-4 lg:auto-rows-fr`}
+                  >
+                    {paperGroup.map((paper, subIndex) => (
+                      <div key={subIndex} className="h-full">
+                        <UpcomingPaper
+                          subject={paper.subject}
+                          slots={paper.slots}
+                        />
+                      </div>
+                    ))}
 
-                  {isLastChunk && displayPapers.length < 8 && (
-                    <div className="h-full">
-                      <AddPapers />
-                    </div>
-                  )}
-                </CarouselItem>
-              );
-            })}
+                    {isLastChunk && displayPapers.length < 8 && (
+                      <div
+                        className="h-full"
+                        onClick={() => {
+                          window.dispatchEvent(new Event("addButtonClicked"));
+                        }}
+                      >
+                        <AddPapers />
+                      </div>
+                    )}
+                  </CarouselItem>
+                );
+              })
+            )}
           </CarouselContent>
         </Carousel>
       </div>

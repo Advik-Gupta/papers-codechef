@@ -4,8 +4,10 @@ import {
   extractWithoutBracketContent,
 } from "@/util/utils";
 import { useRouter } from "next/navigation";
+import { Pin } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { StoredSubjects } from "@/interface";
 
 interface PaperCardProps {
   subject: string;
@@ -16,6 +18,22 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
   const courseName = extractWithoutBracketContent(subject);
   const courseCode = extractBracketContent(subject);
   const [paperCount, setPaperCount] = useState<number | null>(0);
+  const [pinned, setPinned] = useState<boolean>(false);
+
+  const handlePinToggle = () => {
+    const current = !pinned;
+    setPinned(current);
+
+    const saved = JSON.parse(
+      localStorage.getItem("userSubjects") ?? "[]",
+    ) as string[];
+    const updated = current
+      ? [...new Set([...saved, subject])]
+      : saved.filter((s) => s !== subject);
+
+    localStorage.setItem("userSubjects", JSON.stringify(updated));
+    window.dispatchEvent(new Event("userSubjectsChanged"));
+  };
 
   useEffect(() => {
     const fetchPaperCount = async () => {
@@ -31,6 +49,18 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
         console.error("Failed to fetch paper count:", error);
       }
     };
+
+    const currentPinnedSubjects = JSON.parse(
+      localStorage.getItem("userSubjects") ?? "[]",
+    ) as StoredSubjects;
+
+    if (subject && Array.isArray(currentPinnedSubjects)) {
+      if (currentPinnedSubjects.includes(subject)) {
+        setPinned(true);
+      } else {
+        setPinned(false);
+      }
+    }
 
     void fetchPaperCount();
   }, [subject]);
@@ -51,10 +81,30 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
       }`}
     >
       <div className="border-b-2 border-[#453D60] p-2">
-        <h2 className="inline-block rounded-t-lg px-2 py-1 font-play text-base font-bold md:text-lg md:tracking-widest">
-          {courseCode}
-          <div className="text-sm">(Papers available: {paperCount})</div>
-        </h2>
+        <div className="flex items-start justify-between">
+          <h2 className="rounded-t-lg px-2 py-1 font-play text-base font-bold md:text-lg md:tracking-widest">
+            {courseCode}
+            <div className="text-sm font-normal">
+              (Papers available: {paperCount})
+            </div>
+          </h2>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handlePinToggle();
+            }}
+            className="group z-10 mt-1 text-black dark:text-white"
+          >
+            <Pin
+              className={`h-6 w-6 transform stroke-current transition-all ${
+                pinned
+                  ? "fill-violet-400 dark:fill-violet-500"
+                  : "fill-transparent group-hover:fill-violet-400 dark:group-hover:fill-violet-500"
+              } group-hover:scale-110`}
+            />
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col justify-between p-4">
@@ -63,7 +113,7 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
         </h2>
 
         {paperCount ? (
-          <div className="mt-4 flex gap-2 font-play">
+          <div className="mt-4 flex flex-wrap gap-2 font-play">
             {slots?.map((slotValue) => capsule(slotValue))}
           </div>
         ) : (

@@ -24,6 +24,8 @@ function PinnedSearchBar({
   const floatingContainerRef = useRef<HTMLDivElement>(null);
   const [pinned, setPinned] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
+  const [showControls, setShowControls] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const fuzzy = new Fuse(initialSubjects);
 
@@ -55,6 +57,7 @@ function PinnedSearchBar({
       setPinned(currentPinnedSubjects.includes(suggestion));
     }
 
+    setShowControls(true);
     setSuggestions([]);
     filtersNotPulled?.();
   };
@@ -73,9 +76,25 @@ function PinnedSearchBar({
     }
   };
 
+  useEffect(() => {
+    const handleAddClicked = () => {
+      searchRef.current?.focus();
+    };
+
+    window.addEventListener("addButtonClicked", handleAddClicked);
+
+    return () => {
+      window.removeEventListener("addButtonClicked", handleAddClicked);
+    };
+  }, []);
+
   const handlePinToggle = () => {
     const current = !pinned;
     setPinned(current);
+
+    if (searchText.trim() === "") {
+      return;
+    }
 
     const saved = JSON.parse(
       localStorage.getItem("userSubjects") ?? "[]",
@@ -84,9 +103,38 @@ function PinnedSearchBar({
       ? [...new Set([...saved, searchText])]
       : saved.filter((s) => s !== searchText);
 
+    if (updated.length === 0) {
+      setShowControls(false);
+    } else {
+      setShowControls(true);
+    }
+
     localStorage.setItem("userSubjects", JSON.stringify(updated));
     window.dispatchEvent(new Event("userSubjectsChanged"));
+
+    setSearchText("");
+    setPinned(false);
   };
+
+  useEffect(() => {
+    const handlePinsChange = () => {
+      const saved = JSON.parse(
+        localStorage.getItem("userSubjects") ?? "[]",
+      ) as string[];
+
+      if (saved.length === 0) {
+        setShowControls(false);
+      } else {
+        setShowControls(true);
+      }
+    };
+
+    window.addEventListener("userSubjectsChanged", handlePinsChange);
+
+    return () => {
+      window.removeEventListener("userSubjectsChanged", handlePinsChange);
+    };
+  }, []);
 
   const handleRemoveAll = () => {
     localStorage.setItem("userSubjects", JSON.stringify([]));
@@ -95,6 +143,14 @@ function PinnedSearchBar({
   };
 
   useEffect(() => {
+    const storedSubjects = JSON.parse(
+      localStorage.getItem("userSubjects") ?? "[]",
+    ) as string[];
+
+    if (storedSubjects.length > 0) {
+      setShowControls(true);
+    }
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -115,8 +171,9 @@ function PinnedSearchBar({
                 <Input
                   type="text"
                   value={searchText}
+                  ref={searchRef}
                   onChange={handleSearchChange}
-                  placeholder="Search by subject..."
+                  placeholder="Search subject to pin..."
                   className={`text-md w-full rounded-lg bg-[#B2B8FF] px-4 py-6 pr-10 font-play tracking-wider text-black shadow-sm ring-0 placeholder:text-black focus:outline-none focus:ring-0 dark:bg-[#7480FF66] dark:text-white placeholder:dark:text-white ${
                     suggestions.length > 0 ? "rounded-b-none" : ""
                   }`}
@@ -150,10 +207,17 @@ function PinnedSearchBar({
               </div>
 
               <div className="hidden md:block">
-                <PinButton isPinned={pinned} onToggle={handlePinToggle} />
+                <PinButton
+                  isPinned={pinned}
+                  onToggle={handlePinToggle}
+                  disabled={!showControls || searchText.trim() === ""}
+                />
               </div>
 
-              <div ref={floatingContainerRef} className="md:hidden">
+              <div
+                ref={floatingContainerRef}
+                className={`md:hidden ${showControls ? "block" : "hidden"}`}
+              >
                 <NavDropdownButton
                   isOpen={open}
                   onClick={() => setOpen((prev) => !prev)}
@@ -168,13 +232,14 @@ function PinnedSearchBar({
                         handlePinToggle();
                         setOpen(false);
                       }}
+                      disabled={!showControls || searchText.trim() === ""}
                     />
                     <button
                       onClick={() => {
                         handleRemoveAll();
                         setOpen(false);
                       }}
-                      className="flex items-center gap-2 rounded-full border border-[#3A3745] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-[#1A1823]"
+                      className="flex items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
                     >
                       Remove All <X className="h-4 w-4" />
                     </button>
@@ -189,8 +254,11 @@ function PinnedSearchBar({
       <div className="mt-2 hidden w-full md:block">
         <div className="ml-auto w-fit">
           <button
-            onClick={handleRemoveAll}
-            className="flex items-center gap-2 rounded-full border border-[#3A3745] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-[#1A1823]"
+            onClick={() => {
+              handleRemoveAll();
+              setOpen(false);
+            }}
+            className="flex items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
           >
             Remove All <X className="h-4 w-4" />
           </button>

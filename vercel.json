@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "headers": [
+    {
+      "source": "/api/upcoming-papers",
+      "headers": [
+        {
+          "key": "Cache-Control",
+            "value": "s-maxage=60, stale-while-revalidate=120"
+        }
+      ]
+    }
+  ]
+}

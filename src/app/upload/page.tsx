@@ -5,7 +5,7 @@ import { useDropzone } from "react-dropzone";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import axios, { AxiosError } from "axios";
-import { FiTrash, FiX } from "react-icons/fi";
+import { FiTrash, FiPlus } from "react-icons/fi";
 import Image from "next/image";
 import {
   DndContext,
@@ -24,7 +24,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import Dropzone from "react-dropzone";
 import { Upload, XIcon } from "lucide-react";
-
 
 interface APIResponse {
   status: string;
@@ -58,9 +57,16 @@ export default function Page() {
     };
   }, []);
 
+  
   useEffect(() => {
     return () => {
-      previews.forEach((item) => URL.revokeObjectURL(item.preview));
+      previews.forEach((item) => {
+        try {
+          URL.revokeObjectURL(item.preview);
+        } catch (e) {
+          
+        }
+      });
     };
   }, [previews]);
 
@@ -74,7 +80,7 @@ export default function Page() {
         "image/gif",
       ];
 
-      const toastId = toast.loading("Uploading your files...");
+      const toastId = toast.loading("Adding your files...");
       if (!acceptedFiles || acceptedFiles.length === 0) {
         toast.error("No files selected", { id: toastId });
         return;
@@ -83,7 +89,6 @@ export default function Page() {
       const isNewPdf = acceptedFiles.some(
         (file) => file.type === "application/pdf",
       );
-      // const isExistingPdf = files.some((file) => file.type === 'application/pdf');
 
       if (
         (isNewPdf && acceptedFiles.length > 1) ||
@@ -112,8 +117,9 @@ export default function Page() {
         return;
       }
 
+      
       const newPreviews = acceptedFiles.map((file, idx) => ({
-        id: `${file.name}-${file.lastModified}-${Date.now()}-${idx}`,
+        id: `${file.name}-${file.lastModified}-${Date.now()}-${files.length + idx}-add`,
         file,
         preview: URL.createObjectURL(file),
       }));
@@ -163,13 +169,21 @@ export default function Page() {
       transition,
       isDragging,
     } = useSortable({ id });
+    
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
-      //zIndex: 50,
+      zIndex: isDragging ? 1000 : 1,
     };
+    
     return (
-      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <div 
+        ref={setNodeRef} 
+        style={style} 
+        {...attributes} 
+        {...listeners}
+        className={isDragging ? "cursor-grabbing" : "cursor-grab"}
+      >
         {children}
       </div>
     );
@@ -186,10 +200,12 @@ export default function Page() {
         oldIndex,
         newIndex,
       );
-
+      
       previews.forEach((item) => URL.revokeObjectURL(item.preview));
+      
+      
       const newPreviews = newFiles.map((file, idx) => ({
-        id: `${file.name}-${file.lastModified}-${idx}`,
+        id: `${file.name}-${file.lastModified}-${Date.now()}-${idx}-reorder`,
         file,
         preview: URL.createObjectURL(file),
       }));
@@ -204,15 +220,29 @@ export default function Page() {
     if (deletedPreview) {
       URL.revokeObjectURL(deletedPreview.preview);
     }
-    const newPreviews = previews.filter((_, i) => i !== index);
+    
+    
+    const remainingFiles = files.filter((_, i) => i !== index);
+    
+    
+    previews.forEach((item, i) => {
+      if (i !== index) {
+        URL.revokeObjectURL(item.preview);
+      }
+    });
+    
+    
+    const newPreviews = remainingFiles.map((file, idx) => ({
+      id: `${file.name}-${file.lastModified}-${Date.now()}-${idx}-delete`,
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    
+    setFiles(remainingFiles);
     setPreviews(newPreviews);
-    setFiles(newPreviews.map((p) => p.file));
   };
-  const handlePrint = async () => {
-    // if (!campus) {
-    //   Vellore
-    // }
 
+  const handlePrint = async () => {
     const isPdf = files.length === 1 && files[0]?.type === "application/pdf";
 
     const formData = new FormData();
@@ -221,7 +251,6 @@ export default function Page() {
     });
 
     formData.append("campus", campus);
-    //console.log("campus", campus);
     formData.append("isPdf", String(isPdf));
 
     setIsUploading(true);
@@ -230,9 +259,7 @@ export default function Page() {
       await toast.promise(
         async () => {
           try {
-
             await axios.post<APIResponse>("/api/upload", formData);
-
             return { message: "Papers uploaded successfully!" };
           } catch (error) {
             if (error instanceof AxiosError && error.response?.data) {
@@ -254,13 +281,23 @@ export default function Page() {
       );
 
       setFiles([]);
+      setPreviews([]);
+      
+      
+      previews.forEach((item) => {
+        try {
+          URL.revokeObjectURL(item.preview);
+        } catch (e) {
+          
+        }
+      });
     } catch (error) {
     } finally {
       setIsUploading(false);
     }
   };
 
-return (
+  return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <div className="flex h-[calc(100vh-85px)] flex-col justify-center px-6 font-play">
         <div className="2xl:my-15 flex flex-col items-center">
@@ -271,8 +308,15 @@ return (
                   <Dropzone
                     onDrop={onDrop}
                     accept={{
-                      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp'],
-                      'application/pdf': ['.pdf']
+                      "image/*": [
+                        ".jpeg",
+                        ".jpg",
+                        ".png",
+                        ".gif",
+                        ".bmp",
+                        ".webp",
+                      ],
+                      "application/pdf": [".pdf"],
                     }}
                     multiple={true}
                   >
@@ -284,6 +328,8 @@ return (
                             ? "border-solid border-[#6D28D9] bg-purple-50 dark:bg-[#130E1F]"
                             : "border-dashed border-gray-300"
                         } p-8 text-center transition-all duration-200`}
+                        onDragEnter={() => setIsDragging(true)}
+                        onDragLeave={() => setIsDragging(false)}
                       >
                         <input {...getInputProps()} />
                         {isDragActive || isGlobalDragging ? (
@@ -296,12 +342,16 @@ return (
                         ) : (
                           <p>
                             Drag &apos;n&apos; drop some files here, or{" "}
-                            <span className="text-[#6D28D9]">click</span> to select
-                            files
+                            <span className="text-[#6D28D9]">click</span> to
+                            select files
                           </p>
                         )}
                         <div
-                          className={`mt-2 text-xs ${files.length === 0 ? "text-red-500" : "text-gray-600"}`}
+                          className={`mt-2 text-xs ${
+                            files.length === 0
+                              ? "text-red-500"
+                              : "text-gray-600"
+                          }`}
                         >
                           {files.length} files selected
                         </div>
@@ -319,91 +369,113 @@ return (
 
           {previews.length > 0 && (
             <section className="mt-6 flex w-full flex-col items-center">
-              <div
-                className="scrollbar-hide flex aspect-[2/1] w-full max-w-4xl flex-col justify-between overflow-x-auto overflow-y-hidden rounded-[40px] border-[6px] border-indigo-900 bg-indigo-900/10 p-8"
-                style={{ minHeight: 320 }}
-              >
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDndKitDragEnd}
+              <div className="flex w-max gap-4">
+                <div
+                  className="scrollbar-hide flex aspect-[2/1] w-full max-w-4xl flex-col justify-between overflow-x-auto overflow-y-hidden rounded-[40px] border-[6px] border-indigo-900 bg-indigo-900/10 p-8"
+                  style={{ minHeight: 320 }}
                 >
-                  <SortableContext
-                    items={previews.map((item) => item.id)}
-                    strategy={horizontalListSortingStrategy}
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDndKitDragEnd}
                   >
-                    <div className="flex w-max gap-5">
-                      {previews.map((item, index) => (
-                        <SortablePreview key={item.id} id={item.id}>
-                          <div className="relative h-60 w-48">
-                            <div className="h-full w-full overflow-hidden rounded-2xl outline outline-2 outline-white/80">
-                              <div className="absolute left-0 top-0 z-10 flex h-10 w-10 items-center justify-center rounded-br-2xl rounded-tl-2xl bg-slate-600">
-                                <span className="text-xl text-white">
-                                  {index + 1}
-                                </span>
-                              </div>
-                              <Button
-                                onClick={() => handleDelete(index)}
-                                variant="destructive"
-                                size="icon"
-                                className="absolute right-0 top-0 z-10 h-10 w-10 rounded-bl-2xl rounded-tr-2xl bg-pink-800 hover:bg-pink-900"
-                                title="Delete"
-                              >
-                                <FiTrash className="h-5 w-5" />
-                              </Button>
-                              {item.file.type.startsWith("image/") ? (
-                                <div className="relative h-full w-full">
-                                  <Image
-                                    src={item.preview}
-                                    alt={`Page ${index + 1}`}
-                                    fill
-                                    className="object-cover"
-                                    unoptimized
-                                  />
+                    <SortableContext
+                      items={previews.map((item) => item.id)}
+                      strategy={horizontalListSortingStrategy}
+                    >
+                      <div className="flex w-max gap-5">
+                        {previews.map((item, index) => (
+                          <SortablePreview key={item.id} id={item.id}>
+                            <div className="group relative flex-shrink-0">
+                             
+                              <div className="relative h-60 w-48 overflow-hidden rounded-2xl outline outline-2 outline-white">
+                                
+                                <div className="absolute left-0 top-0 z-20 flex h-10 w-10 items-center justify-center rounded-br-2xl rounded-tl-2xl bg-slate-600">
+                                  <span className="text-xl font-bold text-white">
+                                    {index + 1}
+                                  </span>
                                 </div>
-                              ) : (
-                                <iframe
-                                  src={item.preview}
-                                  title={`PDF preview ${index + 1}`}
-                                  className="h-full w-full"
-                                />
-                              )}
+
+                               
+                                <Button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleDelete(index);
+                                  }}
+                                  variant="destructive"
+                                  size="icon"
+                                  className="absolute right-0 top-0 z-20 h-10 w-10 rounded-bl-2xl rounded-tr-2xl bg-pink-800 hover:bg-red-900"
+                                  title="Delete"
+                                >
+                                  <FiTrash className="h-5 w-5" />
+                                </Button>
+
+                                {/* File preview content */}
+                                <div className="absolute inset-0 z-10">
+                                  {item.file.type.startsWith("image/") ? (
+                                    <Image
+                                      src={item.preview}
+                                      alt={`Page ${index + 1}`}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                      sizes="192px"
+                                    />
+                                  ) : (
+                                    <iframe
+                                      src={item.preview}
+                                      title={`PDF preview ${index + 1}`}
+                                      className="h-full w-full border-0"
+                                    />
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </SortablePreview>
-                      ))}
-                      <Dropzone
-                        onDrop={onDrop}
-                        accept={{
-                          'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp'],
-                          'application/pdf': ['.pdf']
-                        }}
-                        multiple={true}
-                      >
-                        {({ getRootProps, getInputProps }) => (
-                          <div
-                            className="relative h-20 w-20 cursor-pointer"
-                            {...getRootProps()}
-                          >
-                            <input {...getInputProps()} />
-                            <div className="absolute left-4 top-4 h-16 w-16 rounded-2xl bg-violet-950" />
-                            <div className="absolute left-0 top-0 h-10 w-10 rounded-[20px] bg-violet-950" />
-                            <div className="absolute left-1 top-1 h-8 w-8 rounded-[20px] bg-black/50" />
-                            <div className="absolute left-7 top-7 text-2xl text-white">
-                              +
+                          </SortablePreview>
+                        ))}
+
+                        {/* Add more button */}
+                        <Dropzone
+                          onDrop={onDrop}
+                          accept={{
+                            "image/*": [
+                              ".jpeg",
+                              ".jpg",
+                              ".png",
+                              ".gif",
+                              ".bmp",
+                              ".webp",
+                            ],
+                            "application/pdf": [".pdf"],
+                          }}
+                          multiple={true}
+                        >
+                          {({ getRootProps, getInputProps }) => (
+                            <div
+                              className="relative h-20 w-20 cursor-pointer flex-shrink-0"
+                              {...getRootProps()}
+                            >
+                              <input {...getInputProps()} />
+                              <div className="absolute left-4 top-4 h-16 w-16 rounded-2xl bg-violet-950" />
+                              <div className="absolute left-0 top-0 h-10 w-10 rounded-[20px] bg-violet-950" />
+                              <div className="absolute left-1 top-1 flex h-8 w-8 items-center rounded-[20px] bg-black/50" />
+                              <div className="absolute left-9 top-9 text-2xl text-white">
+                                <FiPlus className="h-7 w-7" />
+                              </div>
+                              <div className="absolute left-4 top-3 text-xs font-semibold text-white">
+                                {previews.length}
+                              </div>
                             </div>
-                            <div className="absolute left-4 top-3 text-xs font-semibold text-white">
-                              {previews.length}
-                            </div>
-                          </div>
-                        )}
-                      </Dropzone>
-                    </div>
-                  </SortableContext>
-                </DndContext>
-                <p className="mt-4 text-center text-xl text-white/50">
-                  Drag to re-order.
-                </p>
+                          )}
+                        </Dropzone>
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                  <p className="mt-4 text-center text-xl text-white/50">
+                    Drag to re-order.
+                  </p>
+                </div>
               </div>
             </section>
           )}

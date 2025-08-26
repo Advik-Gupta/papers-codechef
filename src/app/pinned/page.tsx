@@ -11,7 +11,7 @@ const Pinned = () => {
 
   return (
     <div id="pinned" className="mt-5 flex flex-col justify-between">
-      <h1 className="mx-auto my-8 hidden text-center font-vipnabd text-3xl font-extrabold md:block">
+      <h1 className="mx-auto my-8 text-center font-vipnabd text-xl font-extrabold sm:text-2xl md:text-3xl">
         Pinned Subjects
       </h1>
       <div className="mb-3 flex w-full flex-col items-center gap-2 px-6">

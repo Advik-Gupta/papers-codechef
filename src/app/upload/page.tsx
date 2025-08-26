@@ -22,6 +22,9 @@ import {
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import Dropzone from "react-dropzone";
+import { Upload, XIcon } from "lucide-react";
+
 
 interface APIResponse {
   status: string;
@@ -257,7 +260,7 @@ export default function Page() {
     }
   };
 
-  return (
+return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <div className="flex h-[calc(100vh-85px)] flex-col justify-center px-6 font-play">
         <div className="2xl:my-15 flex flex-col items-center">
@@ -265,49 +268,46 @@ export default function Page() {
             <fieldset className="mb-4 w-full max-w-md rounded-lg border-2 border-gray-300 p-4 pr-8">
               <div className="flex w-full flex-col 2xl:gap-y-4">
                 <div>
-                  <section
-                    {...getRootProps()}
-                    className={`my-2 -mr-2 cursor-pointer rounded-2xl border-2 ${
-                      isDragging || isGlobalDragging
-                        ? "border-solid border-[#6D28D9] bg-purple-50 dark:bg-[#130E1F]"
-                        : "border-dashed border-gray-300"
-                    } p-8 text-center transition-all duration-200`}
-                    onDragEnter={() => setIsDragging(true)}
-                    onDragLeave={() => setIsDragging(false)}
+                  <Dropzone
+                    onDrop={onDrop}
+                    accept={{
+                      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp'],
+                      'application/pdf': ['.pdf']
+                    }}
+                    multiple={true}
                   >
-                    <input {...getInputProps()} />
-                    {isDragging || isGlobalDragging ? (
-                      <div className="flex flex-col items-center">
-                        <p className="text-lg font-medium text-[#6D28D9]">
-                          Drop files here
-                        </p>
-                        <svg
-                          className="mt-2 h-10 w-10 animate-bounce text-[#6D28D9]"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          viewBox="0 0 24 24"
+                    {({ getRootProps, getInputProps, isDragActive }) => (
+                      <section
+                        {...getRootProps()}
+                        className={`my-2 -mr-2 cursor-pointer rounded-2xl border-2 ${
+                          isDragActive || isGlobalDragging
+                            ? "border-solid border-[#6D28D9] bg-purple-50 dark:bg-[#130E1F]"
+                            : "border-dashed border-gray-300"
+                        } p-8 text-center transition-all duration-200`}
+                      >
+                        <input {...getInputProps()} />
+                        {isDragActive || isGlobalDragging ? (
+                          <div className="flex flex-col items-center">
+                            <p className="text-lg font-medium text-[#6D28D9]">
+                              Drop files here
+                            </p>
+                            <Upload className="mt-2 h-10 w-10 animate-bounce text-[#6D28D9]" />
+                          </div>
+                        ) : (
+                          <p>
+                            Drag &apos;n&apos; drop some files here, or{" "}
+                            <span className="text-[#6D28D9]">click</span> to select
+                            files
+                          </p>
+                        )}
+                        <div
+                          className={`mt-2 text-xs ${files.length === 0 ? "text-red-500" : "text-gray-600"}`}
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12"
-                          />
-                        </svg>
-                      </div>
-                    ) : (
-                      <p>
-                        Drag &apos;n&apos; drop some files here, or{" "}
-                        <span className="text-[#6D28D9]">click</span> to select
-                        files
-                      </p>
+                          {files.length} files selected
+                        </div>
+                      </section>
                     )}
-                    <div
-                      className={`mt-2 text-xs ${files.length === 0 ? "text-red-500" : "text-gray-600"}`}
-                    >
-                      {files.length} files selected
-                    </div>
-                  </section>
+                  </Dropzone>
                   <label className="mx-2 -mr-2 block text-center text-xs font-medium text-gray-700">
                     Only Images and PDF are allowed
                     <sup className="text-red-500">*</sup>
@@ -342,13 +342,15 @@ export default function Page() {
                                   {index + 1}
                                 </span>
                               </div>
-                              <button
+                              <Button
                                 onClick={() => handleDelete(index)}
-                                className="absolute right-0 top-0 z-10 flex h-10 w-10 items-center justify-center rounded-bl-2xl rounded-tr-2xl bg-pink-800"
+                                variant="destructive"
+                                size="icon"
+                                className="absolute right-0 top-0 z-10 h-10 w-10 rounded-bl-2xl rounded-tr-2xl bg-pink-800 hover:bg-pink-900"
                                 title="Delete"
                               >
-                                <FiTrash className="h-5 w-5 text-white" />
-                              </button>
+                                <FiTrash className="h-5 w-5" />
+                              </Button>
                               {item.file.type.startsWith("image/") ? (
                                 <div className="relative h-full w-full">
                                   <Image
@@ -356,7 +358,7 @@ export default function Page() {
                                     alt={`Page ${index + 1}`}
                                     fill
                                     className="object-cover"
-                                    unoptimized // Since we're using object URLs
+                                    unoptimized
                                   />
                                 </div>
                               ) : (
@@ -370,21 +372,32 @@ export default function Page() {
                           </div>
                         </SortablePreview>
                       ))}
-                      <div
-                        className="relative h-20 w-20 cursor-pointer"
-                        {...getRootProps()}
+                      <Dropzone
+                        onDrop={onDrop}
+                        accept={{
+                          'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp'],
+                          'application/pdf': ['.pdf']
+                        }}
+                        multiple={true}
                       >
-                        <input {...getInputProps()} />
-                        <div className="absolute left-4 top-4 h-16 w-16 rounded-2xl bg-violet-950" />
-                        <div className="absolute left-0 top-0 h-10 w-10 rounded-[20px] bg-violet-950" />
-                        <div className="absolute left-1 top-1 h-8 w-8 rounded-[20px] bg-black/50" />
-                        <div className="absolute left-7 top-7 text-2xl text-white">
-                          +
-                        </div>
-                        <div className="absolute left-4 top-3 text-xs font-semibold text-white">
-                          {previews.length}
-                        </div>
-                      </div>
+                        {({ getRootProps, getInputProps }) => (
+                          <div
+                            className="relative h-20 w-20 cursor-pointer"
+                            {...getRootProps()}
+                          >
+                            <input {...getInputProps()} />
+                            <div className="absolute left-4 top-4 h-16 w-16 rounded-2xl bg-violet-950" />
+                            <div className="absolute left-0 top-0 h-10 w-10 rounded-[20px] bg-violet-950" />
+                            <div className="absolute left-1 top-1 h-8 w-8 rounded-[20px] bg-black/50" />
+                            <div className="absolute left-7 top-7 text-2xl text-white">
+                              +
+                            </div>
+                            <div className="absolute left-4 top-3 text-xs font-semibold text-white">
+                              {previews.length}
+                            </div>
+                          </div>
+                        )}
+                      </Dropzone>
                     </div>
                   </SortableContext>
                 </DndContext>
@@ -398,7 +411,8 @@ export default function Page() {
           <Button
             onClick={handlePrint}
             disabled={isUploading || files.length === 0}
-            className="mt-8 rounded-[40px] bg-violet-950 px-8 py-3 text-xl text-white"
+            className="mt-8 rounded-[40px] bg-violet-950 px-8 py-3 text-xl text-white hover:bg-violet-800"
+            size="lg"
           >
             {isUploading ? "Uploading..." : "Upload"}
           </Button>
@@ -408,13 +422,15 @@ export default function Page() {
       {zoomIndex !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
           <div className="relative flex flex-col items-center rounded-lg bg-white p-4 shadow-lg">
-            <button
+            <Button
               onClick={() => setZoomIndex(null)}
-              className="absolute right-2 top-2 rounded-full bg-gray-200 p-2 hover:bg-gray-300"
+              variant="ghost"
+              size="icon"
+              className="absolute right-2 top-2 rounded-full bg-gray-200 hover:bg-gray-300"
               title="Close"
             >
-              <FiX size={24} />
-            </button>
+              <XIcon className="h-6 w-6" />
+            </Button>
             {previews[zoomIndex]?.file.type.startsWith("image/") ? (
               <Image
                 src={previews[zoomIndex].preview}

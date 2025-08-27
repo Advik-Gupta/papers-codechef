@@ -63,7 +63,7 @@ const faqs = [
         "What should I do if I can’t find a specific exam paper on the website?",
       answer:
         <>
-      If the paper you're looking for isn’t available, you can{" "}
+      If the paper you&apos;re looking for isn’t available, you can{" "}
       <Link
         href="https://papers.codechefvit.com/request"
         target="_blank"

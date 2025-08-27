@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useDropzone } from "react-dropzone";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import axios, { AxiosError } from "axios";
@@ -37,7 +36,7 @@ export default function Page() {
     { id: string; file: File; preview: string }[]
   >([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [setIsDragging] = useState(false);
   const [isGlobalDragging, setIsGlobalDragging] = useState(false);
   const [zoomIndex, setZoomIndex] = useState<number | null>(null);
 
@@ -57,18 +56,18 @@ export default function Page() {
     };
   }, []);
 
-  
+  // Cleanup URLs when component unmounts
   useEffect(() => {
     return () => {
       previews.forEach((item) => {
         try {
           URL.revokeObjectURL(item.preview);
         } catch (e) {
-          
+          // Ignore errors
         }
       });
     };
-  }, [previews]);
+  }, []); // Only run on unmount
 
   const fileCheckAndSelect = useCallback(
     (acceptedFiles: File[]) => {
@@ -90,11 +89,23 @@ export default function Page() {
         (file) => file.type === "application/pdf",
       );
 
+      const hasExistingImages = files.some((file) =>
+        file.type.startsWith("image/"),
+      );
+
+      const hasExistingPdf = files.some(
+        (file) => file.type === "application/pdf",
+      );
+
       if (
         (isNewPdf && acceptedFiles.length > 1) ||
-        (isNewPdf && files.length > 0)
+        (isNewPdf && hasExistingImages) ||
+        (isNewPdf && hasExistingPdf) ||
+        (!isNewPdf && hasExistingPdf)
       ) {
-        toast.error("PDFs must be uploaded separately", { id: toastId });
+        toast.error("PDFs must be uploaded separately from images", {
+          id: toastId,
+        });
         return;
       }
 
@@ -117,9 +128,8 @@ export default function Page() {
         return;
       }
 
-      
       const newPreviews = acceptedFiles.map((file, idx) => ({
-        id: `${file.name}-${file.lastModified}-${Date.now()}-${files.length + idx}-add`,
+        id: `${file.name}-${file.lastModified}-${Date.now()}-${files.length + idx}`,
         file,
         preview: URL.createObjectURL(file),
       }));
@@ -131,24 +141,12 @@ export default function Page() {
     },
     [files],
   );
-
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       fileCheckAndSelect(acceptedFiles);
     },
     [fileCheckAndSelect],
   );
-
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    multiple: true,
-    noClick: false,
-    noKeyboard: false,
-    accept: {
-      "application/pdf": [".pdf"],
-      "image/*": [".jpeg", ".jpg", ".png", ".gif"],
-    },
-  });
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -169,18 +167,18 @@ export default function Page() {
       transition,
       isDragging,
     } = useSortable({ id });
-    
+
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
       zIndex: isDragging ? 1000 : 1,
     };
-    
+
     return (
-      <div 
-        ref={setNodeRef} 
-        style={style} 
-        {...attributes} 
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
         {...listeners}
         className={isDragging ? "cursor-grabbing" : "cursor-grab"}
       >
@@ -195,20 +193,8 @@ export default function Page() {
       const oldIndex = previews.findIndex((item) => item.id === active.id);
       const newIndex = previews.findIndex((item) => item.id === over.id);
 
-      const newFiles = arrayMove(
-        previews.map((p) => p.file),
-        oldIndex,
-        newIndex,
-      );
-      
-      previews.forEach((item) => URL.revokeObjectURL(item.preview));
-      
-      
-      const newPreviews = newFiles.map((file, idx) => ({
-        id: `${file.name}-${file.lastModified}-${Date.now()}-${idx}-reorder`,
-        file,
-        preview: URL.createObjectURL(file),
-      }));
+      const newPreviews = arrayMove(previews, oldIndex, newIndex);
+      const newFiles = arrayMove(files, oldIndex, newIndex);
 
       setFiles(newFiles);
       setPreviews(newPreviews);
@@ -220,27 +206,25 @@ export default function Page() {
     if (deletedPreview) {
       URL.revokeObjectURL(deletedPreview.preview);
     }
-    
-    
+
     const remainingFiles = files.filter((_, i) => i !== index);
-    
-    
-    previews.forEach((item, i) => {
-      if (i !== index) {
-        URL.revokeObjectURL(item.preview);
-      }
-    });
-    
-    
-    const newPreviews = remainingFiles.map((file, idx) => ({
-      id: `${file.name}-${file.lastModified}-${Date.now()}-${idx}-delete`,
-      file,
-      preview: URL.createObjectURL(file),
-    }));
-    
+    const remainingPreviews = previews.filter((_, i) => i !== index);
+
     setFiles(remainingFiles);
-    setPreviews(newPreviews);
+    setPreviews(remainingPreviews);
   };
+
+  const clearAllFiles = useCallback(() => {
+    // Clean up all URLs
+    previews.forEach((item) => {
+      try {
+        URL.revokeObjectURL(item.preview);
+      } catch (e) {}
+    });
+
+    setFiles([]);
+    setPreviews([]);
+  }, [previews]);
 
   const handlePrint = async () => {
     const isPdf = files.length === 1 && files[0]?.type === "application/pdf";
@@ -280,18 +264,9 @@ export default function Page() {
         },
       );
 
-      setFiles([]);
-      setPreviews([]);
-      
-      
-      previews.forEach((item) => {
-        try {
-          URL.revokeObjectURL(item.preview);
-        } catch (e) {
-          
-        }
-      });
+      clearAllFiles();
     } catch (error) {
+      
     } finally {
       setIsUploading(false);
     }
@@ -299,7 +274,7 @@ export default function Page() {
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <div className="flex h-[calc(100vh-85px)] flex-col justify-center px-6 font-play">
+      <div className="flex h-[calc(100vh-90px)] flex-col justify-center px-6 font-play">
         <div className="2xl:my-15 flex flex-col items-center">
           {previews.length === 0 && (
             <fieldset className="mb-4 w-full max-w-md rounded-lg border-2 border-gray-300 p-4 pr-8">
@@ -328,8 +303,6 @@ export default function Page() {
                             ? "border-solid border-[#6D28D9] bg-purple-50 dark:bg-[#130E1F]"
                             : "border-dashed border-gray-300"
                         } p-8 text-center transition-all duration-200`}
-                        onDragEnter={() => setIsDragging(true)}
-                        onDragLeave={() => setIsDragging(false)}
                       >
                         <input {...getInputProps()} />
                         {isDragActive || isGlobalDragging ? (
@@ -340,11 +313,11 @@ export default function Page() {
                             <Upload className="mt-2 h-10 w-10 animate-bounce text-[#6D28D9]" />
                           </div>
                         ) : (
-                          <p>
+                          <div>
                             Drag &apos;n&apos; drop some files here, or{" "}
                             <span className="text-[#6D28D9]">click</span> to
                             select files
-                          </p>
+                          </div>
                         )}
                         <div
                           className={`mt-2 text-xs ${
@@ -354,6 +327,12 @@ export default function Page() {
                           }`}
                         >
                           {files.length} files selected
+                        </div>
+                        <div className="mt-4 text-sm text-gray-500">
+                          Note: Uploaded papers are first reviewed by our team
+                          before appearing on the website. If your paper doesn&apos;t
+                          show up immediately, please be patient, it&apos;s likely
+                          still under review.
                         </div>
                       </section>
                     )}
@@ -372,7 +351,7 @@ export default function Page() {
               <div className="flex w-max gap-4">
                 <div
                   className="scrollbar-hide flex aspect-[2/1] w-full max-w-4xl flex-col justify-between overflow-x-auto overflow-y-hidden rounded-[40px] border-[6px] border-indigo-900 bg-indigo-900/10 p-8"
-                  style={{ minHeight: 320 }}
+                  style={{ minHeight: 340, maxHeight: 340 }}
                 >
                   <DndContext
                     sensors={sensors}
@@ -387,16 +366,13 @@ export default function Page() {
                         {previews.map((item, index) => (
                           <SortablePreview key={item.id} id={item.id}>
                             <div className="group relative flex-shrink-0">
-                             
                               <div className="relative h-60 w-48 overflow-hidden rounded-2xl outline outline-2 outline-white">
-                                
                                 <div className="absolute left-0 top-0 z-20 flex h-10 w-10 items-center justify-center rounded-br-2xl rounded-tl-2xl bg-slate-600">
                                   <span className="text-xl font-bold text-white">
                                     {index + 1}
                                   </span>
                                 </div>
 
-                               
                                 <Button
                                   onClick={(e) => {
                                     e.preventDefault();
@@ -411,7 +387,6 @@ export default function Page() {
                                   <FiTrash className="h-5 w-5" />
                                 </Button>
 
-                                {/* File preview content */}
                                 <div className="absolute inset-0 z-10">
                                   {item.file.type.startsWith("image/") ? (
                                     <Image
@@ -435,7 +410,6 @@ export default function Page() {
                           </SortablePreview>
                         ))}
 
-                        {/* Add more button */}
                         <Dropzone
                           onDrop={onDrop}
                           accept={{
@@ -453,7 +427,7 @@ export default function Page() {
                         >
                           {({ getRootProps, getInputProps }) => (
                             <div
-                              className="relative h-20 w-20 cursor-pointer flex-shrink-0"
+                              className="relative h-20 w-20 flex-shrink-0 cursor-pointer"
                               {...getRootProps()}
                             >
                               <input {...getInputProps()} />
@@ -469,14 +443,21 @@ export default function Page() {
                             </div>
                           )}
                         </Dropzone>
-                      </div>
+                      </div>{" "}
+                      {previews.length > 2 && (
+                        <div className="text-l mt-4 text-right text-white/50">
+                          scroll to view more &gt;&gt;
+                        </div>
+                      )}
                     </SortableContext>
                   </DndContext>
-                  <p className="mt-4 text-center text-xl text-white/50">
-                    Drag to re-order.
-                  </p>
                 </div>
               </div>
+              {previews.length > 1 && (
+                <div className="mt-4 text-right text-xl text-white/50">
+                  Drag to reorder
+                </div>
+              )}
             </section>
           )}
 

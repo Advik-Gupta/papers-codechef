@@ -92,7 +92,6 @@ export async function POST(req: Request) {
       );
     }
 
-
     const paper = new PaperAdmin({
       cloudinary_index: configIndex,
 
@@ -105,6 +104,7 @@ export async function POST(req: Request) {
       exam: null,
       semester: null,
       campus: null,
+      ambiguous_tags: [],
     });
 
     await paper.save();

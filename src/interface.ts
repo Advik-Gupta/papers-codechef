@@ -99,6 +99,7 @@ export interface IAdminPaper {
     | null;
   answer_key_included?: boolean | null;
   is_selected?: boolean;
+  ambiguous_tags: string[];
 }
 
 export interface ICourses {

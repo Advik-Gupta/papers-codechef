@@ -35,6 +35,7 @@ const adminSchema = new Schema<IAdminPaper>({
   },
   answer_key_included: { type: Boolean || null, default: false },
   is_selected: { type: Boolean, default: false },
+  ambiguous_tags: { type: [String], default: [] },
 });
 
 const paperSchema = new Schema<IPaper>({

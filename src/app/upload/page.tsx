@@ -10,6 +10,7 @@ import {
   DndContext,
   closestCenter,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -36,7 +37,6 @@ export default function Page() {
     { id: string; file: File; preview: string }[]
   >([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [setIsDragging] = useState(false);
   const [isGlobalDragging, setIsGlobalDragging] = useState(false);
   const [zoomIndex, setZoomIndex] = useState<number | null>(null);
 
@@ -160,6 +160,7 @@ export default function Page() {
     },
     [files],
   );
+
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       fileCheckAndSelect(acceptedFiles);
@@ -168,7 +169,15 @@ export default function Page() {
   );
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 5 },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200,
+        tolerance: 10,
+      },
+    }),
   );
 
   function SortablePreview({
@@ -191,6 +200,7 @@ export default function Page() {
       transform: CSS.Transform.toString(transform),
       transition,
       zIndex: isDragging ? 1000 : 1,
+      touchAction: "none", // Prevent scrolling during touch drag
     };
 
     return (
@@ -234,7 +244,6 @@ export default function Page() {
   };
 
   const clearAllFiles = useCallback(() => {
-    // Clean up all URLs
     previews.forEach((item) => {
       try {
         URL.revokeObjectURL(item.preview);
@@ -322,7 +331,7 @@ export default function Page() {
                           isDragActive || isGlobalDragging
                             ? "border-solid border-[#6D28D9] bg-purple-50 dark:bg-[#130E1F]"
                             : "border-dashed border-gray-300"
-                        } p-8 text-center transition-all duration-200`}
+                        } p-8 text-center transition-all duration-200 touch-none`}
                       >
                         <input {...getInputProps()} />
                         {isDragActive || isGlobalDragging ? (
@@ -375,9 +384,13 @@ export default function Page() {
               }}
               multiple={true}
             >
-              {({ getRootProps, getInputProps }) => (
+              {({ getRootProps, getInputProps, isDragActive }) => (
                 <div
-                  className="relative h-20 w-20 flex-shrink-0 cursor-pointer"
+                  className={`relative h-20 w-20 flex-shrink-0 cursor-pointer touch-none ${
+                    isDragActive || isGlobalDragging
+                      ? "border-2 border-solid border-[#6D28D9]"
+                      : ""
+                  }`}
                   {...getRootProps()}
                 >
                   <input {...getInputProps()} />
@@ -397,10 +410,7 @@ export default function Page() {
           {previews.length > 0 && (
             <section className="mt-6 flex w-full flex-col items-center">
               <div className="flex w-max gap-4">
-                <div
-                  className="scrollbar-hide flex w-full max-w-4xl flex-col justify-between overflow-x-auto overflow-y-hidden rounded-[40px] border-[6px] border-indigo-900 bg-indigo-900/10 p-8"
-                  style={{ minHeight: 340, maxHeight: 340 }}
-                >
+                <div className="scrollbar-hide w-[80vw] flex md:w-max max-w-4xl flex-col justify-between overflow-x-auto overflow-y-hidden rounded-[40px] border-[6px] border-indigo-900 bg-indigo-900/10 p-4 sm:p-6 md:p-8">
                   <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -410,17 +420,19 @@ export default function Page() {
                       items={previews.map((item) => item.id)}
                       strategy={horizontalListSortingStrategy}
                     >
-                      <div className="flex w-max gap-5">
+                      <div className="flex w-full snap-x snap-mandatory gap-3 sm:gap-4 md:gap-5">
                         {previews.map((item, index) => (
                           <SortablePreview key={item.id} id={item.id}>
-                            <div className="group relative flex-shrink-0">
-                              <div className="relative h-60 w-48 overflow-hidden rounded-2xl outline outline-2 outline-white">
-                                <div className="absolute left-0 top-0 z-20 flex h-10 w-10 items-center justify-center rounded-br-2xl rounded-tl-2xl bg-slate-600">
-                                  <span className="text-xl font-bold text-white">
+                            <div className="group relative w-full flex-shrink-0 snap-start sm:w-1/2 md:w-1/3 lg:w-1/4">
+                              <div className="relative h-64 w-48 overflow-hidden rounded-xl outline outline-2 outline-white sm:h-60">
+                                {/* Index badge */}
+                                <div className="absolute left-0 top-0 z-20 flex h-8 w-8 items-center justify-center rounded-br-xl rounded-tl-xl bg-slate-600 sm:h-10 sm:w-10">
+                                  <span className="text-sm font-bold text-white sm:text-xl">
                                     {index + 1}
                                   </span>
                                 </div>
 
+                                {/* Delete button */}
                                 <Button
                                   onClick={(e) => {
                                     e.preventDefault();
@@ -429,12 +441,13 @@ export default function Page() {
                                   }}
                                   variant="destructive"
                                   size="icon"
-                                  className="absolute right-0 top-0 z-20 h-10 w-10 rounded-bl-2xl rounded-tr-2xl bg-pink-800 hover:bg-red-900"
+                                  className="absolute right-0 top-0 z-20 h-8 w-8 rounded-bl-xl rounded-tr-xl bg-pink-800 hover:bg-red-900 sm:h-10 sm:w-10"
                                   title="Delete"
                                 >
-                                  <FiTrash className="h-5 w-5" />
+                                  <FiTrash className="h-4 w-4 sm:h-5 sm:w-5" />
                                 </Button>
 
+                                {/* Preview */}
                                 <div className="absolute inset-0 z-10">
                                   {item.file.type.startsWith("image/") ? (
                                     <Image
@@ -443,7 +456,6 @@ export default function Page() {
                                       fill
                                       className="object-cover"
                                       unoptimized
-                                      sizes="192px"
                                     />
                                   ) : (
                                     <iframe
@@ -457,10 +469,11 @@ export default function Page() {
                             </div>
                           </SortablePreview>
                         ))}
-                      </div>{" "}
+                      </div>
+
                       {previews.length > 2 && (
-                        <div className="text-l mt-4 text-right text-white/50">
-                          scroll to view more &gt;&gt;
+                        <div className="mt-3 text-center text-sm text-white/50">
+                          Swipe to view more &gt;&gt;
                         </div>
                       )}
                     </SortableContext>

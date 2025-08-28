@@ -293,7 +293,9 @@ export default function Page() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <div className="flex h-[calc(100vh-90px)] flex-col justify-center px-6 font-play">
-        <div className="2xl:my-15 flex flex-col ">
+        <div
+          className={`2xl:my-15 flex ${previews.length === 0 ? "items-center" : ""} flex-col`}
+        >
           {previews.length === 0 && (
             <fieldset className="mb-4 w-full max-w-md rounded-lg border-2 border-gray-300 p-4 pr-8">
               <div className="flex w-full flex-col 2xl:gap-y-4">
@@ -396,7 +398,7 @@ export default function Page() {
             <section className="mt-6 flex w-full flex-col items-center">
               <div className="flex w-max gap-4">
                 <div
-                  className="scrollbar-hide flex aspect-[2/1] w-full max-w-4xl flex-col justify-between overflow-x-auto overflow-y-hidden rounded-[40px] border-[6px] border-indigo-900 bg-indigo-900/10 p-8"
+                  className="scrollbar-hide flex w-full max-w-4xl flex-col justify-between overflow-x-auto overflow-y-hidden rounded-[40px] border-[6px] border-indigo-900 bg-indigo-900/10 p-8"
                   style={{ minHeight: 340, maxHeight: 340 }}
                 >
                   <DndContext

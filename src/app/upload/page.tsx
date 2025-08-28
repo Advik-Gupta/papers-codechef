@@ -293,7 +293,7 @@ export default function Page() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <div className="flex h-[calc(100vh-90px)] flex-col justify-center px-6 font-play">
-        <div className="2xl:my-15 flex flex-col items-center">
+        <div className="2xl:my-15 flex flex-col ">
           {previews.length === 0 && (
             <fieldset className="mb-4 w-full max-w-md rounded-lg border-2 border-gray-300 p-4 pr-8">
               <div className="flex w-full flex-col 2xl:gap-y-4">

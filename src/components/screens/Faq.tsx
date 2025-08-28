@@ -1,10 +1,12 @@
 "use client";
 
 import React from "react";
+import Link from 'next/link';
+
 import { useState } from "react";
 
 function Faq() {
-  const faqs = [
+const faqs = [
     {
       question: "How do you source exam papers for the website?",
       answer:
@@ -23,22 +25,55 @@ function Faq() {
     {
       question: "How can I upload an exam paper to the website?",
       answer:
-        'To upload a paper, click the "Upload" button located at the top-right corner of the page. You can submit papers in PDF or image formats, especially if they’re not already available on our site.',
+        <>
+      Click the {" "}
+      <Link
+        href="https://papers.codechefvit.com/upload"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="dark:text-blue-400 text-red-500 underline"
+      >
+        Upload
+      </Link>
+      {" "}button at the top-right corner to submit your exam papers.
+    </>
     },
     {
       question: "Do you provide papers for soft skills?",
-      answer: "lmao",
+      answer: "We currently offer question banks for selected soft skill subjects.",
     },
     {
       question: "How do I reach out for support or assistance?",
       answer:
-        'For any queries or issues, contact our support team via the "Contact Us" section on the website. We’re here to help with all your questions about exam papers and site features.',
+       <>
+      For any queries or issues, you can mail us at{" "}
+      <Link
+        href="mailto:codechefvit@gmail.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="dark:text-blue-400 text-red-500 underline"
+      >
+        codechefvit@gmail.com
+      </Link>
+      .
+    </>,
     },
     {
       question:
         "What should I do if I can’t find a specific exam paper on the website?",
       answer:
-        "Our database is regularly updated with both new and older exam papers. If the paper you’re looking for isn’t available, you can upload it yourself to share with the community.",
+        <>
+      If the paper you're looking for isn’t available, you can{" "}
+      <Link
+        href="https://papers.codechefvit.com/request"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="dark:text-blue-400 text-red-500 underline"
+      >
+        submit a request
+      </Link>
+      .
+    </>,
     },
     {
       question: "Are uploaded papers immediately visible on the website?",
@@ -46,6 +81,7 @@ function Faq() {
         "Once uploaded, our AI system identifies and categorizes the paper by subject, slot, and other relevant tags. The paper then undergoes a quick manual review to ensure quality before it becomes visible on the site.",
     },
   ];
+
 
   const [faqActive, setFaqActive] = useState<number | null>(null);
 
@@ -82,7 +118,7 @@ function Faq() {
                 className={`flex h-6 w-8 shrink-0 items-center justify-center rounded-full text-base font-bold transition-all duration-200 sm:h-7 sm:w-9 sm:text-lg ${
                   faqActive === index
                     ? "bg-[#A47DE5] text-white"
-                    : "bg-white text-[#99979F]"
+                    : "bg-black text-white"
                 }`}
               >
                 {faqActive === index ? "−" : "+"}

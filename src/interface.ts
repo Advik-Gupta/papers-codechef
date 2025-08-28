@@ -99,6 +99,7 @@ export interface IAdminPaper {
     | null;
   answer_key_included?: boolean | null;
   is_selected?: boolean;
+  ambiguous_tags: string[];
 }
 
 export interface ICourses {
@@ -171,7 +172,7 @@ export interface IPaper {
     | "Andhra Pradesh"
     | "Bhopal"
     | "Bangalore"
-    | "Mauritius"
+    | "Mauritius";
   slot: string;
   subject: string;
   year: string;
@@ -210,8 +211,23 @@ export interface TransformedPaper {
   slots: string[];
 }
 
-
 export interface IRelatedSubject {
   subject: string;
   related_subjects: string[];
+}
+
+export interface ICourseCount {
+  name: string;
+  count: number;
+}
+
+export interface ICourse {
+  _id: string;
+  name: string;
+}
+
+export interface ICourseWithCount {
+  _id: string;
+  name: string;
+  count: number;
 }

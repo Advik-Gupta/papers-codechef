@@ -157,7 +157,6 @@ body {
 
 @layer utilities {
 
-  
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }

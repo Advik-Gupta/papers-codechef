@@ -9,25 +9,33 @@ import Fuse from "fuse.js";
 import NavDropdownButton from "../NavDropdownButton";
 import { StoredSubjects } from "@/interface";
 import FloatingControls from "./floating-controls";
+import { type ICourseWithCount } from "@/interface";
 
 function PinnedSearchBar({
   initialSubjects,
+  displayPapers,
   filtersNotPulled,
 }: {
-  initialSubjects: string[];
+  initialSubjects: ICourseWithCount[];
+  displayPapers: boolean;
   filtersNotPulled?: () => void;
 }) {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const suggestionsRef = useRef<HTMLUListElement | null>(null);
-  const floatingContainerRef = useRef<HTMLDivElement>(null);
   const [pinned, setPinned] = useState<boolean>(false);
-  const [open, setOpen] = useState(false);
   const [showControls, setShowControls] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const [fuzzy, setFuzzy] = useState(
+    () => new Fuse<ICourseWithCount>([], { keys: ["name"], threshold: 0.3 }),
+  );
 
-  const fuzzy = new Fuse(initialSubjects);
+  useEffect(() => {
+    if (initialSubjects && initialSubjects.length > 0) {
+      setFuzzy(new Fuse(initialSubjects, { keys: ["name"], threshold: 0.3 }));
+    }
+  }, [initialSubjects]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
@@ -37,7 +45,7 @@ function PinnedSearchBar({
       const filteredSuggestions = fuzzy
         .search(text)
         .sort((a, b) => (a.score ?? Infinity) - (b.score ?? Infinity))
-        .map((item) => item.item)
+        .map((res) => res.item.name)
         .slice(0, 10);
 
       setSuggestions(filteredSuggestions);
@@ -57,24 +65,15 @@ function PinnedSearchBar({
       setPinned(currentPinnedSubjects.includes(suggestion));
     }
 
+    setTimeout(() => {
+      searchRef.current?.focus();
+    }, 0);
+
     setShowControls(true);
     setSuggestions([]);
     filtersNotPulled?.();
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    const target = event.target as Node;
-    if (
-      floatingContainerRef.current &&
-      !floatingContainerRef.current.contains(target)
-    ) {
-      setOpen(false);
-    }
-
-    if (suggestionsRef.current && !suggestionsRef.current.contains(target)) {
-      setSuggestions([]);
-    }
-  };
 
   useEffect(() => {
     const handleAddClicked = () => {
@@ -92,7 +91,10 @@ function PinnedSearchBar({
     const current = !pinned;
     setPinned(current);
 
-    if (searchText.trim() === "") {
+    if (
+      searchText.trim() === "" ||
+      !initialSubjects.find((s) => s.name === searchText)
+    ) {
       return;
     }
 
@@ -139,7 +141,6 @@ function PinnedSearchBar({
   const handleRemoveAll = () => {
     localStorage.setItem("userSubjects", JSON.stringify([]));
     window.dispatchEvent(new Event("userSubjectsChanged"));
-    setOpen(false);
   };
 
   useEffect(() => {
@@ -150,20 +151,16 @@ function PinnedSearchBar({
     if (storedSubjects.length > 0) {
       setShowControls(true);
     }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
   }, []);
 
   return (
     <div className="w-full font-play">
       <div className="flex justify-center">
-        <div className="w-full max-w-xl">
+        <div className="w-full max-w-2xl">
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              handlePinToggle();
             }}
           >
             <div className="flex items-center gap-2">
@@ -178,13 +175,9 @@ function PinnedSearchBar({
                     suggestions.length > 0 ? "rounded-b-none" : ""
                   }`}
                 />
-                <button
-                  type="submit"
-                  className="absolute inset-y-0 right-3 flex items-center"
-                  title="Search"
-                >
+                <div className="absolute inset-y-0 right-3 flex items-center">
                   <Search className="h-5 w-5 text-black dark:text-white" />
-                </button>
+                </div>
 
                 {suggestions.length > 0 && (
                   <ul
@@ -205,65 +198,33 @@ function PinnedSearchBar({
                   </ul>
                 )}
               </div>
-
-              <div className="hidden md:block">
-                <PinButton
-                  isPinned={pinned}
-                  onToggle={handlePinToggle}
-                  disabled={!showControls || searchText.trim() === ""}
-                />
-              </div>
-
-              <div
-                ref={floatingContainerRef}
-                className={`md:hidden ${showControls ? "block" : "hidden"}`}
+              <PinButton
+                isPinned={pinned}
+                onToggle={handlePinToggle}
+                disabled={!showControls || searchText.trim() === ""}
+              />
+              {displayPapers && <button
+                onClick={() => {
+                  handleRemoveAll();
+                }}
+                className="items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] hidden sm:flex"
               >
-                <NavDropdownButton
-                  isOpen={open}
-                  onClick={() => setOpen((prev) => !prev)}
-                  variant="pinned"
-                />
 
-                <div className={`${open ? "block" : "hidden"}`}>
-                  <FloatingControls>
-                    <PinButton
-                      isPinned={pinned}
-                      onToggle={() => {
-                        handlePinToggle();
-                        setOpen(false);
-                      }}
-                      disabled={!showControls || searchText.trim() === ""}
-                    />
-                    <button
-                      onClick={() => {
-                        handleRemoveAll();
-                        setOpen(false);
-                      }}
-                      className="flex items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
-                    >
-                      Remove All <X className="h-4 w-4" />
-                    </button>
-                  </FloatingControls>
-                </div>
-              </div>
+                Remove All <X className="h-4 w-4" />
+              </button>}
             </div>
           </form>
         </div>
       </div>
 
-      <div className="mt-2 hidden w-full md:block">
-        <div className="ml-auto w-fit">
-          <button
-            onClick={() => {
-              handleRemoveAll();
-              setOpen(false);
-            }}
-            className="flex items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
-          >
-            Remove All <X className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
+      {displayPapers && <button
+        onClick={() => {
+          handleRemoveAll();
+        }}
+        className="sm:hidden mt-4 flex items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
+      >
+        Remove All <X className="h-4 w-4" />
+      </button>}
     </div>
   );
 }

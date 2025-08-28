@@ -168,6 +168,24 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
     return () => window.removeEventListener("resize", calculateScale);
   }, []);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const step = 0.02;
+        setScale((prev) =>
+          Math.max(0.25, Math.min(3, prev + (e.deltaY < 0 ? step : -step))),
+        );
+      }
+    };
+
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    return () => container.removeEventListener("wheel", handleWheel);
+  }, []);
+
   return (
     <div className="flex flex-col items-center p-3 md:p-0">
       <div
@@ -211,63 +229,128 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
               </div>
             ))}
         </Document>
+        {isFullscreen && (
+          <div className="fixed bottom-4 left-1/2 z-50 mt-4 flex -translate-x-1/2 flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635] sm:flex-row">
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={goToPreviousPage}
+                disabled={pageNumber <= 1}
+                className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
+              >
+                <FaLessThan />
+              </Button>
+              <input
+                type="number"
+                value={pageNumber}
+                onChange={handlePageChange}
+                min={1}
+                max={numPages}
+                className="h-10 w-16 rounded border p-1 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              />
+              <span>of {numPages ?? 1}</span>
+              <Button
+                onClick={goToNextPage}
+                disabled={pageNumber >= (numPages ?? 1)}
+                className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
+              >
+                <FaGreaterThan />
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={zoomOut}
+                disabled={scale <= 0.25}
+                className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
+              >
+                <ZoomOut />
+              </Button>
+              <span>{(scale * 100).toFixed(0)}%</span>
+              <Button
+                onClick={zoomIn}
+                disabled={scale >= 3}
+                className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
+              >
+                <ZoomIn />
+              </Button>
+              <ShareButton />
+              <Button
+                onClick={downloadPDF}
+                className="aspect-square h-10 w-10 p-0"
+              >
+                <Download />
+              </Button>
+              <Button
+                onClick={toggleFullscreen}
+                className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1]"
+              >
+                {isFullscreen ? <Minimize2 /> : <Maximize2 />}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="mt-4 flex flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635] sm:flex-row">
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={goToPreviousPage}
-            disabled={pageNumber <= 1}
-            className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
-          >
-            <FaLessThan />
-          </Button>
-          <input
-            type="number"
-            value={pageNumber}
-            onChange={handlePageChange}
-            min={1}
-            max={numPages}
-            className="h-10 w-16 rounded border p-1 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-          />
-          <span>of {numPages ?? 1}</span>
-          <Button
-            onClick={goToNextPage}
-            disabled={pageNumber >= (numPages ?? 1)}
-            className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
-          >
-            <FaGreaterThan />
-          </Button>
-        </div>
+      {!isFullscreen && (
+        <div className="mt-4 flex flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635] sm:flex-row">
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={goToPreviousPage}
+              disabled={pageNumber <= 1}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
+            >
+              <FaLessThan />
+            </Button>
+            <input
+              type="number"
+              value={pageNumber}
+              onChange={handlePageChange}
+              min={1}
+              max={numPages}
+              className="h-10 w-16 rounded border p-1 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            />
+            <span>of {numPages ?? 1}</span>
+            <Button
+              onClick={goToNextPage}
+              disabled={pageNumber >= (numPages ?? 1)}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
+            >
+              <FaGreaterThan />
+            </Button>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={zoomOut}
-            disabled={scale <= 0.25}
-            className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
-          >
-            <ZoomOut />
-          </Button>
-          <span>{(scale * 100).toFixed(0)}%</span>
-          <Button
-            onClick={zoomIn}
-            disabled={scale >= 3}
-            className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
-          >
-            <ZoomIn />
-          </Button>
-          <ShareButton />
-          <Button onClick={downloadPDF} className="aspect-square h-10 w-10 p-0">
-            <Download />
-          </Button>
-          <Button
-            onClick={toggleFullscreen}
-            className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1]"
-          >
-            {isFullscreen ? <Minimize2 /> : <Maximize2 />}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={zoomOut}
+              disabled={scale <= 0.25}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
+            >
+              <ZoomOut />
+            </Button>
+            <span>{(scale * 100).toFixed(0)}%</span>
+            <Button
+              onClick={zoomIn}
+              disabled={scale >= 3}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
+            >
+              <ZoomIn />
+            </Button>
+            <ShareButton />
+            <Button
+              onClick={downloadPDF}
+              className="aspect-square h-10 w-10 p-0"
+            >
+              <Download />
+            </Button>
+            <Button
+              onClick={toggleFullscreen}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1]"
+            >
+              {isFullscreen ? <Minimize2 /> : <Maximize2 />}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

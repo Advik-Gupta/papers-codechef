@@ -1,52 +1,154 @@
 "use client";
 
-import ccLogo from "../assets/codechef_logo.svg";
-import Image from "next/image";
-import ModeToggle from "@/components/toggle-theme";
+import { useState, useEffect } from "react";
+import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowDownLeftIcon } from "lucide-react";
+import ccLogo from "../assets/codechef_logo.svg";
+import ModeToggle from "@/components/toggle-theme";
+import { ArrowDownLeftIcon, Pin, ArrowUpRight, ChevronDown } from "lucide-react";
+import FloatingNavbar from "./FloatingNavbar";
+import PWAInstallButton from "./ui/PWAInstallButton";
+import SearchBarChild from "./Searchbar/searchbar-child";
+import type { ICourses } from "@/interface"; 
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 function Navbar() {
-  const pathname = usePathname();
+  const pathname: string = usePathname() ?? "/";
+  const [subjects, setSubjects] = useState<string[]>([]);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (pathname !== "/catalogue") return;
+
+    const getSubjects = async () => {
+      try {
+        const res = await fetch("/api/course-list");
+        if (!res.ok) return;
+
+        const json: unknown = await res.json();
+
+        if (Array.isArray(json)) {
+          const filtered = json
+            .filter((item): item is ICourses => typeof item === "object" && item !== null && "name" in item)
+            .map(item => item.name);
+          setSubjects(filtered);
+        } else {
+          console.error("Invalid data returned from API:", json);
+        }
+      } catch (err) {
+        console.error("Failed to fetch courses", err);
+      }
+    };
+
+    void getSubjects();
+  }, [pathname]);
+
+  const renderHomePageButtons = () => (
+    <>
+      <Link href="/pinned" className="ml-2">
+        <div className="flex items-center gap-2 rounded-full border bg-[#e8e9ff] dark:bg-black border-[#3A3745] px-4 py-2 text-sm font-semibold dark:text-white transition hover:bg-slate-50 text-gray-700 dark:hover:bg-[#1A1823] h-10">
+          <Pin className="h-4 w-4" />
+          Pinned Subjects
+        </div>
+      </Link>
+      <Link href="/request" className="ml-2">
+        <div className="flex items-center gap-2 rounded-full border bg-[#e8e9ff] dark:bg-black border-[#3A3745] px-4 py-2 text-sm font-semibold dark:text-white transition hover:bg-slate-50 text-gray-700 dark:hover:bg-[#1A1823] h-10">
+          <ArrowUpRight className="h-4 w-4" />
+          Paper Request
+        </div>
+      </Link>
+    </>
+  );
 
   return (
-    <div className="sticky top-0 z-10 flex h-[85px] w-full items-center justify-between gap-x-3 overflow-hidden bg-[#B2B8FF] px-2 py-6 dark:bg-[#130E1F] md:px-12">
-      <div className="flex items-center gap-x-2 md:w-auto">
-        <a
-          href="https://www.codechefvit.com/"
-          className="inline-block"
-          title="CodeChef VIT Homepage"
-        >
-          <Image
-            src={ccLogo as HTMLImageElement}
-            alt="codechef-logo"
-            height={60}
-            width={60}
-          />
-        </a>
-        <Link
-          href="/"
-          className="font-jost bg-gradient-to-r from-[#562EE7] to-[rgba(116,128,255,0.8)] bg-clip-text text-left text-4xl font-bold tracking-wide text-transparent dark:from-[#562EE7] dark:to-[#FFC6E8] md:text-6xl"
-        >
-          Papers
-        </Link>
-      </div>
-      <div className="md:w/[20%] flex items-center justify-end gap-x-2">
-        <div className="scale-75 sm:scale-100">
-          <ModeToggle />
+    <div className="sticky top-0 z-10 w-full bg-[#B2B8FF] px-4 py-4 dark:bg-[#130E1F] md:px-8 md:py-5">
+      <div className="flex items-center justify-between">
+        {}
+        <div className="flex items-center gap-4 relative">
+          <Link href="https://www.codechefvit.com/" target="_blank">
+            <Image src={ccLogo as StaticImageData} alt="codechef-logo" height={60} width={60} />
+          </Link>
+
+          <Link
+            href="/"
+            className="bg-gradient-to-r from-[#562EE7] to-[rgba(116,128,255,0.8)] bg-clip-text font-jost text-4xl font-bold tracking-wide text-transparent dark:from-[#562EE7] dark:to-[#FFC6E8] md:text-6xl"
+          >
+            Papers
+          </Link>
+
+          {pathname === "/catalogue" ? (
+            <div className="ml-4 hidden md:block relative">
+              <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[#4B22D1] text-white shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95"
+                    aria-label="Toggle dropdown"
+                  >
+                    <ChevronDown
+                      className={`h-5 w-5 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                  className="w-56 rounded-2xl bg-[#4B22D1] text-white border border-[rgba(255,255,255,0.1)] shadow-2xl backdrop-blur-sm"
+                  align="start"
+                >
+                  <DropdownMenuItem asChild>
+                    <Link href="/pinned" className="flex items-center gap-3">
+                      <Pin className="h-4 w-4" />
+                      <span className="font-medium">Pinned Subjects</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/request" className="flex items-center gap-3">
+                      <ArrowUpRight className="h-4 w-4" />
+                      <span className="font-medium">Paper Request</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center h-10">{renderHomePageButtons()}</div>
+          )}
         </div>
 
-        <Link href={pathname == "/upload" ? "/" : "/upload"}>
-          <div className="rounded-md bg-[#453D60] p-[1.5px] md:p-[2px]">
-            <div className="flex items-center gap-1 rounded-md bg-slate-200 px-2 py-1 text-[9px] font-bold tracking-tight text-black transition-all duration-150 hover:bg-white active:scale-95 dark:bg-[#171720] dark:text-white dark:hover:bg-slate-700 sm:gap-2 sm:px-3 sm:py-2 sm:text-[10px] md:px-6 md:text-sm">
-              <ArrowDownLeftIcon className="h-3 w-3 rotate-90 sm:h-4 sm:w-4" />
-              <span className="text-center font-semibold">
-                {pathname === "/upload" ? "SEARCH PAPERS" : "UPLOAD PAPERS"}
-              </span>
+        {}
+        {pathname === "/catalogue" && (
+          <div className="hidden md:flex flex-1 justify-center mx-4">
+            <div className="w-full max-w-[700px]">
+              <SearchBarChild initialSubjects={subjects} />
             </div>
           </div>
-        </Link>
+        )}
+
+        {}
+        <div className="hidden items-center gap-4 md:flex">
+          <div className="rounded-full border border-[#3A3745] p-1">
+            <ModeToggle />
+          </div>
+          <div className="hidden max-w-[200px] md:block">
+            <PWAInstallButton />
+          </div>
+          <Link href={pathname === "/upload" ? "/" : "/upload"}>
+            <div className="flex items-center gap-2 rounded-full border bg-[#e8e9ff] dark:bg-black border-[#3A3745] px-4 py-2 text-sm font-semibold dark:text-white transition hover:bg-slate-50 text-gray-700 dark:hover:bg-[#1A1823] h-10">
+              <ArrowDownLeftIcon className="h-4 w-4 rotate-90" />
+              <span>{pathname === "/upload" ? "Search Papers" : "Upload Papers"}</span>
+            </div>
+          </Link>
+        </div>
+
+        {}
+        <div className="md:hidden">
+          <FloatingNavbar onNavigate={() => void 0} />
+        </div>
       </div>
     </div>
   );

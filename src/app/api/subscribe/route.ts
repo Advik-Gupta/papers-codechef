@@ -32,7 +32,7 @@ async function appendEmailToSheet(email: string) {
 
 export async function POST(req: Request) {
   try {
-    const { email } = await req.json();
+    const { email } = (await req.json()) as { email: string };
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });

@@ -9,7 +9,11 @@ import {
   extractBracketContent,
   extractWithoutBracketContent,
 } from "@/util/utils";
-import axios from "axios";
+import {
+  getSecureUrl,
+  generateFileName,
+  downloadFile,
+} from "@/util/download_paper";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -26,30 +30,8 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
     setChecked(isSelected);
   }, [isSelected]);
 
-  const getSecureUrl = (url: string): string =>
-    url.startsWith("http://") ? url.replace("http://", "https://") : url;
-
-  const generateFileName = (paper: IPaper): string => {
-    const extension = paper.finalUrl.split(".").pop();
-    return `${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}.${extension}`;
-  };
-
-  const downloadFile = async (url: string, filename: string): Promise<void> => {
-    try {
-      const response = await axios.get(url, { responseType: "blob" });
-      const blob = new Blob([response.data]);
-      const link = document.createElement("a");
-      link.href = window.URL.createObjectURL(blob);
-      link.download = filename;
-      link.click();
-      window.URL.revokeObjectURL(link.href);
-    } catch (error) {
-      console.error("Download failed:", error);
-    }
-  };
-
   const handleDownload = async (paper: IPaper) => {
-    await downloadFile(getSecureUrl(paper.finalUrl), generateFileName(paper));
+    await downloadFile(getSecureUrl(paper.final_url), generateFileName(paper));
   };
 
   const handleCheckboxChange = () => {
@@ -65,13 +47,13 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
   return (
     <div
       className={cn(
-        "font-play overflow-hidden rounded-sm border-2 border-[#734DFF] bg-[#FFFFFF] transition-all duration-150 hover:bg-[#EFEAFF] dark:border-[#36266D] dark:bg-[#171720] hover:dark:bg-[#262635]",
+        "overflow-hidden rounded-sm border-2 border-[#734DFF] bg-[#FFFFFF] font-play transition-all duration-150 hover:bg-[#EFEAFF] dark:border-[#36266D] dark:bg-[#171720] hover:dark:bg-[#262635]",
         checked && "bg-white",
       )}
     >
       <Link href={paperLink} target="_blank" rel="noopener noreferrer">
         <Image
-          src={paper.thumbnailUrl}
+          src={paper.thumbnail_url}
           alt={paper.subject}
           width={320}
           height={180}
@@ -80,7 +62,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
 
         <div className="justify-center">
           <div className="flex flex-row items-center justify-between px-4 pb-2">
-            <div className="font-play text-md font-medium">
+            <div className="text-md font-play font-medium">
               {extractBracketContent(paper.subject)}
             </div>
             <div className="flex gap-2">
@@ -115,7 +97,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
         </div>
       </Link>
 
-      <div className="font-play hidden items-center justify-between gap-2 px-4 pb-4 md:flex">
+      <div className="hidden items-center justify-between gap-2 px-4 pb-4 font-play md:flex">
         <div className="flex items-center gap-2">
           <input
             checked={checked}
@@ -125,7 +107,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
           />
           <p>Select</p>
         </div>
-        {paper.answerKeyIncluded && (
+        {paper.answer_key_included && (
           <div className="flex items-center gap-2 font-normal text-[#7480FF]">
             <Check color="#7480FF" />
             Answer Key

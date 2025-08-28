@@ -6,7 +6,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Download, ZoomIn, ZoomOut, Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "./ui/button";
-import { downloadFile } from "./CatalogueContent";
+import { downloadFile } from "@/util/download_paper";
 import ShareButton from "./ShareButton";
 import Loader from "./ui/loader";
 import { FaGreaterThan, FaLessThan } from "react-icons/fa6";
@@ -145,11 +145,34 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
     };
   }, []);
 
+  useEffect(() => {
+    if (containerRef.current) {
+      const containerWidth = containerRef.current.offsetWidth;
+
+      const initialScale = containerWidth / 800;
+      setScale(initialScale > 1 ? 1 : initialScale);
+    }
+  }, []);
+
+  useEffect(() => {
+    const calculateScale = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth;
+        const initialScale = containerWidth / 800;
+        setScale(initialScale > 1 ? 1 : initialScale);
+      }
+    };
+
+    calculateScale();
+    window.addEventListener("resize", calculateScale);
+    return () => window.removeEventListener("resize", calculateScale);
+  }, []);
+
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center p-3 md:p-0">
       <div
         ref={containerRef}
-        className="max-h-[70vh] max-w-[100vw]  overflow-auto bg-[#F3F5FF] shadow-lg dark:bg-[#070114]"
+        className="max-h-[70vh] w-full overflow-auto bg-[#F3F5FF] px-4 shadow-lg dark:bg-[#070114]"
       >
         <Document
           file={url}
@@ -171,17 +194,20 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
             Array.from({ length: numPages }, (_, index) => (
               <div
                 key={`page_${index + 1}`}
+                className="mb-4 w-full overflow-x-auto"
                 ref={(el) => {
                   pageRefs.current[index] = el;
                 }}
               >
-                <Page
-                  pageNumber={index + 1}
-                  scale={scale}
-                  renderAnnotationLayer={true}
-                  renderTextLayer={true}
-                  className="w-max-[75vw] mb-4 shadow-md"
-                />
+                <div className="mx-auto flex w-fit justify-center">
+                  <Page
+                    pageNumber={index + 1}
+                    scale={scale}
+                    renderAnnotationLayer
+                    renderTextLayer
+                    className="shadow-md"
+                  />
+                </div>
               </div>
             ))}
         </Document>

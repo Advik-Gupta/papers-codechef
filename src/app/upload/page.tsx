@@ -293,7 +293,7 @@ export default function Page() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <div className="flex h-[calc(100vh-90px)] flex-col justify-center px-6 font-play">
-        <div className="2xl:my-15 flex flex-col ">
+        <div className="2xl:my-15 flex flex-col items-center">
           {previews.length === 0 && (
             <fieldset className="mb-4 w-full max-w-md rounded-lg border-2 border-gray-300 p-4 pr-8">
               <div className="flex w-full flex-col 2xl:gap-y-4">
@@ -364,33 +364,34 @@ export default function Page() {
             </fieldset>
           )}
 
-          <Dropzone
-            onDrop={onDrop}
-            accept={{
-              "image/*": [".jpeg", ".jpg", ".png", ".gif", ".bmp", ".webp"],
-              "application/pdf": [".pdf"],
-            }}
-            multiple={true}
-          >
-            {({ getRootProps, getInputProps }) => (
-              <div
-                className="relative h-20 w-20 flex-shrink-0 cursor-pointer"
-                {...getRootProps()}
-              >
-                <input {...getInputProps()} />
-                <div className="absolute left-4 top-4 h-16 w-16 rounded-2xl bg-violet-950" />
-                <div className="absolute left-0 top-0 h-10 w-10 rounded-[20px] bg-violet-950" />
-                <div className="absolute left-1 top-1 flex h-8 w-8 items-center rounded-[20px] bg-black/50" />
-                <div className="absolute left-9 top-9 text-2xl text-white">
-                  <FiPlus className="h-7 w-7" />
+          {previews.length > 0 && (
+            <Dropzone
+              onDrop={onDrop}
+              accept={{
+                "image/*": [".jpeg", ".jpg", ".png", ".gif", ".bmp", ".webp"],
+                "application/pdf": [".pdf"],
+              }}
+              multiple={true}
+            >
+              {({ getRootProps, getInputProps }) => (
+                <div
+                  className="relative h-20 w-20 flex-shrink-0 cursor-pointer"
+                  {...getRootProps()}
+                >
+                  <input {...getInputProps()} />
+                  <div className="absolute left-4 top-4 h-16 w-16 rounded-2xl bg-violet-950" />
+                  <div className="absolute left-0 top-0 h-10 w-10 rounded-[20px] bg-violet-950" />
+                  <div className="absolute left-1 top-1 flex h-8 w-8 items-center rounded-[20px] bg-black/50" />
+                  <div className="absolute left-9 top-9 text-2xl text-white">
+                    <FiPlus className="h-7 w-7" />
+                  </div>
+                  <div className="absolute left-4 top-3 text-xs font-semibold text-white">
+                    {previews.length}
+                  </div>
                 </div>
-                <div className="absolute left-4 top-3 text-xs font-semibold text-white">
-                  {previews.length}
-                </div>
-              </div>
-            )}
-          </Dropzone>
-
+              )}
+            </Dropzone>
+          )}
           {previews.length > 0 && (
             <section className="mt-6 flex w-full flex-col items-center">
               <div className="flex w-max gap-4">

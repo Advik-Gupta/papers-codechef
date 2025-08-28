@@ -97,17 +97,33 @@ export default function Page() {
         (file) => file.type === "application/pdf",
       );
 
-      if (
-        (isNewPdf && acceptedFiles.length > 1) ||
-        (isNewPdf && hasExistingImages) ||
-        (isNewPdf && hasExistingPdf) ||
-        (!isNewPdf && hasExistingPdf)
-      ) {
-        toast.error("PDFs must be uploaded separately from images", {
-          id: toastId,
-        });
-        return;
-      }
+     if (isNewPdf && acceptedFiles.length > 1) {
+  toast.error("Only one PDF can be uploaded at a time.", {
+    id: toastId,
+  });
+  return;
+}
+
+if (isNewPdf && hasExistingImages) {
+  toast.error("PDFs cannot be uploaded together with images.", {
+    id: toastId,
+  });
+  return;
+}
+
+if (isNewPdf && hasExistingPdf) {
+  toast.error("Only one PDF is allowed. You’ve already uploaded a PDF.", {
+    id: toastId,
+  });
+  return;
+}
+
+if (!isNewPdf && hasExistingPdf) {
+  toast.error("Images cannot be uploaded after a PDF. Upload them separately.", {
+    id: toastId,
+  });
+  return;
+} 
 
       const allFiles = [...files, ...acceptedFiles];
       if (allFiles.length > 5) {

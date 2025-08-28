@@ -100,13 +100,13 @@ export default function Footer() {
           <Link href="https://gravitas.codechefvit.com" target="_blank">CookOff</Link>
           <Link href="https://gravitas.codechefvit.com" target="_blank">Clueminati</Link>
         </div>
+<div className="flex flex-col gap-2 text-black dark:text-white md:items-start lg:text-left">
+  <h3 className="font-jost text-2xl font-semibold">Our Projects</h3>
+  <Link href="https://papers.codechefvit.com">Papers</Link>
+  <Link href="https://contactify.codechefvit.com">Contactify</Link>
+  <Link href="https://ffcs.codechefvit.com">FFCS-iniator</Link>
+</div>
 
-        {/* Projects */}
-        <div className="flex w-full flex-col gap-2 text-black dark:text-white sm:w-[45%] lg:w-[20%]">
-          <h3 className="font-jost text-xl font-semibold">Our Projects</h3>
-          <Link href="https://papers.codechefvit.com" target="_blank">Papers</Link>
-          <Link href="https://contactify.codechefvit.com" target="_blank">Contactify</Link>
-          <Link href="https://ffcs.codechefvit.com" target="_blank">FFCS-inator</Link>
         </div>
 
         {/* Suggestions */}
@@ -122,24 +122,28 @@ export default function Footer() {
             <span>codechefvit@gmail.com</span>
           </Link>
 
-          <h3 className="mt-4 font-jost text-xl font-semibold">
-            Subscribe For Updates:
-          </h3>
-          <div className="flex gap-2">
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter Your Email"
-              className="flex-1"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <Button
-              onClick={handleSubscribe}
-              className="rounded-md bg-[#562EE7] px-4 text-white hover:bg-[#4531b3]"
-            >
-              Subscribe!
-            </Button>
+<div className="mt-4 flex flex-col gap-2 w-full max-w-xs">
+  <h3 className="font-jost text-2xl font-semibold">
+    Subscribe For Updates:
+  </h3>
+  <div className="relative w-full">
+    <Input
+      id="email"
+      type="email"
+      placeholder="Enter Your Email"
+      className="pr-24"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+    />
+    <Button
+      onClick={handleSubscribe}
+      className="absolute right-0 top-0 h-full rounded-l-none rounded-r-md bg-[#562EE7] px-4 text-white hover:bg-[#4531b3]"
+    >
+      Subscribe!
+    </Button>
+  </div>
+</div>
+
           </div>
         </div>
       </div>

@@ -144,14 +144,15 @@ function SideBar({
         >
           Answer Key Available
         </SidebarButton>
-</div>
-<div className="flex w-full flex-wrap justify-between gap-2 border-b-2 border-[#36266d] px-[10px] py-4">
-  <SidebarButton onClick={handleSelectAll}>Select All</SidebarButton>
-  <SidebarButton onClick={handleDeselectAll}>Deselect All</SidebarButton>
-  <SidebarButton onClick={handleDownloadSelected}>Download Selected</SidebarButton>
-</div>
+      </div>
 
-{filtersForSidebar.map((section) => (
+      <div className="flex w-full flex-wrap justify-between gap-2 border-b-2 border-[#36266d] px-[10px] py-4">
+        <SidebarButton onClick={handleSelectAll}>Select All</SidebarButton>
+        <SidebarButton onClick={handleDeselectAll}>Deselect All</SidebarButton>
+        <SidebarButton onClick={handleDownloadSelected}>Download Selected</SidebarButton>
+      </div>
+
+      {filtersForSidebar.map((section) => (
         <SidebarSection
           key={section.label}
           label={section.label}

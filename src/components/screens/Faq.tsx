@@ -31,11 +31,9 @@ const faqs = [
         href="https://papers.codechefvit.com/upload"
         target="_blank"
         rel="noopener noreferrer"
-        className="dark:text-blue-400 text-red-500"
-        style={{textDecoration: "underline" }}
+        className="dark:text-blue-400 text-red-500 underline"
       >
         Upload
-
       </Link>
       {" "}button at the top-right corner to submit your exam papers.
     </>
@@ -53,8 +51,7 @@ const faqs = [
         href="mailto:codechefvit@gmail.com"
         target="_blank"
         rel="noopener noreferrer"
-        className="dark:text-blue-400 text-red-500"
-        style={{textDecoration: "underline" }}
+        className="dark:text-blue-400 text-red-500 underline"
       >
         codechefvit@gmail.com
       </Link>
@@ -66,13 +63,12 @@ const faqs = [
         "What should I do if I can’t find a specific exam paper on the website?",
       answer:
         <>
-      If the paper you're looking for isn’t available, you can{" "}
+      If the paper you&apos;re looking for isn’t available, you can{" "}
       <Link
         href="https://papers.codechefvit.com/request"
         target="_blank"
         rel="noopener noreferrer"
-        className="dark:text-blue-400 text-red-500"
-        style={{textDecoration: "underline" }}
+        className="dark:text-blue-400 text-red-500 underline"
       >
         submit a request
       </Link>

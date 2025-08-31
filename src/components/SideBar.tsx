@@ -16,9 +16,9 @@ function SideBar({
   filterOptions,
   filtersNotPulled,
   handleApplyFilters,
-  handleSelectAll,
-  handleDeselectAll,
-  handleDownloadSelected: handleDownloadAll,
+  handleSelectAll,      
+  handleDeselectAll,    
+  handleDownloadSelected 
 }: {
   loading: boolean;
   selectedExams: string[];
@@ -41,8 +41,8 @@ function SideBar({
     semester: string[],
     anskey: boolean
   ) => void;
-  handleSelectAll: () => void;
-  handleDeselectAll: () => void;
+  handleSelectAll: () => void;      
+  handleDeselectAll: () => void;    
   handleDownloadSelected: () => void;
 }) {
   const exams =
@@ -146,11 +146,6 @@ function SideBar({
         </SidebarButton>
       </div>
 
-      <div className="flex w-full flex-wrap justify-between gap-2 border-b-2 border-[#36266d] px-[10px] py-4">
-        <SidebarButton onClick={handleSelectAll}>Select All</SidebarButton>
-        <SidebarButton onClick={handleDeselectAll}>Deselect All</SidebarButton>
-        <SidebarButton onClick={handleDownloadAll}>Download Selected</SidebarButton>
-      </div>
 
       {filtersForSidebar.map((section) => (
         <SidebarSection

@@ -26,6 +26,7 @@ import JSZip from "jszip";
 import { toast } from "react-hot-toast";
 import { useCourses } from "@/context/courseContext";
 import EmptyState from "./ui/EmptyState";
+import SidebarButton from "./SidebarButton";
 
 const CatalogueContent = () => {
   const router = useRouter();
@@ -417,6 +418,22 @@ const CatalogueContent = () => {
               </button>
             </div>
           </div>
+
+          
+      {/* Select/Deselect/Download All Buttons */}
+      
+      <div className="mb-8 flex w-full items-center justify-end gap-4">
+        <SidebarButton onClick={handleSelectAll}>
+          Select All
+        </SidebarButton>
+        <SidebarButton onClick={handleDeselectAll}>
+          Deselect All
+        </SidebarButton>
+        <SidebarButton onClick={handleDownloadSelected}>
+          Download Selected
+        </SidebarButton>
+      </div>
+
           {relatedSubjects.length > 0 && (
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <span className="mr-2 text-sm font-medium text-gray-500 dark:text-gray-300">

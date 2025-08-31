@@ -18,6 +18,7 @@ function SideBar({
   selectedSemesters,
   selectedAnswerKeyIncluded,
   filterOptions,
+  filtersNotPulled,
   handleApplyFilters,
   handleSelectAll,      
   handleDeselectAll,    

@@ -18,11 +18,10 @@ function SideBar({
   selectedSemesters,
   selectedAnswerKeyIncluded,
   filterOptions,
-  filtersNotPulled,
   handleApplyFilters,
-  handleSelectAll,
-  handleDeselectAll,
-  handleDownloadSelected: handleDownloadAll,
+  handleSelectAll,      
+  handleDeselectAll,    
+  handleDownloadSelected 
 }: {
   loading: boolean;
   selectedExams: string[];
@@ -45,8 +44,8 @@ function SideBar({
     semester: string[],
     anskey: boolean,
   ) => void;
-  handleSelectAll: () => void;
-  handleDeselectAll: () => void;
+  handleSelectAll: () => void;      
+  handleDeselectAll: () => void;    
   handleDownloadSelected: () => void;
 }) {
   const exams =
@@ -167,28 +166,6 @@ function SideBar({
           }`}
         >
           Answer Key Available
-        </div>
-      </div>
-
-      {/* Select/Deselect/Download All Buttons */}
-      <div className="flex w-full flex-wrap justify-between gap-2 border-b-2 border-[#36266d] px-[10px] py-4">
-        <div
-          onClick={handleSelectAll}
-          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
-        >
-          Select All
-        </div>
-        <div
-          onClick={handleDeselectAll}
-          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
-        >
-          Deselect All
-        </div>
-        <div
-          onClick={handleDownloadAll}
-          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
-        >
-          Download Selected
         </div>
       </div>
 

@@ -417,6 +417,30 @@ const CatalogueContent = () => {
               </button>
             </div>
           </div>
+
+          
+      {/* Select/Deselect/Download All Buttons */}
+      <div className="mb-8 flex w-full items-center justify-end gap-4">
+        <div
+          onClick={handleSelectAll}
+          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
+        >
+          Select All
+        </div>
+        <div
+          onClick={handleDeselectAll}
+          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
+        >
+          Deselect All
+        </div>
+        <div
+          onClick={handleDownloadSelected}
+          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
+        >
+          Download Selected
+        </div>
+      </div>
+
           {relatedSubjects.length > 0 && (
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <span className="mr-2 text-sm font-medium text-gray-500 dark:text-gray-300">

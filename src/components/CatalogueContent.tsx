@@ -26,6 +26,7 @@ import JSZip from "jszip";
 import { toast } from "react-hot-toast";
 import { useCourses } from "@/context/courseContext";
 import EmptyState from "./ui/EmptyState";
+import SidebarButton from "./SidebarButton";
 
 const CatalogueContent = () => {
   const router = useRouter();
@@ -420,25 +421,17 @@ const CatalogueContent = () => {
 
           
       {/* Select/Deselect/Download All Buttons */}
+      
       <div className="mb-8 flex w-full items-center justify-end gap-4">
-        <div
-          onClick={handleSelectAll}
-          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
-        >
+        <SidebarButton onClick={handleSelectAll}>
           Select All
-        </div>
-        <div
-          onClick={handleDeselectAll}
-          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
-        >
+        </SidebarButton>
+        <SidebarButton onClick={handleDeselectAll}>
           Deselect All
-        </div>
-        <div
-          onClick={handleDownloadSelected}
-          className="cursor-pointer rounded-full border-2 border-black px-2 py-1 font-play text-xs font-semibold hover:bg-[#B2B8FF] hover:text-black dark:border-white dark:hover:border-[#434dba] dark:hover:bg-[#434dba] dark:hover:text-white"
-        >
+        </SidebarButton>
+        <SidebarButton onClick={handleDownloadSelected}>
           Download Selected
-        </div>
+        </SidebarButton>
       </div>
 
           {relatedSubjects.length > 0 && (

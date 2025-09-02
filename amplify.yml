@@ -1,3 +1,4 @@
+version: 1
 frontend:
   phases:
     preBuild:
@@ -8,3 +9,12 @@ frontend:
     build:
       commands:
         - pnpm run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - .pnpm-store/**/*
+

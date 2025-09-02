@@ -5,11 +5,12 @@ frontend:
       commands:
         - corepack enable
         - corepack prepare pnpm@latest --activate
-        - pnpm install
+        - pnpm install --frozen-lockfile
     build:
       commands:
         - pnpm run build
   artifacts:
+    # Next.js SSR requires both .next and standalone/serverless files
     baseDirectory: .next
     files:
       - '**/*'
@@ -17,4 +18,8 @@ frontend:
     paths:
       - node_modules/**/*
       - .pnpm-store/**/*
-
+  customHeaders:
+    - pattern: '**/*'
+      headers:
+        - key: Cache-Control
+          value: public,max-age=0,must-revalidate

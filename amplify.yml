@@ -1,0 +1,10 @@
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - corepack enable
+        - corepack prepare pnpm@latest --activate
+        - pnpm install
+    build:
+      commands:
+        - pnpm run build

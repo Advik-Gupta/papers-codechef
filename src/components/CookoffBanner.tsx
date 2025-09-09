@@ -30,7 +30,7 @@ export default function CookoffBanner() {
             target="_blank"
             
           >
-            Register for CookOff 10.0u
+            Register for CookOff 10.0
           </Link>
         </div>
 

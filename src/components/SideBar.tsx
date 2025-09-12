@@ -48,9 +48,13 @@ function SideBar({
   const exams =
     filterOptions?.unique_exams.map((exam) => ({ label: exam, value: exam })) ?? [];
   const slots =
-    filterOptions?.unique_slots.map((slot) => ({ label: slot, value: slot })) ?? [];
+    filterOptions?.unique_slots
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+      .map((slot) => ({ label: slot, value: slot })) ?? [];
   const years =
-    filterOptions?.unique_years.map((year) => ({ label: year, value: year })) ?? [];
+    filterOptions?.unique_years
+      .sort((a, b) => b.localeCompare(a)) 
+      .map((year) => ({ label: year, value: year })) ?? [];
   const semesters =
     filterOptions?.unique_semesters.map((semester) => ({
       label: semester,

@@ -24,6 +24,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import Dropzone from "react-dropzone";
 import { Upload, XIcon } from "lucide-react";
+import { UploadThingDropzone } from "@/components/UploadButton";
 
 interface APIResponse {
   status: string;
@@ -331,7 +332,7 @@ export default function Page() {
                           isDragActive || isGlobalDragging
                             ? "border-solid border-[#6D28D9] bg-purple-50 dark:bg-[#130E1F]"
                             : "border-dashed border-gray-300"
-                        } p-8 text-center transition-all duration-200 touch-none`}
+                        } touch-none p-8 text-center transition-all duration-200`}
                       >
                         <input {...getInputProps()} />
                         {isDragActive || isGlobalDragging ? (
@@ -410,7 +411,7 @@ export default function Page() {
           {previews.length > 0 && (
             <section className="mt-6 flex w-full flex-col items-center">
               <div className="flex w-max gap-4">
-                <div className="scrollbar-hide w-[80vw] flex md:w-max max-w-4xl flex-col justify-between overflow-x-auto overflow-y-hidden rounded-[40px] border-[6px] border-indigo-900 bg-indigo-900/10 p-4 sm:p-6 md:p-8">
+                <div className="scrollbar-hide flex w-[80vw] max-w-4xl flex-col justify-between overflow-x-auto overflow-y-hidden rounded-[40px] border-[6px] border-indigo-900 bg-indigo-900/10 p-4 sm:p-6 md:w-max md:p-8">
                   <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -488,14 +489,7 @@ export default function Page() {
             </section>
           )}
 
-          <Button
-            onClick={handlePrint}
-            disabled={isUploading || files.length === 0}
-            className="mt-8 rounded-[40px] bg-violet-950 px-8 py-3 text-xl text-white hover:bg-violet-800"
-            size="lg"
-          >
-            {isUploading ? "Uploading..." : "Upload"}
-          </Button>
+          <UploadThingDropzone />
         </div>
       </div>
 

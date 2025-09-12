@@ -8,6 +8,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChildrenWrapper from "@/components/ChildrenWrapper";
 import { CoursesProvider } from "@/context/courseContext";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "@/app/api/uploadthing/core";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://papers.codechefvit.com/"),
@@ -123,7 +126,12 @@ export default function RootLayout({
           <div className="bg-[#F3F5FF] dark:bg-[#070114]">
             <CoursesProvider>
               <Navbar />
-              <ChildrenWrapper>{children}</ChildrenWrapper>
+              <ChildrenWrapper>
+                <NextSSRPlugin
+                  routerConfig={extractRouterConfig(ourFileRouter)}
+                />
+                {children}
+              </ChildrenWrapper>
               <Footer />
             </CoursesProvider>
           </div>

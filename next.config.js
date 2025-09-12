@@ -7,9 +7,7 @@ await import("./src/env.js");
 /** @type {import("next").NextConfig} */
 const config = {
   swcMinify: false,
-  images: {
-    domains: ["res.cloudinary.com"],
-  },
+  images: {},
   webpack: (config, options) => {
     config.resolve.alias.canvas = false;
     config.module.rules.push({

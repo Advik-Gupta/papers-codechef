@@ -1,52 +1,4 @@
-// export interface CloudinaryUploadResult {
-//   id: string;
-//   batchId: string;
-//   asset_id: string;
-//   public_id: string;
-//   version: number;
-//   version_id?: string;
-//   signature: string;
-//   width: number;
-//   height: number;
-//   format: string;
-//   access_mode: string;
-//   bytes: number;
-//   created_at: string;
-//   etag: string;
-//   folder: string;
-//   original_filename: string;
-//   path: string;
-//   placeholder: boolean;
-//   resource_type: string;
-//   secure_url: string;
-//   tags: string[];
-//   thumbnail_url: string;
-//   type: string;
-//   url: string;
-
 import { mongo } from "mongoose";
-
-export interface CloudinaryUploadResult {
-  asset_id: string;
-  public_id: string;
-  version: number;
-  version_id: string;
-  signature: string;
-  width: number;
-  height: number;
-  format: string;
-  resource_type: string;
-  created_at: string;
-  tags: string[];
-  bytes: number;
-  type: string;
-  etag: string;
-  placeholder: boolean;
-  url: string;
-  secure_url: string;
-  folder: string;
-  access_mode: string;
-}
 
 export interface IUpcomingSlot {
   slot: string;
@@ -55,11 +7,6 @@ export interface IUpcomingSlot {
 export interface IUpcomingSubject {
   subject: string;
   slots: string[];
-}
-
-export interface CloudinaryUploadWidgetProps {
-  info: CloudinaryUploadResult;
-  event?: string;
 }
 
 export interface PostRequestBody {
@@ -75,7 +22,6 @@ export interface PaperResponse {
 }
 
 export interface IAdminPaper {
-  public_id_cloudinary: string;
   final_url: string;
   thumbnail_url: string;
   subject: string | null;
@@ -88,7 +34,7 @@ export interface IAdminPaper {
     | "Summer Semester"
     | "Weekend Semester"
     | null;
-  cloudinary_index: number;
+
   campus:
     | "Vellore"
     | "Chennai"

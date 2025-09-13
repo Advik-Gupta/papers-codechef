@@ -17,11 +17,10 @@ export default function CookoffBanner() {
             className="md:hidden"
           />
 
-          <span className="hidden md:block">
-            Marking 10 years of coding excellence, CookOff is back as
-            graVITas&apos; biggest coding challenge – test your skills and make
-            history!
-          </span>
+            <span className="hidden md:block">
+            10 Years. Hundreds of Coders. One Champion.
+            CookOff, the biggest competitive coding challenge of graVITas is back!
+            </span>
 
           <Link
             href="https://gravitas.vit.ac.in/events/bdfcebea-c141-4a61-ac73-61dec96c08f4"

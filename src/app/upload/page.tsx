@@ -24,7 +24,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import Dropzone from "react-dropzone";
 import { Upload, XIcon } from "lucide-react";
-import { UploadThingDropzone } from "@/components/UploadButton";
+import { UploadThingResponse } from "@/interface";
 
 interface APIResponse {
   status: string;
@@ -99,9 +99,7 @@ export default function Page() {
       );
 
       if (isNewPdf && acceptedFiles.length > 1) {
-        toast.error("Only one PDF can be uploaded at a time.", {
-          id: toastId,
-        });
+        toast.error("Only one PDF can be uploaded at a time.", { id: toastId });
         return;
       }
 
@@ -122,9 +120,7 @@ export default function Page() {
       if (!isNewPdf && hasExistingPdf) {
         toast.error(
           "Images cannot be uploaded after a PDF. Upload them separately.",
-          {
-            id: toastId,
-          },
+          { id: toastId },
         );
         return;
       }
@@ -150,14 +146,13 @@ export default function Page() {
 
       const newPreviews = acceptedFiles.map((file, idx) => ({
         id: `${file.name}-${file.lastModified}-${Date.now()}-${files.length + idx}`,
-        file,
         preview: URL.createObjectURL(file),
+        file,
       }));
 
       setFiles((prev) => [...prev, ...acceptedFiles]);
       setPreviews((prev) => [...prev, ...newPreviews]);
-
-      toast.success(`${acceptedFiles.length} file(s) added!`, { id: toastId });
+      toast.success("Files added!", { id: toastId });
     },
     [files],
   );
@@ -255,48 +250,36 @@ export default function Page() {
     setPreviews([]);
   }, [previews]);
 
-  const handlePrint = async () => {
-    const isPdf = files.length === 1 && files[0]?.type === "application/pdf";
-
-    const formData = new FormData();
-    files.forEach((file) => {
-      formData.append("files", file);
-    });
-
-    formData.append("campus", campus);
-    formData.append("isPdf", String(isPdf));
+  const uploadFiles = async () => {
+    if (files.length === 0) return;
 
     setIsUploading(true);
+    const toastId = toast.loading("Uploading...");
 
     try {
-      await toast.promise(
-        async () => {
-          try {
-            await axios.post<APIResponse>("/api/upload", formData);
-            return { message: "Papers uploaded successfully!" };
-          } catch (error) {
-            if (error instanceof AxiosError && error.response?.data) {
-              const errorData = error.response.data as APIResponse;
-              const errorMessage =
-                errorData.message ?? "Failed to upload papers";
-              throw new Error(errorMessage);
-            }
-            throw new Error("Failed to upload papers");
-          }
-        },
-        {
-          loading: "Uploading papers...",
-          success: "Papers uploaded successfully!",
-          error: (error: Error) => {
-            return error.message;
-          },
-        },
-      );
+      const form = new FormData();
+      files.forEach((file) => form.append("files", file));
 
-      clearAllFiles();
-    } catch (error) {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: form,
+      });
+
+      if (!res.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const uploaded = (await res.json()) as UploadThingResponse;
+
+      toast.success("Files uploaded and saved!", { id: toastId });
+      setFiles([]);
+      setPreviews([]);
+    } catch (err) {
+      console.error(err);
+      toast.error("Upload failed", { id: toastId });
     } finally {
       setIsUploading(false);
+      toast.dismiss(toastId); // Ensure toast is cleared if still showing
     }
   };
 
@@ -489,7 +472,14 @@ export default function Page() {
             </section>
           )}
 
-          <UploadThingDropzone />
+          <Button
+            onClick={uploadFiles}
+            disabled={isUploading || files.length === 0}
+            className="mt-8 rounded-[40px] bg-violet-950 px-8 py-3 text-xl text-white hover:bg-violet-800"
+            size="lg"
+          >
+            {isUploading ? "Uploading..." : "Upload"}
+          </Button>
         </div>
       </div>
 

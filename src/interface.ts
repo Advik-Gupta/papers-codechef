@@ -177,3 +177,23 @@ export interface ICourseWithCount {
   name: string;
   count: number;
 }
+
+export interface UploadThingResponse {
+  success: boolean;
+  savedCount: number;
+  uploaded: Array<{
+    data: {
+      appUrl: string;
+      customId: string | null;
+      fileHash: string;
+      key: string;
+      lastModified: number;
+      name: string;
+      size: number;
+      type: string;
+      ufsUrl: string;
+      url: string;
+    } | null;
+    error: string | null;
+  }>;
+}

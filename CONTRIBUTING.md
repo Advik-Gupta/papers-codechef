@@ -1,4 +1,4 @@
-# Contribute to the Papers Repository
+<img width="1440" height="122" alt="image" src="https://github.com/user-attachments/assets/b43352aa-df3c-4165-872d-6cbc6fbcf026" /># Contribute to the Papers Repository
 
 We appreciate your interest in contributing to the `papers-codechef` repository! Please follow these guidelines to ensure a smooth and effective contribution process.
 
@@ -8,11 +8,14 @@ We appreciate your interest in contributing to the `papers-codechef` repository!
 
 If you're looking for ideas about what to work on, check out:
 
-- Our [issues](https://github.com/CodeChefVIT/papers-codechef/issues) based on votes by the community
+- Our [issues](https://github.com/CodeChefVIT/papers-codechef/issues) 
 
-The best way to propose a change is to start a discussion on our CodeChefVIT GitHub repository. Begin by creating a new issue, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions.
+The best way to propose a change is to start a [discussion] (https://github.com/CodeChefVIT/papers-codechef/discussions) on our CodeChefVIT GitHub repository. Begin by creating a new issue, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions.
 
 ---
+### Cloning the repository
+- **Fork** the repository.
+- **Clone** the repository. All the PRs would be made from this clone.
 
 ### Set Up Your Local Environment
 

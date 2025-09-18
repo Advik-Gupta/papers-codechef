@@ -9,7 +9,7 @@ If you're looking for ideas about what to work on, check out:
 
 - Our [issues](https://github.com/CodeChefVIT/papers-codechef/issues) 
 
-The best way to propose a change is to start a [discussion](https://github.com/CodeChefVIT/papers-codechef/discussions) on our CodeChefVIT GitHub repository. Begin by creating a new discussion, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions.
+The best way to propose a change is to start a [discussion](https://github.com/CodeChefVIT/papers-codechef/discussions) on our CodeChefVIT GitHub repository. Begin by creating a new discussion, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions. 
 
 ## Setting up
 - **Fork** the repository. All the PRs would be made from this fork.
@@ -29,18 +29,7 @@ Once your environment is set up, you're ready to start coding.
 - **Create a new branch:** Use the command `git checkout -b yourName/featureName` to create a new branch for your work.
 - **Make your changes:** Write the code to address the issue you were assigned.
 - **Add changed files:** After making your changes, use `git add .` to add the modified files to Git tracking.
-- **Commit your changes:** Use `git commit -m "feat: xyz"` to create a checkpoint for your work. Use a prefix that describes your changes. Common prefixes include:
-  - `feat:` A new feature.
-  - `fix:` A bug fix.
-  - `docs:` Documentation changes.
-  - `style:` Formatting or white-space changes that do not affect the code's meaning.
-  - `refactor:` A code change that is not a bug fix or a new feature.
-  - `perf:` A code change that improves performance.
-  - `test:` Adding or correcting tests.
-  - `build:` Changes affecting the build system or external dependencies.
-  - `ci:` Changes to CI configuration files or scripts.
-  - `chore:` Other changes that don't modify source or test files.
-  - `revert:` Reverts a previous commit.
+- **Commit your changes:** Please follow standard conventional commit guidelines as outlined here: https://www.conventionalcommits.org/en/v1.0.0/
 - **Push your changes:** Push your commits to your forked repository using `git push`.
 
 ## Submit a Pull Request

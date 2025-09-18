@@ -10,7 +10,7 @@ If you're looking for ideas about what to work on, check out:
 
 - Our [issues](https://github.com/CodeChefVIT/papers-codechef/issues) 
 
-The best way to propose a change is to start a [discussion] (https://github.com/CodeChefVIT/papers-codechef/discussions) on our CodeChefVIT GitHub repository. Begin by creating a new issue, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions.
+The best way to propose a change is to start a [discussion](https://github.com/CodeChefVIT/papers-codechef/discussions) on our CodeChefVIT GitHub repository. Begin by creating a new issue, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions.
 
 ---
 ### Cloning the repository

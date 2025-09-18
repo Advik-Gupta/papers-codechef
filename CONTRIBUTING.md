@@ -10,12 +10,12 @@ If you're looking for ideas about what to work on, check out:
 
 - Our [issues](https://github.com/CodeChefVIT/papers-codechef/issues) 
 
-The best way to propose a change is to start a [discussion](https://github.com/CodeChefVIT/papers-codechef/discussions) on our CodeChefVIT GitHub repository. Begin by creating a new issue, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions.
+The best way to propose a change is to start a [discussion](https://github.com/CodeChefVIT/papers-codechef/discussions) on our CodeChefVIT GitHub repository. Begin by creating a new discussion, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions.
 
 ---
 ### Cloning the repository
-- **Fork** the repository.
-- **Clone** the repository. All the PRs would be made from this clone.
+- **Fork** the repository. All the PRs would be made from this fork.
+- **Clone** the repository.
 
 ### Set Up Your Local Environment
 
@@ -51,14 +51,14 @@ Once your environment is set up, you're ready to start coding.
 
 ---
 
-### Submit a Pull Request
+## Submit a Pull Request
 
 - **Open a Pull Request:** On the forked repository, open a pull request and set the **base branch** to `staging` to submit your changes for review.
 - **Request a review:** Wait for a organization member to review your PR. Any new changes you push to your branch will be automatically attached to the PR.
 
 ---
 
-## Mandatory PR contents
+### Mandatory PR contents
 
 Please ensure that any Pull Request you make contains these things -
 
@@ -73,7 +73,7 @@ Please ensure that any Pull Request you make contains these things -
 
 **Note:** Trivial tab-completion (like single keywords or short phrases) does not need to be disclosed.
 
-## Tips to improve the chances of your PR getting reviewed and merged
+### Tips to improve the chances of your PR getting reviewed and merged
 
 - Small, focused & incremental pull requests are much easier to review.
 - Spend time explaining your changes in the pull request body.

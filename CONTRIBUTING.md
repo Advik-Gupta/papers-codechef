@@ -7,7 +7,7 @@ We appreciate your interest in contributing to the `papers-codechef` repository!
 
 - If you're looking for ideas about what to work on, check out our [issues](https://github.com/CodeChefVIT/papers-codechef/issues) 
 - If you have a bugfix to report ensure that you are on the latest pkull and no similar issue exists. You can then [create an bug report](https://github.com/CodeChefVIT/papers-codechef/issues/new?template=bug_report.md)
-- You can also propose a [feature request]([https://github.com/CodeChefVIT/papers-codechef/issues](https://github.com/CodeChefVIT/papers-codechef/issues/new?template=feature_request.md)). Begin by filling out the template, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions. 
+- You can also propose a [feature request](https://github.com/CodeChefVIT/papers-codechef/issues/new?template=feature_request.md). Begin by filling out the template, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions. 
 
 ## Setting up
 - **Fork** the repository. All the PRs would be made from this fork.

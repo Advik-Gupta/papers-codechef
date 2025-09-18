@@ -27,6 +27,7 @@
 - Stay updated with any new additions to the repository
 
 ## 🏁 Get Started
+Note: To read more about how to contribute visit: [CONTRIBUTE.md](CONTRIBUTING.md)
 
 The repository has two branches, 'prod' and 'staging'.
 

@@ -1,4 +1,4 @@
-<img width="1440" height="122" alt="image" src="https://github.com/user-attachments/assets/b43352aa-df3c-4165-872d-6cbc6fbcf026" /># Contribute to the Papers Repository
+# Contribute to the Papers Repository
 
 We appreciate your interest in contributing to the `papers-codechef` repository! Please follow these guidelines to ensure a smooth and effective contribution process.
 

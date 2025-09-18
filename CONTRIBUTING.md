@@ -69,9 +69,6 @@ Please ensure that any Pull Request you make contains these things -
 
 **Important:** Ensure no merge conflicts exist before making a PR and run `pnpm build` to check for build errors.
 
-**AI Disclosure:** Disclose any AI assistance used while working on the PR. Clearly state the extent of AI involvement (for example, “used AI for documentation only”, “used AI to generate initial code” or "used AI for PR descriptions & responses"). 
-
-**Note:** Trivial tab-completion (like single keywords or short phrases) does not need to be disclosed.
 
 ### Tips to improve the chances of your PR getting reviewed and merged
 

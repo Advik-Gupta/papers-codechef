@@ -3,13 +3,11 @@
 We appreciate your interest in contributing to the `papers-codechef` repository! Please follow these guidelines to ensure a smooth and effective contribution process.
 
 
-## Contribution ideas
+## Getting started
 
-If you're looking for ideas about what to work on, check out:
-
-- Our [issues](https://github.com/CodeChefVIT/papers-codechef/issues) 
-
-The best way to propose a change is to start a [discussion](https://github.com/CodeChefVIT/papers-codechef/discussions) on our CodeChefVIT GitHub repository. Begin by creating a new discussion, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions. 
+- If you're looking for ideas about what to work on, check out our [issues](https://github.com/CodeChefVIT/papers-codechef/issues) 
+- If you have a bugfix to report ensure that you are on the latest pkull and no similar issue exists. You can then [create an bug report](https://github.com/CodeChefVIT/papers-codechef/issues/new?template=bug_report.md)
+- You can also propose a [feature request]([https://github.com/CodeChefVIT/papers-codechef/issues](https://github.com/CodeChefVIT/papers-codechef/issues/new?template=feature_request.md)). Begin by filling out the template, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions. 
 
 ## Setting up
 - **Fork** the repository. All the PRs would be made from this fork.
@@ -34,8 +32,9 @@ Once your environment is set up, you're ready to start coding.
 
 ## Submit a Pull Request
 
-- **Open a Pull Request:** On the forked repository, open a pull request and set the **base branch** to `staging` to submit your changes for review.
-- **Request a review:** Wait for a organization member to review your PR. Any new changes you push to your branch will be automatically attached to the PR.
+- **[Submit your pull request](https://github.com/CodeChefVIT/papers-codechef/compare):** Please, fill in the Pull Request template - it will help us better understand the PR and increase the chances of it getting merged quickly.
+
+An organization member will review the PR and discuss changes you might have to make before merging it. Any new changes you push to your branch will be automatically attached to the PR.
 
 ---
 

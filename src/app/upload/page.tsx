@@ -57,18 +57,15 @@ export default function Page() {
     };
   }, []);
 
-  // Cleanup URLs when component unmounts
   useEffect(() => {
     return () => {
       previews.forEach((item) => {
         try {
           URL.revokeObjectURL(item.preview);
-        } catch (e) {
-          // Ignore errors
-        }
+        } catch (e) {}
       });
     };
-  }, []); // Only run on unmount
+  }, []);
 
   const fileCheckAndSelect = useCallback(
     (acceptedFiles: File[]) => {
@@ -152,7 +149,7 @@ export default function Page() {
 
       setFiles((prev) => [...prev, ...acceptedFiles]);
       setPreviews((prev) => [...prev, ...newPreviews]);
-      toast.success("Files added!", { id: toastId });
+      toast.success("Files added successfully!", { id: toastId });
     },
     [files],
   );
@@ -196,7 +193,7 @@ export default function Page() {
       transform: CSS.Transform.toString(transform),
       transition,
       zIndex: isDragging ? 1000 : 1,
-      touchAction: "none", // Prevent scrolling during touch drag
+      touchAction: "none",
     };
 
     return (
@@ -258,7 +255,13 @@ export default function Page() {
 
     try {
       const form = new FormData();
+
       files.forEach((file) => form.append("files", file));
+
+      const isPdf = files.length === 1 && files[0]?.type === "application/pdf";
+      form.append("isPdf", String(isPdf));
+
+      form.append("campus", campus);
 
       const res = await fetch("/api/upload", {
         method: "POST",
@@ -279,7 +282,7 @@ export default function Page() {
       toast.error("Upload failed", { id: toastId });
     } finally {
       setIsUploading(false);
-      toast.dismiss(toastId); // Ensure toast is cleared if still showing
+      toast.dismiss(toastId);
     }
   };
 
@@ -296,14 +299,7 @@ export default function Page() {
                   <Dropzone
                     onDrop={onDrop}
                     accept={{
-                      "image/*": [
-                        ".jpeg",
-                        ".jpg",
-                        ".png",
-                        ".gif",
-                        ".bmp",
-                        ".webp",
-                      ],
+                      "image/*": [".jpeg", ".jpg", ".png"],
                       "application/pdf": [".pdf"],
                     }}
                     multiple={true}

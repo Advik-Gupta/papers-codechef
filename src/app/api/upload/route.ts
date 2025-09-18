@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { utapi } from "@/util/utapiClient";
-import { UTFile } from "uploadthing/server";
 import { connectToDatabase } from "@/lib/mongoose";
 import { PaperAdmin } from "@/db/papers";
 import { PDFDocument } from "pdf-lib";
@@ -10,7 +9,7 @@ export async function POST(req: Request) {
     const form = await req.formData();
     const rawFiles = form.getAll("files") ?? [];
 
-    if (!rawFiles || rawFiles.length === 0) {
+    if (rawFiles.length === 0) {
       return NextResponse.json(
         { success: false, message: "No files uploaded" },
         { status: 400 },
@@ -24,41 +23,32 @@ export async function POST(req: Request) {
 
     if (files.length === 0) {
       return NextResponse.json(
-        { success: false, message: "No files uploaded" },
+        { success: false, message: "No valid files provided" },
         { status: 400 },
       );
     }
 
-    const firstFile = files[0]!;
-
-    let pdfData: string | null = null;
+    let finalFile: File;
+    let filename: string;
 
     if (isPdf) {
-      const pdfBytes = await firstFile.arrayBuffer();
-      pdfData = Buffer.from(pdfBytes).toString("base64");
+      finalFile = files[0]!;
+      filename = finalFile.name;
     } else {
-      const pdfBytes = await createPDFfromImages(files);
-      pdfData = Buffer.from(pdfBytes).toString("base64");
+      finalFile = await createPDFfromImages(files);
+      filename = "merged.pdf" + Date.now();
     }
+
+    const responses = await utapi.uploadFiles([finalFile]);
 
     await connectToDatabase();
 
-    const responses = await utapi.uploadFiles(
-      pdfData
-        ? [
-            new UTFile(
-              [Uint8Array.from(atob(pdfData), (c) => c.charCodeAt(0))],
-              `merged-${Date.now()}.pdf`,
-            ),
-          ]
-        : [],
-    );
-
     const savedDocs = [];
     for (const r of responses) {
-      if (r.data?.url) {
+      if (r.data?.url && r.data?.key) {
         const doc = await PaperAdmin.create({
           final_url: r.data.url,
+          uploadthing_key: `${r.data.key}_${filename}`,
           thumbnail_url: null,
           subject: null,
           slot: null,
@@ -87,11 +77,12 @@ export async function POST(req: Request) {
   }
 }
 
-async function createPDFfromImages(orderedFiles: File[]) {
+async function createPDFfromImages(files: File[]): Promise<File> {
   const pdfDoc = await PDFDocument.create();
 
-  for (const file of orderedFiles) {
+  for (const file of files) {
     const fileBytes = await file.arrayBuffer();
+
     let img;
     if (file.type === "image/png") {
       img = await pdfDoc.embedPng(fileBytes);
@@ -110,5 +101,6 @@ async function createPDFfromImages(orderedFiles: File[]) {
     });
   }
 
-  return pdfDoc.save();
+  const pdfBytes = await pdfDoc.save();
+  return new File([pdfBytes], "combined.pdf", { type: "application/pdf" });
 }

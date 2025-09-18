@@ -23,6 +23,7 @@ export interface PaperResponse {
 
 export interface IAdminPaper {
   final_url: string;
+  uploadthing_key: string;
   thumbnail_url: string;
   subject: string | null;
   slot: string | null;
@@ -106,6 +107,7 @@ export interface IPaper {
   _id: string;
   exam: "CAT-1" | "CAT-2" | "FAT" | "Model CAT-1" | "Model CAT-2" | "Model FAT";
   final_url: string;
+  uploadthing_key: string;
   thumbnail_url: string;
   semester:
     | "Fall Semester"

@@ -125,10 +125,12 @@ export async function generateMetadata({
     };
   }
 }
+
 const PaperPage = async ({ params }: { params: { id: string } }) => {
   async function getPaper() {
     try {
       const paper = await fetchPaperID(params.id);
+
       return paper;
     } catch (err) {
       if (axios.isAxiosError(err)) {

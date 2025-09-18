@@ -7,7 +7,16 @@ await import("./src/env.js");
 /** @type {import("next").NextConfig} */
 const config = {
   swcMinify: false,
-  images: {},
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
   webpack: (config, options) => {
     config.resolve.alias.canvas = false;
     config.module.rules.push({

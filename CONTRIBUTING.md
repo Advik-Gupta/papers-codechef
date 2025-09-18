@@ -2,7 +2,6 @@
 
 We appreciate your interest in contributing to the `papers-codechef` repository! Please follow these guidelines to ensure a smooth and effective contribution process.
 
----
 
 ## Contribution ideas
 
@@ -12,12 +11,9 @@ If you're looking for ideas about what to work on, check out:
 
 The best way to propose a change is to start a [discussion](https://github.com/CodeChefVIT/papers-codechef/discussions) on our CodeChefVIT GitHub repository. Begin by creating a new discussion, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions.
 
----
-### Cloning the repository
+## Setting up
 - **Fork** the repository. All the PRs would be made from this fork.
 - **Clone** the repository.
-
-### Set Up Your Local Environment
 
 To get the project running, you need to set up your local environment:
 
@@ -25,8 +21,6 @@ To get the project running, you need to set up your local environment:
 - **Install dependencies:** Run `pnpm i` in your terminal to install all necessary dependencies.
 - **Checkout staging branch**: Run `git checkout staging` to switch branches.
 - **Run the project:** Run `pnpm dev` to start the project.
-
----
 
 ## How to Contribute
 
@@ -48,8 +42,6 @@ Once your environment is set up, you're ready to start coding.
   - `chore:` Other changes that don't modify source or test files.
   - `revert:` Reverts a previous commit.
 - **Push your changes:** Push your commits to your forked repository using `git push`.
-
----
 
 ## Submit a Pull Request
 

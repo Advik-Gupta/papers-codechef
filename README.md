@@ -63,27 +63,6 @@ To start your development server run:
 pnpm dev
 ```
 
-## 🐳 Using Docker
-
-To run the application using Docker, follow these steps:
-
-1. **Build the Docker Image**:
-
-   ```bash
-   docker build -t papers-codechef .
-   ```
-
-2. **Run the Docker Container**:
-
-   ```bash
-   docker run -p 3000:3000 --env-file .env papers-codechef
-   ```
-
-3. **Using Docker Compose**:
-   If you prefer `docker-compose`, ensure the `docker-compose.yml` file is configured, then run:
-   ```bash
-   docker-compose up
-   ```
 
 Before getting started, please ensure that the .env file is properly configured. The .env.example file has been provided for your reference, with examples of environment variables to be listed.
 

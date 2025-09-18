@@ -1,72 +1,80 @@
-## Contribution Guidelines
+<img width="1440" height="122" alt="image" src="https://github.com/user-attachments/assets/b43352aa-df3c-4165-872d-6cbc6fbcf026" /># Contribute to the Papers Repository
 
-Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+We appreciate your interest in contributing to the `papers-codechef` repository! Please follow these guidelines to ensure a smooth and effective contribution process.
 
-## How to contribute
+---
 
-- Decide which repository to contribute
-- Decide what to contribute
-- Fork the repo then clone it locally
-- Commit your work (You should create a new branch when you're doing development work that is somewhat experimental in nature.)
-- Create a **Pull Request**
-- Congrats 🎉 you have just contributed towards open source!
+## Contribution ideas
 
-## What to contribute
+If you're looking for ideas about what to work on, check out:
 
-- Find an open issue to tackle
-- Ask if you can help write a new feature
-- Add / Improve Unit Testing
-- Write tutorials for how a project can be used and add to the readme
-- Review code on other people’s submissions and help improving / finding vulnerabilities
+- Our [issues](https://github.com/CodeChefVIT/papers-codechef/issues) 
 
-## Making a PR
-- Provide all the appropriate details asked in PR template
-- A pull request doesn’t have to represent finished work. It’s usually better to open a pull request early on, so others can watch or give feedback on your progress. Just mark it as a “WIP” (Work in Progress) in the subject line. You can always add more commits later.
+The best way to propose a change is to start a [discussion] (https://github.com/CodeChefVIT/papers-codechef/discussions) on our CodeChefVIT GitHub repository. Begin by creating a new issue, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions.
 
-## Opening an Issue
-- Make use of an appropriate Issue Template
-- We welcome Feature request, Bug Report, Documentation fix and others
-- Do not open critical security issues here, report them directly at [our email](mailto:contact@codechefvit.com).
+---
+### Cloning the repository
+- **Fork** the repository.
+- **Clone** the repository. All the PRs would be made from this clone.
 
-## Communicating effectively
-**Give context.** Help others get quickly up to speed. If you’re running into an error, explain what you’re trying to do and how to reproduce it. If you’re suggesting a new idea, explain why you think it’d be useful to the project (not just to you!).
+### Set Up Your Local Environment
 
-```
-✔️ “X doesn’t happen when I do Y”
-❌ “X is broken! Please fix it.”
-```
+To get the project running, you need to set up your local environment:
 
-**Do your homework beforehand.** It’s OK not to know things, but show that you tried. Before asking for help, be sure to check a project’s README, documentation, issues (open or closed), mailing list, and search the internet for an answer. People will appreciate when you demonstrate that you’re trying to learn.
+- **Create a `.env` file:** Create a new file named `.env` and use the .env.example file to create your own .env file and put in your your own environment variables to make the project functional.
+- **Install dependencies:** Run `pnpm i` in your terminal to install all necessary dependencies.
+- **Checkout staging branch**: Run `git checkout staging` to switch branches.
+- **Run the project:** Run `pnpm dev` to start the project.
 
-```
-✔️ ““I’m not sure how to implement X. I checked the help docs and didn’t find any mentions.””
-❌ “How do I X?”
-```
+---
 
-**Keep requests short and direct.**
+## How to Contribute
 
-```
-✔️ “I’d like to write an API tutorial.”
-❌ “I was driving down the highway the other day and stopped for gas, and then I had this amazing idea for something we should be doing, but before I explain that, let me show you…“
-```
+Once your environment is set up, you're ready to start coding.
 
-**It’s okay to ask questions (but be patient!).**
+- **Create a new branch:** Use the command `git checkout -b yourName/featureName` to create a new branch for your work.
+- **Make your changes:** Write the code to address the issue you were assigned.
+- **Add changed files:** After making your changes, use `git add .` to add the modified files to Git tracking.
+- **Commit your changes:** Use `git commit -m "feat: xyz"` to create a checkpoint for your work. Use a prefix that describes your changes. Common prefixes include:
+  - `feat:` A new feature.
+  - `fix:` A bug fix.
+  - `docs:` Documentation changes.
+  - `style:` Formatting or white-space changes that do not affect the code's meaning.
+  - `refactor:` A code change that is not a bug fix or a new feature.
+  - `perf:` A code change that improves performance.
+  - `test:` Adding or correcting tests.
+  - `build:` Changes affecting the build system or external dependencies.
+  - `ci:` Changes to CI configuration files or scripts.
+  - `chore:` Other changes that don't modify source or test files.
+  - `revert:` Reverts a previous commit.
+- **Push your changes:** Push your commits to your forked repository using `git push`.
 
-```
-✔️ “Thanks for looking into this error. I followed your suggestions. Here’s the output.”
-❌ “Why can’t you fix my problem? Isn’t this your project?”
-```
+---
 
-**Respect community decisions.**
+### Submit a Pull Request
 
-```
-✔️ “I’m disappointed you can’t support my use case, but as you’ve explained it only affects a minor portion of users, I understand why. Thanks for listening.”
-❌ “Why won’t you support my use case? This is unacceptable!”
-```
+- **Open a Pull Request:** On the forked repository, open a pull request and set the **base branch** to `staging` to submit your changes for review.
+- **Request a review:** Wait for a organization member to review your PR. Any new changes you push to your branch will be automatically attached to the PR.
 
-## Misc
-- You are welcome to Propose a new feature by creating an **Issue**.
-- You may Discuss a high-level topic or idea (for example, community, vision or policies) by writing to us at our [Email](mailto:contact@codechefvit.com).
+---
 
-## Attribution
-- [Open Source Guide](https://opensource.guide/how-to-contribute/)
+## Mandatory PR contents
+
+Please ensure that any Pull Request you make contains these things -
+
+- Purpose and issue which the PR is made for.
+- Before & after screenshots if your changes involve any visual adjustments (e.g. UI changes, layout tweaks).
+- List of the major changes made in this PR.
+- Mention of any bug fixes, known issues or follow-ups needed.
+
+**Important:** Ensure no merge conflicts exist before making a PR and run `pnpm build` to check for build errors.
+
+**AI Disclosure:** Disclose any AI assistance used while working on the PR. Clearly state the extent of AI involvement (for example, “used AI for documentation only”, “used AI to generate initial code” or "used AI for PR descriptions & responses"). 
+
+**Note:** Trivial tab-completion (like single keywords or short phrases) does not need to be disclosed.
+
+## Tips to improve the chances of your PR getting reviewed and merged
+
+- Small, focused & incremental pull requests are much easier to review.
+- Spend time explaining your changes in the pull request body.
+- Low effort PRs, such as those that just re-arrange syntax, won't be merged without a compelling justification.

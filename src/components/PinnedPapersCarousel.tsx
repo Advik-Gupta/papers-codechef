@@ -35,19 +35,19 @@ function PinnedPapersCarousel({
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) {
+      if(window.innerWidth <= 540){
+        setChunkSize(2);
+      }
+      else if (window.innerWidth <= 920) {
         setChunkSize(4);
       } else {
         setChunkSize(8);
       }
     };
 
-    handleResize();
+    handleResize(); // initialize
     window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const chunkedPapers = chunkArray(displayPapers, chunkSize);
@@ -110,7 +110,7 @@ function PinnedPapersCarousel({
   const plugins = [Autoplay({ delay: 8000, stopOnInteraction: true })];
 
   return (
-    <div className="px-4 sm:mt-4">
+    <div className="px-4 mt-4">
       <div className="">
         {displayPapers.length > 0 ?
         <Carousel
@@ -132,7 +132,7 @@ function PinnedPapersCarousel({
             {isLoading ? (
               <CarouselItem
                 className={`grid ${
-                  chunkSize === 4 ? "grid-cols-2 grid-rows-2" : "grid-cols-4"
+                  chunkSize === 2 ? "grid-cols-1 grid-rows-2" : chunkSize === 4 ? "grid-cols-2 grid-rows-2" : "grid-cols-4"
                 } gap-4 lg:auto-rows-fr`}
               >
                 <SkeletonPaperCard length={chunkSize} />
@@ -145,9 +145,7 @@ function PinnedPapersCarousel({
                   <CarouselItem
                     key={`carousel-item-${index}`}
                     className={`grid ${
-                      chunkSize === 4
-                        ? "grid-cols-2 grid-rows-2"
-                        : "grid-cols-4"
+                      chunkSize === 2 ? "grid-cols-1 grid-rows-2" : chunkSize === 4 ? "grid-cols-2 grid-rows-2" : "grid-cols-4"
                     } gap-4 lg:auto-rows-fr`}
                   >
                     {paperGroup.map((paper, subIndex) => (
@@ -175,7 +173,7 @@ function PinnedPapersCarousel({
             )}
           </CarouselContent>
         </Carousel> : 
-        <div className={`relative flex justify-center gap-4 items-center h-max text-center mt-48 font-bold`}
+        <div className={`relative flex justify-center gap-4 items-center h-max text-center my-48 font-bold`}
         >
           Start pinning subjects for quick and easy access.
         </div>}

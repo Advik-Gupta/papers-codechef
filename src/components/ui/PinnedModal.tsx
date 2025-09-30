@@ -14,15 +14,15 @@ import { type IUpcomingPaper } from "@/interface";
 import { StoredSubjects } from "@/interface";
 import { useState, useEffect } from "react";
 import { Pin, PinOff } from "lucide-react";
+import { Plus } from "lucide-react";
 
-const PinnedModal = () => {
+const PinnedModal = ({triggerName = "Pin Subjects", page = "Navbar"} : {triggerName? : String, page? : String}) => {
   const [displayPapers, setDisplayPapers] = useState<IUpcomingPaper[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const fetchPapers = async () => {
     try {
       setIsLoading(true);
-
       const storedSubjects = JSON.parse(
         localStorage.getItem("userSubjects") ?? "[]",
       ) as StoredSubjects;
@@ -65,6 +65,7 @@ const PinnedModal = () => {
     localStorage.setItem("userSubjects", JSON.stringify(updatedSubjects));
     setDisplayPapers((prev) => prev.filter((paper) => paper.subject !== subjectToRemove));
     window.dispatchEvent(new Event("userSubjectsChanged"));
+    window.dispatchEvent(new Event("updatePapers"));
   };
 
   useEffect(() => {
@@ -78,9 +79,19 @@ const PinnedModal = () => {
         void fetchPapers();
       }else{
         window.dispatchEvent(new Event("userSubjectsChanged"));
+        window.dispatchEvent(new Event("updatePapers"));
       }
     }}>
-      <DialogTrigger>Pin Subjects</DialogTrigger>
+      {page === "Navbar" ? 
+      <DialogTrigger className="flex flex-row gap-2 items-center h-full w-full">
+        <Pin size={16}/>
+        {triggerName}
+      </DialogTrigger> :
+      <DialogTrigger className="flex flex-row gap-2 items-center h-full w-full justify-center">
+        <Plus className="font-extrabold"/>
+        {triggerName}
+      </DialogTrigger>
+      }
       <DialogContent className="bg-[#F3F5FF] dark:bg-[#070114] border-[#3A3745]">
         <DialogHeader>
           <DialogTitle>Quick Access to This Semester&apos;s Subjects</DialogTitle>

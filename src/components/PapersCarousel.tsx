@@ -39,21 +39,24 @@ function PapersCarousel() {
   }, []);
 
   useEffect(() => {
-    async function fetchPapers() {
+    const fetchPapers = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get<IUpcomingPaper[]>(
-          "/api/upcoming-papers",
-        );
+        const response = await axios.get<IUpcomingPaper[]>("/api/upcoming-papers");
         setDisplayPapers(response.data);
       } catch (error) {
         console.error("Failed to fetch papers:", error);
       } finally {
         setIsLoading(false);
       }
-    }
-
+    };
     void fetchPapers();
+    const handleUpdate = () => void fetchPapers();
+    window.addEventListener("updatePapers", handleUpdate);
+
+    return () => {
+      window.removeEventListener("updatePapers", handleUpdate);
+    };
   }, []);
 
   const chunkedPapers = chunkArray(displayPapers, chunkSize);

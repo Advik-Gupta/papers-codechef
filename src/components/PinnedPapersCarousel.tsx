@@ -23,6 +23,7 @@ import PinnedModal from "./ui/PinnedModal";
 type PinnedPapersCarouselProps = {
   carouselType: "users" | "upcoming",
 }
+import { Plus } from "lucide-react";
 
 function PinnedPapersCarousel({
   carouselType = "upcoming",
@@ -48,6 +49,18 @@ function PinnedPapersCarousel({
   }, []);
 
   const chunkedPapers = chunkArray(displayPapers, chunkSize);
+
+  if (chunkedPapers.length > 0) {
+    const lastChunkIndex = chunkedPapers.length - 1;
+    if ((chunkedPapers[lastChunkIndex]?.length ?? 0) < chunkSize) {
+      chunkedPapers[lastChunkIndex] = [
+        ...(chunkedPapers[lastChunkIndex] ?? []),
+        { subject: "add_subject_button", slots: [] } as IUpcomingPaper,
+      ];
+    } else {
+      chunkedPapers.push([{ subject: "add_subject_button", slots: [] } as IUpcomingPaper]);
+    }
+  }
 
   const fetchPapers = async () => {
     try {
@@ -138,7 +151,7 @@ function PinnedPapersCarousel({
   const plugins = [Autoplay({ delay: 8000, stopOnInteraction: true })];
 
   return (
-    <div className="px-4 mt-4">
+    <div className="px-4 mt-8 md:mt-4">
       <div className="">
         {displayPapers.length > 0 ?
         <Carousel
@@ -149,7 +162,7 @@ function PinnedPapersCarousel({
           plugins={plugins}
           className="w-full"
         >
-          {displayPapers.length > 8 &&
+          {displayPapers.length >= 8 &&
           <div
             className={`relative mt-4 flex justify-end gap-4`}
           >
@@ -167,8 +180,7 @@ function PinnedPapersCarousel({
               </CarouselItem>
             ) : (
               chunkedPapers.map((paperGroup, index) => {
-                const isLastChunk = index === chunkedPapers.length - 1;
-
+                const placeholdersNeeded = (chunkSize - paperGroup.length) % chunkSize;
                 return (
                   <CarouselItem
                     key={`carousel-item-${index}`}
@@ -177,6 +189,11 @@ function PinnedPapersCarousel({
                     } gap-4 lg:auto-rows-fr`}
                   >
                     {paperGroup.map((paper, subIndex) => (
+                      paper.subject === "add_subject_button" ?
+                      <div key={subIndex} className="h-full border-dashed border border-[#734DFF] dark:border-[#36266D] rounded-sm font-bold hover:bg-[#EFEAFF] dark:bg-transparent dark:hover:bg-[#1A1823] bg-[#FFFFFF]">
+                        <PinnedModal triggerName={"Add Subjects"} page={"Carousel"}/>
+                      </div>
+                      :
                       <div key={subIndex} className="h-full">
                         <UpcomingPaper
                           subject={paper.subject}
@@ -185,26 +202,24 @@ function PinnedPapersCarousel({
                       </div>
                     ))}
 
-                    {isLastChunk && displayPapers.length < 8 && (
+                    {Array.from({ length: placeholdersNeeded }).map(
+                    (_, placeholderIndex) => (
                       <div
-                        className="h-full"
-                        onClick={() => {
-                          window.dispatchEvent(new Event("addButtonClicked"));
-                        }}
-                      >
-                      </div>
-                    )}
+                        key={`placeholder-${placeholderIndex}`}
+                        className="invisible h-full"
+                      ></div>
+                    ),
+                  )}
                   </CarouselItem>
                 );
               })
             )}
           </CarouselContent>
         </Carousel> : 
-        <div className={`relative flex flex-col justify-center gap-4 items-center h-max text-center my-48 font-bold`}
+        <div className={`relative flex flex-col justify-center gap-4 items-center text-center font-bold`}
         >
           Start pinning subjects for quick and easy access.
           <div className="flex h-8 items-center gap-1 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-2.5 py-1 text-xs font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] sm:h-9 sm:gap-2 sm:px-3.5 sm:py-1.5 sm:text-sm md:h-10 md:px-4 md:py-2 md:text-base">
-            <Pin className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span className="truncate">
               <PinnedModal/>
             </span>

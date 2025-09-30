@@ -1,5 +1,6 @@
 "use client";
 
+import { Pin } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { type IUpcomingPaper } from "@/interface";
@@ -18,21 +19,17 @@ import Autoplay from "embla-carousel-autoplay";
 import { chunkArray } from "@/util/utils";
 import { StoredSubjects } from "@/interface";
 import SkeletonPaperCard from "./SkeletonPaperCard";
-
+import PinnedModal from "./ui/PinnedModal";
 type PinnedPapersCarouselProps = {
   carouselType: "users" | "upcoming",
-  displayPapers: IUpcomingPaper[],
-  setDisplayPapers: React.Dispatch<React.SetStateAction<IUpcomingPaper[]>> 
 }
 
 function PinnedPapersCarousel({
   carouselType = "upcoming",
-  displayPapers,
-  setDisplayPapers
 } : PinnedPapersCarouselProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [chunkSize, setChunkSize] = useState<number>(4);
-
+  const [displayPapers, setDisplayPapers] = useState<IUpcomingPaper[]>([]);
   useEffect(() => {
     const handleResize = () => {
       if(window.innerWidth <= 540){
@@ -96,8 +93,39 @@ function PinnedPapersCarousel({
   }, []);
 
   useEffect(() => {
-    const handleSubjectsChange = () => {
-      void fetchPapers();
+    const handleSubjectsChange = async() => {
+      try {
+        const storedSubjects = JSON.parse(
+          localStorage.getItem("userSubjects") ?? "[]",
+        ) as StoredSubjects;
+
+        const response = await axios.post<{ subject: string; slots: string[] }[]>(
+          "/api/user-papers",
+          storedSubjects,
+        );
+
+        const fetchedPapers = response.data;
+
+        const fetchedSubjectsSet = new Set(
+          fetchedPapers.map((paper) => paper.subject),
+        );
+
+        const storedSubjectsArray = Array.isArray(storedSubjects)
+          ? storedSubjects
+          : [];
+        const missingSubjects = storedSubjectsArray
+          .filter((subject: string) => !fetchedSubjectsSet.has(subject))
+          .map((subject: string) => ({
+            subject,
+            slots: [],
+          })) as { subject: string; slots: string[] }[];
+
+        const allDisplayPapers = [...fetchedPapers, ...missingSubjects];
+
+        setDisplayPapers(allDisplayPapers);
+      } catch (error) {
+        console.error("Failed to fetch papers:", error);
+      }
     };
 
     window.addEventListener("userSubjectsChanged", handleSubjectsChange);
@@ -164,7 +192,6 @@ function PinnedPapersCarousel({
                           window.dispatchEvent(new Event("addButtonClicked"));
                         }}
                       >
-                        <AddPapers />
                       </div>
                     )}
                   </CarouselItem>
@@ -173,9 +200,15 @@ function PinnedPapersCarousel({
             )}
           </CarouselContent>
         </Carousel> : 
-        <div className={`relative flex justify-center gap-4 items-center h-max text-center my-48 font-bold`}
+        <div className={`relative flex flex-col justify-center gap-4 items-center h-max text-center my-48 font-bold`}
         >
           Start pinning subjects for quick and easy access.
+          <div className="flex h-8 items-center gap-1 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-2.5 py-1 text-xs font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] sm:h-9 sm:gap-2 sm:px-3.5 sm:py-1.5 sm:text-sm md:h-10 md:px-4 md:py-2 md:text-base">
+            <Pin className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="truncate">
+              <PinnedModal/>
+            </span>
+          </div>
         </div>}
       </div>
     </div>

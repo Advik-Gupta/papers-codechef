@@ -10,14 +10,15 @@ import NavDropdownButton from "../NavDropdownButton";
 import { StoredSubjects } from "@/interface";
 import FloatingControls from "./floating-controls";
 import { type ICourseWithCount } from "@/interface";
+import { IUpcomingPaper } from "@/interface";
 
 function PinnedSearchBar({
   initialSubjects,
-  displayPapers,
+  setDisplayPapers,
   filtersNotPulled,
 }: {
   initialSubjects: ICourseWithCount[];
-  displayPapers: boolean;
+  setDisplayPapers: React.Dispatch<React.SetStateAction<IUpcomingPaper[]>>; 
   filtersNotPulled?: () => void;
 }) {
   const router = useRouter();
@@ -104,6 +105,7 @@ function PinnedSearchBar({
     const updated = current
       ? [...new Set([...saved, searchText])]
       : saved.filter((s) => s !== searchText);
+  
 
     if (updated.length === 0) {
       setShowControls(false);
@@ -112,7 +114,17 @@ function PinnedSearchBar({
     }
 
     localStorage.setItem("userSubjects", JSON.stringify(updated));
-    window.dispatchEvent(new Event("userSubjectsChanged"));
+
+    setDisplayPapers((prev) => {
+      if (current) {
+        if (!prev.find((paper) => paper.subject === searchText)) {
+          return [...prev, { subject: searchText, slots: [] }];
+        }
+        return prev;
+      } else {
+        return prev.filter((paper) => paper.subject !== searchText);
+      }
+    });
 
     setSearchText("");
     setPinned(false);
@@ -203,28 +215,10 @@ function PinnedSearchBar({
                 onToggle={handlePinToggle}
                 disabled={!showControls || searchText.trim() === ""}
               />
-              {displayPapers && <button
-                onClick={() => {
-                  handleRemoveAll();
-                }}
-                className="items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] hidden sm:flex"
-              >
-
-                Remove All <X className="h-4 w-4" />
-              </button>}
             </div>
           </form>
         </div>
       </div>
-
-      {displayPapers && <button
-        onClick={() => {
-          handleRemoveAll();
-        }}
-        className="sm:hidden mt-4 flex items-center gap-2 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:bg-slate dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
-      >
-        Remove All <X className="h-4 w-4" />
-      </button>}
     </div>
   );
 }

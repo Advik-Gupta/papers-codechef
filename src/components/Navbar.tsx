@@ -24,6 +24,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { useCourses } from "@/context/courseContext";
+import PinnedModal from "./ui/PinnedModal";
 import CookoffBanner from "./CookoffBanner";
 
 function Navbar() {
@@ -38,12 +39,19 @@ function Navbar() {
 
   const renderHomePageButtons = () => (
     <>
-      <Link href="/pinned" className="ml-2">
+      {/* <Link href="/pinned" className="ml-2">
         <div className="flex h-8 items-center gap-1 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-2.5 py-1 text-xs font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] sm:h-9 sm:gap-2 sm:px-3.5 sm:py-1.5 sm:text-sm md:h-10 md:px-4 md:py-2 md:text-base">
           <Pin className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           <span className="truncate">Pinned Subjects</span>
         </div>
-      </Link>
+      </Link> */}
+
+      <div className="flex h-8 items-center gap-1 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-2.5 py-1 text-xs font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] sm:h-9 sm:gap-2 sm:px-3.5 sm:py-1.5 sm:text-sm md:h-10 md:px-4 md:py-2 md:text-base">
+        <Pin className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        <span className="truncate">
+          <PinnedModal/>
+        </span>
+      </div>
 
       <Link href="/request" className="ml-2 mt-2 sm:mt-0">
         <div className="flex h-8 items-center gap-1 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-2.5 py-1 text-xs font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] sm:h-9 sm:gap-2 sm:px-3.5 sm:py-1.5 sm:text-sm md:h-10 md:px-4 md:py-2 md:text-base">
@@ -104,10 +112,7 @@ function Navbar() {
                   align="start"
                 >
                   <DropdownMenuItem asChild>
-                    <Link href="/pinned" className="flex items-center gap-3">
-                      <Pin className="h-4 w-4" />
-                      <span className="font-medium">Pinned Subjects</span>
-                    </Link>
+                    <PinnedModal/>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/request" className="flex items-center gap-3">

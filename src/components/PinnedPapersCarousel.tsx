@@ -106,7 +106,8 @@ function PinnedPapersCarousel({
   }, []);
 
   useEffect(() => {
-    const handleSubjectsChange = async() => {
+  const handleSubjectsChange = () => {
+    void (async () => {
       try {
         const storedSubjects = JSON.parse(
           localStorage.getItem("userSubjects") ?? "[]",
@@ -139,7 +140,8 @@ function PinnedPapersCarousel({
       } catch (error) {
         console.error("Failed to fetch papers:", error);
       }
-    };
+    })();
+  };
 
     window.addEventListener("userSubjectsChanged", handleSubjectsChange);
 

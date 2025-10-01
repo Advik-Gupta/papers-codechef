@@ -16,7 +16,7 @@ import { useState, useEffect } from "react";
 import { Pin, PinOff } from "lucide-react";
 import { Plus } from "lucide-react";
 
-const PinnedModal = ({triggerName = "Pin Subjects", page = "Navbar"} : {triggerName? : String, page? : String}) => {
+const PinnedModal = ({triggerName = "Pin Subjects", page = "Navbar"} : {triggerName? : string, page? : string}) => {
   const [displayPapers, setDisplayPapers] = useState<IUpcomingPaper[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [open, setOpen] = useState(false);

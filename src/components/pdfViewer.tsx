@@ -12,7 +12,7 @@ import Loader from "./ui/loader";
 import { FaGreaterThan, FaLessThan } from "react-icons/fa6";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
+  'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url,
 ).toString();
 

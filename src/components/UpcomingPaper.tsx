@@ -34,6 +34,8 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
 
     localStorage.setItem("userSubjects", JSON.stringify(updated));
     window.dispatchEvent(new Event("userSubjectsChanged"));
+    if(!current)
+      window.dispatchEvent(new Event("updatePapers"));
   };
 
   useEffect(() => {

@@ -1,114 +1,79 @@
 import { NextResponse } from "next/server";
 import { PDFDocument } from "pdf-lib";
 import { connectToDatabase } from "@/lib/mongoose";
-import cloudinary from "cloudinary";
-import type { CloudinaryUploadResult } from "@/interface";
 import { PaperAdmin } from "@/db/papers";
+import { Storage } from "@google-cloud/storage";
 
-cloudinary.v2.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_SECRET,
+interface GCPCredentials {
+  type: string;
+  project_id: string;
+  private_key_id: string;
+  private_key: string;
+  client_email: string;
+  client_id: string;
+  auth_uri: string;
+  token_uri: string;
+  auth_provider_x509_cert_url: string;
+  client_x509_cert_url: string;
+  universe_domain?: string;
+}
+
+// Initialize GCP Storage
+const credentials: GCPCredentials = JSON.parse(
+  process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON ?? "{}",
+) as GCPCredentials;
+
+const storage = new Storage({
+  projectId: process.env.GOOGLE_CLOUD_PROJECT,
+  credentials,
 });
 
-const config1 = {
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_1,
-  api_key: process.env.CLOUDINARY_API_KEY_1,
-  api_secret: process.env.CLOUDINARY_SECRET_1,
-};
-
-const config2 = {
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_2,
-  api_key: process.env.CLOUDINARY_API_KEY_2,
-  api_secret: process.env.CLOUDINARY_SECRET_2,
-};
-
-const cloudinaryConfigs = [config1, config2];
+const bucketName = process.env.GOOGLE_CLOUD_BUCKET ?? "";
+const bucket = storage.bucket(bucketName);
 
 export async function POST(req: Request) {
   try {
-    if (!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET) {
-      return NextResponse.json(
-        { message: "ServerMisconfiguration" },
-        { status: 500 },
-      );
-    }
     await connectToDatabase();
-    const count: number = await PaperAdmin.countDocuments();
-    const configIndex = count % cloudinaryConfigs.length;
-    console.log(configIndex);
-    cloudinary.v2.config(cloudinaryConfigs[configIndex]);
 
-    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
     const formData = await req.formData();
-    const files: File[] = formData.getAll("files") as File[];
+    const files = formData.getAll("files") as File[];
     const isPdf = formData.get("isPdf") === "true";
+    const thumb = formData.get("thumbnail") as File | null;
 
-    let pdfData = "";
+    console.log("Received thumbnail:", thumb ? thumb.name : "NULL");
 
-    if (isPdf && files.length > 0 && files[0]) {
-      const pdfFile = files[0];
-      const pdfBytes = await pdfFile.arrayBuffer();
-      const pdfBuffer = Buffer.from(pdfBytes);
-      pdfData = pdfBuffer.toString("base64");
-    } else if (files.length > 0) {
-      const pdfBytes = await CreatePDF(files);
-      const pdfBuffer = Buffer.from(pdfBytes);
-      pdfData = pdfBuffer.toString("base64");
-    }
-
-    let final_url: string | undefined = "";
-    let public_id_cloudinary: string | undefined = "";
 
     if (!files || files.length === 0) {
-      return NextResponse.json(
-        { error: "No files received." },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "No files received." }, { status: 400 });
     }
 
-    if (!isPdf) {
-      try {
-        if (!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET) {
-          return;
-        }
-
-        const mergedPdfBytes = await CreatePDF(files);
-        [public_id_cloudinary, final_url] = await uploadPDFFile(
-          mergedPdfBytes,
-          uploadPreset,
-        );
-      } catch (error) {
-        console.error("Error creating PDF:", error);
-        return NextResponse.json(
-          { error: "Failed to process PDF" },
-          { status: 500 },
-        );
-      }
+    let pdfBytes: ArrayBuffer;
+    if (isPdf && files[0]) {
+      pdfBytes = await files[0].arrayBuffer();
     } else {
-      [public_id_cloudinary, final_url] = await uploadPDFFile(
-        files[0]!,
-        uploadPreset,
-      );
+      pdfBytes = await createPDFfromImages(files);
     }
 
-    const paper = new PaperAdmin({
-      cloudinary_index: configIndex,
+    const { file_url, thumbnail_url } = await uploadToGCS(pdfBytes, thumb);
 
-      public_id_cloudinary,
-      final_url,
-      thumbnail_url: null,
+    // Save in MongoDB
+    const paper = new PaperAdmin({
+      file_url,
+      thumbnail_url,
       subject: null,
       slot: null,
       year: null,
       exam: null,
       semester: null,
-      campus: null,
+      campus: formData.get("campus"),
       ambiguous_tags: [],
     });
-
     await paper.save();
-    return NextResponse.json({ status: "success" }, { status: 201 });
+
+    return NextResponse.json(
+      { status: "success", file_url, thumbnail_url },
+      { status: 201 },
+    );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
@@ -118,59 +83,46 @@ export async function POST(req: Request) {
   }
 }
 
-async function uploadPDFFile(file: File | ArrayBuffer, uploadPreset: string) {
-  let bytes;
-  if (file instanceof File) {
-    bytes = await file.arrayBuffer();
-  } else {
-    bytes = file;
+async function uploadToGCS(bytes: ArrayBuffer, thumbFile?: File | null) {
+  const buffer = Buffer.from(bytes);
+
+  const pdfFilename = `papers/${Date.now()}-${Math.random()
+    .toString(36)
+    .substring(2)}.pdf`;
+  await bucket.file(pdfFilename).save(buffer, {
+    resumable: false,
+    contentType: "application/pdf",
+  });
+  const file_url = `https://storage.googleapis.com/${bucketName}/${pdfFilename}`;
+
+  let thumbnail_url: string | null = null;
+  if (thumbFile) {
+    const thumbBuffer = Buffer.from(await thumbFile.arrayBuffer());
+    const thumbFilename = pdfFilename.replace(".pdf", ".png");
+    await bucket.file(thumbFilename).save(thumbBuffer, {
+      resumable: false,
+      contentType: "image/png",
+    });
+    thumbnail_url = `https://storage.googleapis.com/${bucketName}/${thumbFilename}`;
   }
-  return uploadFile(bytes, uploadPreset, "application/pdf");
+
+  return { file_url, thumbnail_url };
 }
 
-async function uploadFile(
-  bytes: ArrayBuffer,
-  uploadPreset: string,
-  fileType: string,
-) {
-  try {
-    const buffer = Buffer.from(bytes);
-    const dataUrl = `data:${fileType};base64,${buffer.toString("base64")}`;
-
-    const uploadResult = (await cloudinary.v2.uploader.unsigned_upload(
-      dataUrl,
-      uploadPreset,
-    )) as CloudinaryUploadResult;
-
-    return [uploadResult.public_id, uploadResult.secure_url];
-  } catch (e) {
-    throw e;
-  }
-}
-
-async function CreatePDF(orderedFiles: File[]) {
+async function createPDFfromImages(files: File[]) {
   const pdfDoc = await PDFDocument.create();
 
-  for (const file of orderedFiles) {
-    const fileBlob = new Blob([file]);
-    const imgBytes = Buffer.from(await fileBlob.arrayBuffer());
+  for (const file of files) {
+    const imgBytes = Buffer.from(await file.arrayBuffer());
     let img;
-    if (file instanceof File) {
-      if (file.type === "image/png") {
-        img = await pdfDoc.embedPng(imgBytes);
-      } else if (file.type === "image/jpeg" || file.type === "image/jpg") {
-        img = await pdfDoc.embedJpg(imgBytes);
-      } else {
-        continue;
-      }
-      const page = pdfDoc.addPage([img.width, img.height]);
-      page.drawImage(img, {
-        x: 0,
-        y: 0,
-        width: img.width,
-        height: img.height,
-      });
-    }
+    if (file.type === "image/png") {
+      img = await pdfDoc.embedPng(imgBytes);
+    } else if (file.type === "image/jpeg" || file.type === "image/jpg") {
+      img = await pdfDoc.embedJpg(imgBytes);
+    } else continue;
+
+    const page = pdfDoc.addPage([img.width, img.height]);
+    page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
   }
 
   const mergedPdfBytes = await pdfDoc.save();
@@ -178,3 +130,5 @@ async function CreatePDF(orderedFiles: File[]) {
   new Uint8Array(ab).set(mergedPdfBytes);
   return ab;
 }
+
+export const runtime = "nodejs"; 

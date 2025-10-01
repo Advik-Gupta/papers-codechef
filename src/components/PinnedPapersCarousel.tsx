@@ -16,7 +16,7 @@ import {
 import { Skeleton } from "./ui/skeleton";
 import AddPapers from "./AddPapers";
 import Autoplay from "embla-carousel-autoplay";
-import { chunkArray } from "@/util/utils";
+import { chunkArray } from "@/lib/utils/array";
 import { StoredSubjects } from "@/interface";
 import SkeletonPaperCard from "./SkeletonPaperCard";
 import PinnedModal from "./ui/PinnedModal";

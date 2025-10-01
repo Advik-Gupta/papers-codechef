@@ -1,5 +1,5 @@
-import { IPaper } from "@/interface";
-import { extractBracketContent } from "./utils";
+import { IPaper } from "../../interface";
+import { extractBracketContent } from "./string";
 import axios from "axios";
 
 export const getSecureUrl = (url: string): string =>

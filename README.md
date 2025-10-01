@@ -16,7 +16,7 @@
 - Next.js : Framework for React applications with server-side rendering.
 - Tailwind CSS : Utility-first CSS framework for rapid UI development.
 - MongoDB & Mongoose : Database and object data modeling (ODM) for Node.js.
-- Cloudinary : Media storage and optimization service.
+- Google Cloud Storage: Media storage and optimization service.
 - Shadcn : Collection of pre-built components using Radix UI and Tailwind CSS.
 ## 💡 Features:
 

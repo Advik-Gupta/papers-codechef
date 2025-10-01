@@ -24,6 +24,10 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import Dropzone from "react-dropzone";
 import { Upload, XIcon } from "lucide-react";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
+
+GlobalWorkerOptions.workerSrc = 
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.mjs";
 
 interface APIResponse {
   status: string;
@@ -56,18 +60,16 @@ export default function Page() {
     };
   }, []);
 
-  // Cleanup URLs when component unmounts
+  // Cleanup previews on unmount
   useEffect(() => {
     return () => {
       previews.forEach((item) => {
         try {
           URL.revokeObjectURL(item.preview);
-        } catch (e) {
-          // Ignore errors
-        }
+        } catch {}
       });
     };
-  }, []); // Only run on unmount
+  }, []);
 
   const fileCheckAndSelect = useCallback(
     (acceptedFiles: File[]) => {
@@ -169,14 +171,9 @@ export default function Page() {
   );
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 5 },
-    }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 200,
-        tolerance: 10,
-      },
+      activationConstraint: { delay: 200, tolerance: 10 },
     }),
   );
 
@@ -200,7 +197,7 @@ export default function Page() {
       transform: CSS.Transform.toString(transform),
       transition,
       zIndex: isDragging ? 1000 : 1,
-      touchAction: "none", // Prevent scrolling during touch drag
+      touchAction: "none",
     };
 
     return (
@@ -236,32 +233,28 @@ export default function Page() {
       URL.revokeObjectURL(deletedPreview.preview);
     }
 
-    const remainingFiles = files.filter((_, i) => i !== index);
-    const remainingPreviews = previews.filter((_, i) => i !== index);
-
-    setFiles(remainingFiles);
-    setPreviews(remainingPreviews);
+    setFiles(files.filter((_, i) => i !== index));
+    setPreviews(previews.filter((_, i) => i !== index));
   };
 
   const clearAllFiles = useCallback(() => {
     previews.forEach((item) => {
       try {
         URL.revokeObjectURL(item.preview);
-      } catch (e) {}
+      } catch {}
     });
 
     setFiles([]);
     setPreviews([]);
   }, [previews]);
 
-  const handlePrint = async () => {
+  const handleUpload = async () => {
     const isPdf = files.length === 1 && files[0]?.type === "application/pdf";
-
     const formData = new FormData();
+
     files.forEach((file) => {
       formData.append("files", file);
     });
-
     formData.append("campus", campus);
     formData.append("isPdf", String(isPdf));
 
@@ -286,19 +279,16 @@ export default function Page() {
         {
           loading: "Uploading papers...",
           success: "Papers uploaded successfully!",
-          error: (error: Error) => {
-            return error.message;
-          },
+          error: (err: Error) => err.message,
         },
       );
 
       clearAllFiles();
-    } catch (error) {
     } finally {
       setIsUploading(false);
     }
   };
-
+  
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <div className="flex h-[calc(100vh-90px)] flex-col justify-center px-6 font-play">
@@ -331,7 +321,7 @@ export default function Page() {
                           isDragActive || isGlobalDragging
                             ? "border-solid border-[#6D28D9] bg-purple-50 dark:bg-[#130E1F]"
                             : "border-dashed border-gray-300"
-                        } p-8 text-center transition-all duration-200 touch-none`}
+                        } touch-none p-8 text-center transition-all duration-200`}
                       >
                         <input {...getInputProps()} />
                         {isDragActive || isGlobalDragging ? (
@@ -410,7 +400,7 @@ export default function Page() {
           {previews.length > 0 && (
             <section className="mt-6 flex w-full flex-col items-center">
               <div className="flex w-max gap-4">
-                <div className="scrollbar-hide w-[80vw] flex md:w-max max-w-4xl flex-col justify-between overflow-x-auto overflow-y-hidden rounded-[40px] border-[6px] border-indigo-900 bg-indigo-900/10 p-4 sm:p-6 md:p-8">
+                <div className="scrollbar-hide flex w-[80vw] max-w-4xl flex-col justify-between overflow-x-auto overflow-y-hidden rounded-[40px] border-[6px] border-indigo-900 bg-indigo-900/10 p-4 sm:p-6 md:w-max md:p-8">
                   <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -489,10 +479,9 @@ export default function Page() {
           )}
 
           <Button
-            onClick={handlePrint}
+            onClick={handleUpload}
             disabled={isUploading || files.length === 0}
             className="mt-8 rounded-[40px] bg-violet-950 px-8 py-3 text-xl text-white hover:bg-violet-800"
-            size="lg"
           >
             {isUploading ? "Uploading..." : "Upload"}
           </Button>

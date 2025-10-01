@@ -4,7 +4,7 @@ What problem does it solve, or what feature does it add?
 
 ---
 
-## Corresponding issue: #[Issue number]
+## Corresponding issue: closes #[Issue number]
 
 ---
 

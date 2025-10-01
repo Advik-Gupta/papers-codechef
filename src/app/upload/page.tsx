@@ -26,8 +26,8 @@ import Dropzone from "react-dropzone";
 import { Upload, XIcon } from "lucide-react";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 
-GlobalWorkerOptions.workerSrc =
-  "https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js";
+GlobalWorkerOptions.workerSrc = 
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.mjs";
 
 interface APIResponse {
   status: string;

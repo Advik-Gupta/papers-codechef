@@ -34,7 +34,6 @@
     "axios": "^1.8.4",
     "canvas": "^3.2.0",
     "class-variance-authority": "^0.7.1",
-    "cloudinary": "^2.6.0",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
     "debounce": "^2.2.0",

@@ -26,8 +26,8 @@ const storage = new Storage({
 const bucketName = process.env.GOOGLE_CLOUD_BUCKET ?? "";
 const bucket = storage.bucket(bucketName);
 
-export async function uploadPDF(buffer: Buffer) {
-  const pdfFilename = `papers/${Date.now()}-${Math.random().toString(36).substring(2)}.pdf`;
+export async function uploadPDF(folder: string, buffer: Buffer) {
+  const pdfFilename = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2)}.pdf`;
   await bucket.file(pdfFilename).save(buffer, { resumable: false, contentType: "application/pdf" });
   return `https://storage.googleapis.com/${bucketName}/${pdfFilename}`;
 }

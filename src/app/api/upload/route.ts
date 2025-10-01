@@ -36,7 +36,7 @@ export async function POST(req: Request) {
 
     const buffer = Buffer.from(pdfBytes);
 
-    const file_url = await uploadPDF(buffer);
+    const file_url = await uploadPDF("unapproved", buffer);
 
     let thumbnail_url: string | null = null;
     if (thumb) {

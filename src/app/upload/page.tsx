@@ -248,24 +248,6 @@ export default function Page() {
     setPreviews([]);
   }, [previews]);
 
-  async function generatePdfThumbnail(file: File): Promise<Blob> {
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await getDocument({ data: arrayBuffer }).promise;
-    const page = await pdf.getPage(1);
-
-    const viewport = page.getViewport({ scale: 1 });
-    const canvas = document.createElement("canvas");
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-
-    const context = canvas.getContext("2d")!;
-    await page.render({ canvasContext: context, viewport }).promise;
-
-    return new Promise<Blob>((resolve) => {
-      canvas.toBlob((blob) => resolve(blob!), "image/png");
-    });
-  }
-
   const handleUpload = async () => {
     const isPdf = files.length === 1 && files[0]?.type === "application/pdf";
     const formData = new FormData();
@@ -275,14 +257,6 @@ export default function Page() {
     });
     formData.append("campus", campus);
     formData.append("isPdf", String(isPdf));
-
-    if (isPdf && files[0]) {
-      const thumbBlob = await generatePdfThumbnail(files[0]);
-      const thumbFile = new File([thumbBlob], "thumbnail.png", {
-        type: "image/png",
-      });
-      formData.append("thumbnail", thumbFile);
-    }
 
     setIsUploading(true);
 
@@ -314,6 +288,7 @@ export default function Page() {
       setIsUploading(false);
     }
   };
+  
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <div className="flex h-[calc(100vh-90px)] flex-col justify-center px-6 font-play">

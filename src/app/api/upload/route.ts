@@ -1,25 +1,18 @@
 import { NextResponse } from "next/server";
-import { utapi } from "@/util/utapiClient";
 import { connectToDatabase } from "@/lib/mongoose";
 import { PaperAdmin } from "@/db/papers";
-import { PDFDocument } from "pdf-lib";
+import { createPDFfromImages } from "@/lib/pdf";
+import { uploadPDF, uploadThumbnail } from "@/lib/storage";
+
+export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
-    const form = await req.formData();
-    const rawFiles = form.getAll("files") ?? [];
-
-    if (rawFiles.length === 0) {
-      return NextResponse.json(
-        { success: false, message: "No files uploaded" },
-        { status: 400 },
-      );
-    }
-
-    const campus = (form.get("campus") as string) ?? "Vellore";
-    const isPdf = (form.get("isPdf") as string) === "true";
-
-    const files: File[] = rawFiles.filter((f): f is File => f instanceof File);
+    await connectToDatabase();
+    const formData = await req.formData();
+    const files = formData.getAll("files").filter(Boolean) as File[];
+    const isPdf = formData.get("isPdf") === "true";
+    const thumb = formData.get("thumbnail") as File | null;
 
     if (files.length === 0) {
       return NextResponse.json(
@@ -28,46 +21,46 @@ export async function POST(req: Request) {
       );
     }
 
-    let finalFile: File;
-    let filename: string;
-
+    let pdfBytes: Uint8Array;
     if (isPdf) {
-      finalFile = files[0]!;
-      filename = finalFile.name;
-    } else {
-      finalFile = await createPDFfromImages(files);
-      filename = "merged.pdf" + Date.now();
-    }
-
-    const responses = await utapi.uploadFiles([finalFile]);
-
-    await connectToDatabase();
-
-    const savedDocs = [];
-    for (const r of responses) {
-      if (r.data?.url && r.data?.key) {
-        const doc = await PaperAdmin.create({
-          final_url: r.data.url,
-          uploadthing_key: `${r.data.key}_${filename}`,
-          thumbnail_url: null,
-          subject: null,
-          slot: null,
-          year: null,
-          exam: null,
-          semester: null,
-          campus,
-          ambiguous_tags: [],
-          isPdf,
-        });
-        savedDocs.push(doc);
+      if (!files[0]) {
+        return NextResponse.json(
+          { error: "No PDF file provided." },
+          { status: 400 },
+        );
       }
+      pdfBytes = new Uint8Array(await files[0].arrayBuffer());
+    } else {
+      pdfBytes = await createPDFfromImages(files);
     }
 
-    return NextResponse.json({
-      success: true,
-      uploaded: responses,
-      savedCount: savedDocs.length,
+    const buffer = Buffer.from(pdfBytes);
+
+    const file_url = await uploadPDF("unapproved", buffer);
+
+    let thumbnail_url: string | null = null;
+    if (thumb) {
+      const thumbBuffer = Buffer.from(await thumb.arrayBuffer());
+      thumbnail_url = await uploadThumbnail(thumbBuffer, file_url);
+    }
+
+    const paper = new PaperAdmin({
+      file_url,
+      thumbnail_url,
+      campus: formData.get("campus"),
+      subject: null,
+      slot: null,
+      year: null,
+      exam: null,
+      semester: null,
+      ambiguous_tags: [],
     });
+    await paper.save();
+
+    return NextResponse.json(
+      { status: "success", file_url, thumbnail_url },
+      { status: 201 },
+    );
   } catch (error) {
     console.error("Upload route error:", error);
     return NextResponse.json(
@@ -75,32 +68,4 @@ export async function POST(req: Request) {
       { status: 500 },
     );
   }
-}
-
-async function createPDFfromImages(files: File[]): Promise<File> {
-  const pdfDoc = await PDFDocument.create();
-
-  for (const file of files) {
-    const fileBytes = await file.arrayBuffer();
-
-    let img;
-    if (file.type === "image/png") {
-      img = await pdfDoc.embedPng(fileBytes);
-    } else if (file.type === "image/jpeg" || file.type === "image/jpg") {
-      img = await pdfDoc.embedJpg(fileBytes);
-    } else {
-      continue;
-    }
-
-    const page = pdfDoc.addPage([img.width, img.height]);
-    page.drawImage(img, {
-      x: 0,
-      y: 0,
-      width: img.width,
-      height: img.height,
-    });
-  }
-
-  const pdfBytes = await pdfDoc.save();
-  return new File([pdfBytes], "combined.pdf", { type: "application/pdf" });
 }

@@ -221,13 +221,13 @@ const CatalogueContent = () => {
     }
     for (const paper of uniquePapers) {
       try {
-        const response = await fetch(getSecureUrl(paper.final_url));
+        const response = await fetch(getSecureUrl(paper.file_url));
         const blob = await response.blob();
         const filename = generateFileName(paper);
         zip.file(filename, blob);
       } catch (err) {
         // Optionally handle individual download errors
-        console.error(`Failed to fetch ${paper.final_url}`, err);
+        console.error(`Failed to fetch ${paper.file_url}`, err);
       }
     }
 

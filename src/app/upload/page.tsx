@@ -24,7 +24,10 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import Dropzone from "react-dropzone";
 import { Upload, XIcon } from "lucide-react";
-import { UploadThingResponse } from "@/interface";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
+
+GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.mjs";
 
 interface APIResponse {
   status: string;
@@ -57,12 +60,13 @@ export default function Page() {
     };
   }, []);
 
+  // Cleanup previews on unmount
   useEffect(() => {
     return () => {
       previews.forEach((item) => {
         try {
           URL.revokeObjectURL(item.preview);
-        } catch (e) {}
+        } catch {}
       });
     };
   }, []);
@@ -162,14 +166,9 @@ export default function Page() {
   );
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 5 },
-    }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 200,
-        tolerance: 10,
-      },
+      activationConstraint: { delay: 200, tolerance: 10 },
     }),
   );
 
@@ -229,57 +228,57 @@ export default function Page() {
       URL.revokeObjectURL(deletedPreview.preview);
     }
 
-    const remainingFiles = files.filter((_, i) => i !== index);
-    const remainingPreviews = previews.filter((_, i) => i !== index);
-
-    setFiles(remainingFiles);
-    setPreviews(remainingPreviews);
+    setFiles(files.filter((_, i) => i !== index));
+    setPreviews(previews.filter((_, i) => i !== index));
   };
 
   const clearAllFiles = useCallback(() => {
     previews.forEach((item) => {
       try {
         URL.revokeObjectURL(item.preview);
-      } catch (e) {}
+      } catch {}
     });
 
     setFiles([]);
     setPreviews([]);
   }, [previews]);
 
-  const uploadFiles = async () => {
-    if (files.length === 0) return;
+  const handleUpload = async () => {
+    const isPdf = files.length === 1 && files[0]?.type === "application/pdf";
+    const formData = new FormData();
+
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+    formData.append("campus", campus);
+    formData.append("isPdf", String(isPdf));
 
     setIsUploading(true);
-    const toastId = toast.loading("Uploading...");
 
     try {
-      const form = new FormData();
+      await toast.promise(
+        async () => {
+          try {
+            await axios.post<APIResponse>("/api/upload", formData);
+            return { message: "Papers uploaded successfully!" };
+          } catch (error) {
+            if (error instanceof AxiosError && error.response?.data) {
+              const errorData = error.response.data as APIResponse;
+              const errorMessage =
+                errorData.message ?? "Failed to upload papers";
+              throw new Error(errorMessage);
+            }
+            throw new Error("Failed to upload papers");
+          }
+        },
+        {
+          loading: "Uploading papers...",
+          success: "Papers uploaded successfully!",
+          error: (err: Error) => err.message,
+        },
+      );
 
-      files.forEach((file) => form.append("files", file));
-
-      const isPdf = files.length === 1 && files[0]?.type === "application/pdf";
-      form.append("isPdf", String(isPdf));
-
-      form.append("campus", campus);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: form,
-      });
-
-      if (!res.ok) {
-        throw new Error("Upload failed");
-      }
-
-      const uploaded = (await res.json()) as UploadThingResponse;
-
-      toast.success("Files uploaded and saved!", { id: toastId });
-      setFiles([]);
-      setPreviews([]);
-    } catch (err) {
-      console.error(err);
-      toast.error("Upload failed", { id: toastId });
+      clearAllFiles();
     } finally {
       setIsUploading(false);
       toast.dismiss(toastId);
@@ -469,10 +468,9 @@ export default function Page() {
           )}
 
           <Button
-            onClick={uploadFiles}
+            onClick={handleUpload}
             disabled={isUploading || files.length === 0}
             className="mt-8 rounded-[40px] bg-violet-950 px-8 py-3 text-xl text-white hover:bg-violet-800"
-            size="lg"
           >
             {isUploading ? "Uploading..." : "Upload"}
           </Button>

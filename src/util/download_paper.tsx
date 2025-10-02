@@ -6,7 +6,7 @@ export const getSecureUrl = (url: string): string =>
   url.startsWith("http://") ? url.replace("http://", "https://") : url;
 
 export const generateFileName = (paper: IPaper): string => {
-  const extension = paper.final_url.split(".").pop();
+  const extension = paper.file_url.split(".").pop();
   return `${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}.${extension}`;
 };
 

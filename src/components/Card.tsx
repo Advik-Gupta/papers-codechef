@@ -31,7 +31,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
   }, [isSelected]);
 
   const handleDownload = async (paper: IPaper) => {
-    await downloadFile(getSecureUrl(paper.final_url), generateFileName(paper));
+    await downloadFile(getSecureUrl(paper.file_url), generateFileName(paper));
   };
 
   const handleCheckboxChange = () => {

@@ -14,7 +14,7 @@ export interface PostRequestBody {
 }
 
 export interface PaperResponse {
-  final_url: string;
+  file_url: string;
   subject: string;
   year: string;
   slot: string;
@@ -22,8 +22,7 @@ export interface PaperResponse {
 }
 
 export interface IAdminPaper {
-  final_url: string;
-  uploadthing_key: string;
+  file_url: string;
   thumbnail_url: string;
   subject: string | null;
   slot: string | null;
@@ -35,7 +34,6 @@ export interface IAdminPaper {
     | "Summer Semester"
     | "Weekend Semester"
     | null;
-
   campus:
     | "Vellore"
     | "Chennai"
@@ -106,8 +104,7 @@ export interface IUpcomingPaper extends mongo.Document {
 export interface IPaper {
   _id: string;
   exam: "CAT-1" | "CAT-2" | "FAT" | "Model CAT-1" | "Model CAT-2" | "Model FAT";
-  final_url: string;
-  uploadthing_key: string;
+  file_url: string;
   thumbnail_url: string;
   semester:
     | "Fall Semester"

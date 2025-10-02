@@ -167,7 +167,7 @@ const PaperPage = async ({ params }: { params: { id: string } }) => {
           </h1>
           <center>
             <PdfViewer
-              url={paper.final_url}
+              url={paper.file_url}
               name={`${extractBracketContent(paper.subject)}-${paper.exam}-${paper.slot}-${paper.year}`}
             ></PdfViewer>
           </center>

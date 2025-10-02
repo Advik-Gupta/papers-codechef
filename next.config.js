@@ -8,14 +8,7 @@ await import("./src/env.js");
 const config = {
   swcMinify: false,
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "utfs.io",
-        port: "",
-        pathname: "/**",
-      },
-    ],
+    domains: ["storage.googleapis.com"],
   },
   webpack: (config, options) => {
     config.resolve.alias.canvas = false;

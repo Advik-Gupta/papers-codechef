@@ -164,13 +164,16 @@ function PinnedPapersCarousel({
           plugins={plugins}
           className="w-full"
         >
-          {displayPapers.length >= 8 &&
-          <div
-            className={`relative mt-4 flex justify-end gap-4`}
-          >
-            <CarouselPrevious className="relative" />
-            <CarouselNext className="relative" />
-          </div>}
+          {(() => {
+      const totalItems = displayPapers.length + 1;
+      const needsNav = totalItems > chunkSize;
+      return needsNav ? (
+        <div className="relative mt-4 flex justify-end gap-4">
+          <CarouselPrevious className="relative" />
+          <CarouselNext className="relative" />
+        </div>
+      ) : null;
+    })()}
           <CarouselContent>
             {isLoading ? (
               <CarouselItem

@@ -12,7 +12,7 @@ const Hero = () => {
       <div className="mt-5 px-6">
         <SearchBar />
       </div>
-      <p className="my-8 hidden text-center font-play text-lg font-semibold md:block">
+      <p className="my-8 text-center font-play text-lg font-semibold">
         Pinned Subjects
       </p>
       <PinnedPapersCarousel carouselType="users"/>

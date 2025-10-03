@@ -16,43 +16,64 @@ const config = {
       {
         source: "/api/upcoming-papers",
         headers: [
-          { key: "Cache-Control", value: "s-maxage=60, stale-while-revalidate=120" },
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=60, stale-while-revalidate=120",
+          },
         ],
       },
       {
         source: "/api/papers",
         headers: [
-          { key: "Cache-Control", value: "s-maxage=60, stale-while-revalidate=120" },
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=60, stale-while-revalidate=120",
+          },
         ],
       },
       {
         source: "/api/selected-papers",
         headers: [
-          { key: "Cache-Control", value: "s-maxage=60, stale-while-revalidate=120" },
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=60, stale-while-revalidate=120",
+          },
         ],
       },
       {
         source: "/api/related-subject",
         headers: [
-          { key: "Cache-Control", value: "s-maxage=60, stale-while-revalidate=120" },
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=60, stale-while-revalidate=120",
+          },
         ],
       },
       {
         source: "/api/course-list",
         headers: [
-          { key: "Cache-Control", value: "s-maxage=60, stale-while-revalidate=120" },
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=60, stale-while-revalidate=120",
+          },
         ],
       },
       {
         source: "/_next/static/:path*",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
         ],
       },
       {
-        source: "/:all*(css|js|png|jpg|jpeg|gif|webp|svg|ico|woff|woff2)",
+        source: "/:path*\\.(css|js|png|jpg|jpeg|gif|webp|svg|ico|woff|woff2)",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=86400" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=604800, stale-while-revalidate=86400",
+          },
         ],
       },
     ];

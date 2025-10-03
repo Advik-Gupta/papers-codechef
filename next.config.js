@@ -7,6 +7,7 @@ await import("./src/env.js");
 /** @type {import("next").NextConfig} */
 const config = {
   swcMinify: false,
+  output: "standalone", 
   images: {
     domains: ["storage.googleapis.com"],
   },

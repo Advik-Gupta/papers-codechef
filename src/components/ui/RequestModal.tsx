@@ -33,7 +33,7 @@ type Course = {
   title?: string | null;
 };
 
-const RequestModal = () => {
+const RequestModal = ({section = "navbar"} : {section? : string}) => {
     const [open, setOpen] = useState(false);
     const [subjects, setSubjects] = useState<string[]>([]);
     const [searchText, setSearchText] = useState("");
@@ -115,14 +115,20 @@ const RequestModal = () => {
     }, [searchText, fuse, selectedSubject]);
 
     return (
-    <Dialog open={open} onOpenChange={(isOpen) => {
+    <Dialog 
+    open={open} onOpenChange={(isOpen) => {
     setOpen(isOpen);
     if (isOpen) resetModal();
     }}>
+        {section === "navbar" ?
         <DialogTrigger className='flex items-center gap-2'>
             <ArrowUpRight className="h-4 w-4"/>
             <span className="font-medium">Request Paper</span>
-        </DialogTrigger>
+        </DialogTrigger> :
+        <DialogTrigger className='underline text-[#562EE7] dark:text-[#A47DE5] '>
+            <span className="font-medium">request a paper.</span>
+        </DialogTrigger> 
+        }
         <DialogContent className='bg-[#F3F5FF] dark:bg-[#070114] border-[#3A3745] items-start'>
             <DialogHeader>
                 <DialogTitle>Request Papers</DialogTitle>

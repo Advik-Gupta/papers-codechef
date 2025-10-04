@@ -100,14 +100,6 @@ export default function Footer() {
           <Link href="https://gravitas.codechefvit.com" target="_blank">CookOff</Link>
           <Link href="https://gravitas.codechefvit.com" target="_blank">Clueminati</Link>
         </div>
-<div className="flex flex-col gap-2 text-black dark:text-white md:items-start lg:text-left">
-  <h3 className="font-jost text-2xl font-semibold">Our Projects</h3>
-  <Link href="https://papers.codechefvit.com">Papers</Link>
-  <Link href="https://contactify.codechefvit.com">Contactify</Link>
-  <Link href="https://ffcs.codechefvit.com">FFCS-iniator</Link>
-</div>
-
-
         {/* Projects */}
         <div className="flex w-full flex-col gap-2 text-black dark:text-white  lg:w-[20%]">
           <h3 className="font-jost text-xl font-semibold">Our Projects</h3>

@@ -98,7 +98,7 @@ const PinnedModal = ({triggerName = "Pin Subjects", page = "Navbar"} : {triggerN
           <DialogTitle className="font-normal">
             <div className="my-3 flex w-full flex-col items-center gap-2 text-sm">
               <div className="w-full">
-                <SearchBar type="pinned" setDisplayPapers={setDisplayPapers}/>
+                <SearchBar type="pinned" setDisplayPapers={setDisplayPapers} displayPapers={displayPapers}/>
               </div>
             </div>
             <div className="mt-4">
@@ -118,7 +118,6 @@ const PinnedModal = ({triggerName = "Pin Subjects", page = "Navbar"} : {triggerN
                           Unpin
                           <PinOff size={16}/>
                         </div>
-                        
                       </button>
                     </div>
                   ))

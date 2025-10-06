@@ -487,27 +487,29 @@ const CatalogueContent = () => {
                 ))
               )}
             </div>
-            <div className="mt-8 flex items-center justify-center gap-4">
-              <Button
-                variant="outline"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((prev) => prev - 1)}
-              >
-                Previous
-              </Button>
+            {totalPages > 1 && (
+              <div className="mt-8 flex items-center justify-center gap-4">
+                <Button
+                  variant="outline"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((prev) => prev - 1)}
+                >
+                  Previous
+                </Button>
 
-              <span className="text-gray-700 dark:text-gray-300">
-                Page {currentPage} of {totalPages}
-              </span>
+                <span className="text-gray-700 dark:text-gray-300">
+                  Page {currentPage} of {totalPages}
+                </span>
 
-              <Button
-                variant="outline"
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((prev) => prev + 1)}
-              >
-                Next
-              </Button>
-            </div>
+                <Button
+                  variant="outline"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((prev) => prev + 1)}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
           </div>
         ) : (
           <Error

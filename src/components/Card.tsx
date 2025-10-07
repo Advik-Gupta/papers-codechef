@@ -97,7 +97,7 @@ const Card = ({ paper, onSelect, isSelected }: CardProps) => {
         </div>
       </Link>
 
-      <div className="hidden items-center justify-between gap-2 px-4 pb-4 font-play md:flex">
+      <div className="flex items-center justify-between gap-2 px-4 pb-4 font-play">
         <div className="flex items-center gap-2">
           <input
             checked={checked}

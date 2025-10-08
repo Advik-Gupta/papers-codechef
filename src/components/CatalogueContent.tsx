@@ -20,7 +20,7 @@ import {
   getSecureUrl,
   generateFileName,
   downloadFile,
-} from "@/util/download_paper";
+} from "@/lib/utils/download";
 import type { ICourses } from "@/interface";
 import JSZip from "jszip";
 import { toast } from "react-hot-toast";

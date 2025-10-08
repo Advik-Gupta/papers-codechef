@@ -48,13 +48,13 @@ function Navbar() {
 
       <div className="flex h-8 items-center gap-1 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-2.5 py-1 text-xs font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] sm:h-9 sm:gap-2 sm:px-3.5 sm:py-1.5 sm:text-sm md:h-10 md:px-4 md:py-2 md:text-base">
         <span className="truncate">
-          <PinnedModal/>
+          <PinnedModal />
         </span>
       </div>
 
       <div className="flex h-8 items-center gap-1 rounded-full border border-[#3A3745] bg-[#e8e9ff] px-2.5 py-1 text-xs font-semibold text-gray-700 transition hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] sm:h-9 sm:gap-2 sm:px-3.5 sm:py-1.5 sm:text-sm md:h-10 md:px-4 md:py-2 md:text-base">
         <span className="truncate">
-          <RequestModal/>
+          <RequestModal />
         </span>
       </div>
     </>
@@ -95,7 +95,7 @@ function Navbar() {
               <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[#3A3745] bg-[#e8e9ff] text-gray-700 hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[#3A3745] bg-[#e8e9ff] text-gray-700 shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-slate-50 active:scale-95 dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
                     aria-label="Toggle dropdown"
                   >
                     <ChevronDown
@@ -105,14 +105,20 @@ function Navbar() {
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent
-                  className="w-56 rounded-2xl border border-[rgba(255,255,255,0.1)] border-[#3A3745] bg-[#e8e9ff] text-gray-700 hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] shadow-2xl backdrop-blur-sm"
+                  className="w-56 rounded-2xl border border-[#3A3745] border-[rgba(255,255,255,0.1)] bg-[#e8e9ff] text-gray-700 shadow-2xl backdrop-blur-sm hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
                   align="start"
                 >
-                  <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()}>
-                    <PinnedModal/>
+                  <DropdownMenuItem
+                    asChild
+                    onSelect={(e) => e.preventDefault()}
+                  >
+                    <PinnedModal />
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()}>
-                    <RequestModal/>
+                  <DropdownMenuItem
+                    asChild
+                    onSelect={(e) => e.preventDefault()}
+                  >
+                    <RequestModal />
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -126,7 +132,7 @@ function Navbar() {
                 >
                   <DropdownMenuTrigger asChild>
                     <button
-                      className="flex h-10 w-10 items-center justify-center rounded-full border border-[#3A3745] bg-[#e8e9ff] text-gray-700 hover:bg-slate-50 dark:bg-black dark:text-white dark:hover:bg-[#1A1823] shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95"
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-[#3A3745] bg-[#e8e9ff] text-gray-700 shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-slate-50 active:scale-95 dark:bg-black dark:text-white dark:hover:bg-[#1A1823]"
                       aria-label="Toggle dropdown"
                     >
                       <ChevronDown
@@ -136,22 +142,25 @@ function Navbar() {
                   </DropdownMenuTrigger>
 
                   <DropdownMenuContent
-                  className="xl:hidden flex flex-col gap-1 py-3 w-72 space-y-1 rounded-3xl px-4
-                  border border-[#3A3745] shadow-lg backdrop-blur-sm transition-colors
-                  bg-[#e8e9ff] text-gray-700 
-                  dark:bg-black dark:text-white dark:border-[#3A3745]"
-                  align="end"
-                >
-                    <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()}>
-                      <PinnedModal/>
+                    className="flex w-72 flex-col gap-1 space-y-1 rounded-3xl border border-[#3A3745] bg-[#e8e9ff] px-4 py-3 text-gray-700 shadow-lg backdrop-blur-sm transition-colors dark:border-[#3A3745] dark:bg-black dark:text-white xl:hidden"
+                    align="end"
+                  >
+                    <DropdownMenuItem
+                      asChild
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      <PinnedModal />
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()}>
-                      <RequestModal/>
+                    <DropdownMenuItem
+                      asChild
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      <RequestModal />
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <div className="hidden h-10 items-center xl:flex gap-2">
+              <div className="hidden h-10 items-center gap-2 xl:flex">
                 {renderHomePageButtons()}
               </div>
             </>

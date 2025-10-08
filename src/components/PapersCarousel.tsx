@@ -12,7 +12,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { chunkArray } from "@/util/utils";
+import { chunkArray } from "@/lib/utils/array";
 import { Skeleton } from "@/components/ui/skeleton";
 import SkeletonPaperCard from "@/components/SkeletonPaperCard";
 

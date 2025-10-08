@@ -26,7 +26,7 @@ import Dropzone from "react-dropzone";
 import { Upload, XIcon } from "lucide-react";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 
-GlobalWorkerOptions.workerSrc = 
+GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.mjs";
 
 interface APIResponse {
@@ -288,7 +288,7 @@ export default function Page() {
       setIsUploading(false);
     }
   };
-  
+
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <div className="flex h-[calc(100vh-90px)] flex-col justify-center px-6 font-play">

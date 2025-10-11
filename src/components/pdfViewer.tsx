@@ -24,6 +24,7 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState(pageNumber.toString());
   const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -87,11 +88,21 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
     });
   };
 
-  const handlePageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10);
-    if (!isNaN(value) && value >= 1 && value <= (numPages ?? 1)) {
-      setPageNumber(value);
-      scrollToPage(value);
+  const handlePageChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const target = e.target as HTMLInputElement;
+      if (/^\d+$/.test(inputValue)) {
+        const value = parseInt(inputValue, 10);
+        if (value >= 1 && value <= (numPages ?? 1)) {
+          setPageNumber(value);
+          scrollToPage(value);
+        } else {
+          setInputValue(pageNumber.toString());
+        }
+      } else {
+        setInputValue(pageNumber.toString());
+      }
+      target.blur();
     }
   };
 
@@ -131,6 +142,10 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
         });
     }
   };
+
+  useEffect(() => {
+    setInputValue(pageNumber.toString());
+  }, [pageNumber]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -238,11 +253,11 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
                 <FaLessThan />
               </Button>
               <input
-                type="number"
-                value={pageNumber}
-                onChange={handlePageChange}
-                min={1}
-                max={numPages}
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => handlePageChange(e)}
+                onFocus={() => setInputValue("")}
                 className="h-10 w-16 rounded border p-1 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />
               <span>of {numPages ?? 1}</span>
@@ -300,11 +315,11 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
               <FaLessThan />
             </Button>
             <input
-              type="number"
-              value={pageNumber}
-              onChange={handlePageChange}
-              min={1}
-              max={numPages}
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => handlePageChange(e)}
+              onFocus={() => setInputValue("")}
               className="h-10 w-16 rounded border p-1 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
             <span>of {numPages ?? 1}</span>

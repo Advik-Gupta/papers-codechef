@@ -169,8 +169,7 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
       semester: string[],
       anskey: boolean,
     ) => {
-      setAppliedFilters(true);
-
+      // Update URL for bookmarking/sharing (use replace to avoid navigation/re-fetch)
       let pushContent = "/catalogue";
       if (subject) pushContent += `?subject=${encodeURIComponent(subject)}`;
       if (exams.length > 0)
@@ -185,39 +184,19 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
         pushContent += `&semester=${encodeURIComponent(semester.join(","))}`;
       if (anskey) pushContent += "&answerkey=true";
 
-      router.push(pushContent);
+      // Use replace instead of push to avoid triggering navigation/re-render
+      router.replace(pushContent, { scroll: false });
+      
+      // Update filter state (filtering happens in useEffect in CatalogueContent)
       setSelectedExams(exams);
       setSelectedSlots(slots);
       setSelectedYears(years);
       setSelectedCampuses(campus);
       setSelectedSemesters(semester);
       setSelectedAnswerKeyIncluded(anskey);
-      
-      const filtered = papers.filter((paper) => {
-        const examCondition = exams.length ? exams.includes(paper.exam) : true;
-        const slotCondition = slots.length ? slots.includes(paper.slot) : true;
-        const yearCondition = years.length ? years.includes(paper.year) : true;
-        const campusCondition = campus.length
-          ? campus.includes(paper.campus)
-          : true;
-        const semesterCondition = semester.length
-          ? semester.includes(paper.semester)
-          : true;
-        const anskeyCondition = anskey ? paper.answer_key_included === true : true;
-
-        return (
-          examCondition &&
-          slotCondition &&
-          yearCondition &&
-          campusCondition &&
-          semesterCondition &&
-          anskeyCondition
-        );
-      });
-      setFilteredPapers(filtered);
-      setCurrentPage(1); 
+      setCurrentPage(1); // Reset to first page when filters change
     },
-    [papers, router, subject],
+    [router, subject, setSelectedExams, setSelectedSlots, setSelectedYears, setSelectedCampuses, setSelectedSemesters, setSelectedAnswerKeyIncluded, setCurrentPage],
   );
 
   

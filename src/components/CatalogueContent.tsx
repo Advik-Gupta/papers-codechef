@@ -122,7 +122,7 @@ const CatalogueContentInner = ({ subject }: { subject: string | null }) => {
     localStorage.setItem("userSubjects", JSON.stringify(updated));
   };
 
-  // Fetch papers and apply filters
+  // Fetch papers ONLY when subject changes (not when filters change!)
   useEffect(() => {
     if (!subject || !isMounted) return;
 
@@ -136,36 +136,6 @@ const CatalogueContentInner = ({ subject }: { subject: string | null }) => {
         const papersData = data.papers;
         setFilterOptions(data);
         setPapers(papersData);
-        const filtered = papersData.filter((paper) => {
-          const examCondition = selectedExams.length
-            ? selectedExams.includes(paper.exam)
-            : true;
-          const slotCondition = selectedSlots.length
-            ? selectedSlots.includes(paper.slot)
-            : true;
-          const yearCondition = selectedYears.length
-            ? selectedYears.includes(paper.year)
-            : true;
-          const semesterCondition = selectedSemesters.length
-            ? selectedSemesters.includes(paper.semester)
-            : true;
-          const campusCondition = selectedCampuses.length
-            ? selectedCampuses.includes(paper.campus)
-            : true;
-          const answerkeyCondition = selectedAnswerKeyIncluded
-            ? paper.answer_key_included === true
-            : true;
-          return (
-            examCondition &&
-            slotCondition &&
-            yearCondition &&
-            semesterCondition &&
-            campusCondition &&
-            answerkeyCondition
-          );
-        });
-        setFilteredPapers(filtered);
-        setAppliedFilters(true);
       } catch (error) {
         setPapers([]);
         const axiosError = error as AxiosError;
@@ -184,16 +154,61 @@ const CatalogueContentInner = ({ subject }: { subject: string | null }) => {
   }, [
     subject,
     isMounted,
+    setPapers,
+    setFilterOptions,
+  ]);
+
+  useEffect(() => {
+    if (!papers.length) return;
+
+    const filtered = papers.filter((paper) => {
+      const examCondition = selectedExams.length
+        ? selectedExams.includes(paper.exam)
+        : true;
+      const slotCondition = selectedSlots.length
+        ? selectedSlots.includes(paper.slot)
+        : true;
+      const yearCondition = selectedYears.length
+        ? selectedYears.includes(paper.year)
+        : true;
+      const semesterCondition = selectedSemesters.length
+        ? selectedSemesters.includes(paper.semester)
+        : true;
+      const campusCondition = selectedCampuses.length
+        ? selectedCampuses.includes(paper.campus)
+        : true;
+      const answerkeyCondition = selectedAnswerKeyIncluded
+        ? paper.answer_key_included === true
+        : true;
+      return (
+        examCondition &&
+        slotCondition &&
+        yearCondition &&
+        semesterCondition &&
+        campusCondition &&
+        answerkeyCondition
+      );
+    });
+    
+    setFilteredPapers(filtered);
+    setAppliedFilters(
+      selectedExams.length > 0 ||
+      selectedSlots.length > 0 ||
+      selectedYears.length > 0 ||
+      selectedSemesters.length > 0 ||
+      selectedCampuses.length > 0 ||
+      selectedAnswerKeyIncluded
+    );
+  }, [
+    papers,
     selectedExams,
     selectedSlots,
     selectedYears,
     selectedSemesters,
     selectedCampuses,
     selectedAnswerKeyIncluded,
-    setPapers,
-    setFilterOptions,
-    setAppliedFilters,
     setFilteredPapers,
+    setAppliedFilters,
   ]);
 
   // Render loading state until mounted to avoid hydration mismatch

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/assets/images/favicon.svg" }],
   openGraph: {
     title: "Papers by CodeChef-VIT | Exam Resources",
-    images: [{ url: "/assets//images/papers.png" }],
+    images: [{ url: "/assets/images/papers.png" }],
     url: "https://papers.codechefvit.com/",
     type: "website",
     description:
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     title: "Papers by CodeChef-VIT | VIT Previous Year Question Papers",
     description:
       "Discover previous year question papers created by CodeChef-VIT at Vellore Institute of Technology. Made with ♡ to help students excel.",
-    images: [{ url: "/assets//images/papers.png" }],
+    images: [{ url: "/assets/images/papers.png" }],
   },
   applicationName: "Papers by CodeChef-VIT",
   keywords: [

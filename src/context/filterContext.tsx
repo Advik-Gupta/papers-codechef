@@ -169,7 +169,6 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
       semester: string[],
       anskey: boolean,
     ) => {
-      // Update URL for bookmarking/sharing (use replace to avoid navigation/re-fetch)
       let pushContent = "/catalogue";
       if (subject) pushContent += `?subject=${encodeURIComponent(subject)}`;
       if (exams.length > 0)
@@ -184,17 +183,15 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
         pushContent += `&semester=${encodeURIComponent(semester.join(","))}`;
       if (anskey) pushContent += "&answerkey=true";
 
-      // Use replace instead of push to avoid triggering navigation/re-render
       router.replace(pushContent, { scroll: false });
       
-      // Update filter state (filtering happens in useEffect in CatalogueContent)
       setSelectedExams(exams);
       setSelectedSlots(slots);
       setSelectedYears(years);
       setSelectedCampuses(campus);
       setSelectedSemesters(semester);
       setSelectedAnswerKeyIncluded(anskey);
-      setCurrentPage(1); // Reset to first page when filters change
+      setCurrentPage(1);
     },
     [router, subject, setSelectedExams, setSelectedSlots, setSelectedYears, setSelectedCampuses, setSelectedSemesters, setSelectedAnswerKeyIncluded, setCurrentPage],
   );

@@ -2,49 +2,22 @@
 
 import React from "react";
 import { Filter } from "lucide-react";
-import { type Filters, type IPaper } from "@/interface";
 import SidebarButton from "./SidebarButton";
 import SidebarSection from "./SidebarSection";
+import { useFilters } from "@/context/filterContext";
 
-function SideBar({
-  selectedExams,
-  selectedSlots,
-  selectedYears,
-  selectedCampuses,
-  selectedSemesters,
-  selectedAnswerKeyIncluded,
-  filterOptions,
-  filtersNotPulled,
-  handleApplyFilters,
-  handleSelectAll,      
-  handleDeselectAll,    
-  handleDownloadSelected 
-}: {
-  loading: boolean;
-  selectedExams: string[];
-  selectedSlots: string[];
-  selectedYears: string[];
-  selectedCampuses: string[];
-  selectedSemesters: string[];
-  selectedAnswerKeyIncluded: boolean;
-  filtersNotPulled: () => void;
-  noAppliedFilters: () => void;
-  closeFilters: () => void;
-  subject: string | null;
-  filterOptions: Filters | undefined;
-  selectedPapers: IPaper[];
-  handleApplyFilters: (
-    exams: string[],
-    slots: string[],
-    years: string[],
-    campus: string[],
-    semester: string[],
-    anskey: boolean
-  ) => void;
-  handleSelectAll: () => void;      
-  handleDeselectAll: () => void;    
-  handleDownloadSelected: () => void;
-}) {
+function SideBar() {
+  // Get everything from context - no more prop drilling!
+  const {
+    selectedExams,
+    selectedSlots,
+    selectedYears,
+    selectedSemesters,
+    selectedCampuses,
+    selectedAnswerKeyIncluded,
+    filterOptions,
+    handleApplyFilters,
+  } = useFilters();
   const exams =
     filterOptions?.unique_exams.map((exam) => ({ label: exam, value: exam })) ?? [];
   const slots =
@@ -121,7 +94,7 @@ function SideBar({
   ];
 
   return (
-    <div className="no-scrollbar fixed sticky top-0 h-[100vh] flex-col items-baseline overflow-y-auto border-r-2 border-[#36266d] bg-[#f3f5ff] pt-[10px] dark:bg-[#070114] md:flex">
+    <div className="no-scrollbar sticky top-0 h-[100vh] flex-col items-baseline overflow-y-auto border-r-2 border-[#36266d] bg-[#f3f5ff] pt-[10px] dark:bg-[#070114] md:flex">
       <div className="flex w-full items-center justify-between border-b-2 border-[#36266d] px-[10px] py-4">
         <div className="flex items-center gap-1">
           <Filter size={24} />

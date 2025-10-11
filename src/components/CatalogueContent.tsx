@@ -1,12 +1,11 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios, { type AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
 import { type IPaper, type Filters, type StoredSubjects } from "@/interface";
 import Card from "./Card";
-import { useRouter } from "next/navigation";
 import Loader from "./ui/loader";
 import SideBar from "../components/SideBar";
 import Error from "./Error";
@@ -15,47 +14,51 @@ import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Pin } from "lucide-react";
 import SearchBarChild from "./Searchbar/searchbar-child";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  getSecureUrl,
-  generateFileName,
-  downloadFile,
-} from "@/lib/utils/download";
-import type { ICourses } from "@/interface";
-import JSZip from "jszip";
-import { toast } from "react-hot-toast";
 import { useCourses } from "@/context/courseContext";
+import { FilterProvider, useFilters } from "@/context/filterContext";
 import EmptyState from "./ui/EmptyState";
 import SidebarButton from "./SidebarButton";
 
-const CatalogueContent = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+const CatalogueContentInner = ({ subject }: { subject: string | null }) => {
   const [isMounted, setIsMounted] = useState(false);
-  const pathname: string = usePathname() ?? "/";
-  // Initialize state with defaults, set later in useEffect
-  const [subject, setSubject] = useState<string | null>(null);
-  const [subjects, setSubjects] = useState<string[]>([]);
-  const [selectedExams, setSelectedExams] = useState<string[]>([]);
-  const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
-  const [selectedYears, setSelectedYears] = useState<string[]>([]);
-  const [selectedSemesters, setSelectedSemesters] = useState<string[]>([]);
-  const [selectedCampuses, setSelectedCampuses] = useState<string[]>([]);
-  const [selectedAnswerKeyIncluded, setSelectedAnswerKeyIncluded] =
-    useState<boolean>(false);
-  const [papers, setPapers] = useState<IPaper[]>([]);
-  const [filteredPapers, setFilteredPapers] = useState<IPaper[]>([]);
-  const [selectedPapers, setSelectedPapers] = useState<IPaper[]>([]);
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [filterOptions, setFilterOptions] = useState<Filters>();
-  const [filtersPulled, setFiltersPulled] = useState<boolean>(false);
-  const [appliedFilters, setAppliedFilters] = useState<boolean>(false);
   const [pinned, setPinned] = useState<boolean>(false);
   const [relatedSubjects, setRelatedSubjects] = useState<string[]>([]);
   const { courses } = useCourses();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [papersPerPage, setPapersPerPage] = useState(12); // show 12 per page
+
+  // Use filter context
+  const {
+    selectedExams,
+    selectedSlots,
+    selectedYears,
+    selectedSemesters,
+    selectedCampuses,
+    selectedAnswerKeyIncluded,
+    papers,
+    appliedFilters,
+    filtersPulled,
+    currentPage,
+    paginatedPapers,
+    totalPages,
+    selectedPapers,
+    setPapers,
+    setFilterOptions,
+    setSelectedExams,
+    setSelectedSlots,
+    setSelectedYears,
+    setSelectedSemesters,
+    setSelectedCampuses,
+    setSelectedAnswerKeyIncluded,
+    setAppliedFilters,
+    setCurrentPage,
+    setFilteredPapers,
+    handleSelectPaper,
+    handleSelectAll,
+    handleDeselectAll,
+    handleDownloadSelected,
+  } = useFilters();
 
   // Fetch related subjects when subject changes
   useEffect(() => {
@@ -68,26 +71,19 @@ const CatalogueContent = () => {
             params: { subject },
           },
         );
-        console.log(res.data);
         const data = res.data.related_subjects;
-        console.log("data", data[0], data[1]);
         if (data && data.length > 0) {
           setRelatedSubjects(data);
         } else {
           setRelatedSubjects([]);
         }
-      } catch (e) {
+      } catch {
         setRelatedSubjects([]);
       }
     };
     void fetchRelatedSubjects();
   }, [subject]);
 
-  useEffect(() => {
-    if (pathname !== "/catalogue") return;
-    const filteredSubjects = courses.map((course) => course.name);
-    setSubjects(filteredSubjects);
-  }, [pathname, courses]);
   // Set initial state from searchParams on client-side mount
   useEffect(() => {
     setIsMounted(true);
@@ -96,12 +92,11 @@ const CatalogueContent = () => {
         localStorage.getItem("userSubjects") ?? "[]",
       ) as StoredSubjects;
       const subjectName = searchParams.get("subject");
-      setSubject(subjectName);
-      setSelectedExams(searchParams.get("exams")?.split(",") ?? []);
-      setSelectedSlots(searchParams.get("slots")?.split(",") ?? []);
-      setSelectedYears(searchParams.get("years")?.split(",") ?? []);
-      setSelectedCampuses(searchParams.get("campus")?.split(",") ?? []);
-      setSelectedSemesters(searchParams.get("semester")?.split(",") ?? []);
+      setSelectedExams(searchParams.get("exams")?.split(",").filter(Boolean) ?? []);
+      setSelectedSlots(searchParams.get("slots")?.split(",").filter(Boolean) ?? []);
+      setSelectedYears(searchParams.get("years")?.split(",").filter(Boolean) ?? []);
+      setSelectedCampuses(searchParams.get("campus")?.split(",").filter(Boolean) ?? []);
+      setSelectedSemesters(searchParams.get("semester")?.split(",").filter(Boolean) ?? []);
       setSelectedAnswerKeyIncluded(searchParams.get("answerkey") === "true");
       if (subjectName && Array.isArray(currentPinnedSubjects)) {
         if (currentPinnedSubjects.includes(subjectName)) {
@@ -111,11 +106,7 @@ const CatalogueContent = () => {
         }
       }
     }
-  }, [searchParams, pinned]);
-
-  const filtersNotPulled = () => {
-    setFiltersPulled(false);
-  };
+  }, [searchParams, setSelectedExams, setSelectedSlots, setSelectedYears, setSelectedSemesters, setSelectedCampuses, setSelectedAnswerKeyIncluded]);
 
   const handlePinToggle = () => {
     const current = !pinned;
@@ -199,133 +190,11 @@ const CatalogueContent = () => {
     selectedSemesters,
     selectedCampuses,
     selectedAnswerKeyIncluded,
+    setPapers,
+    setFilterOptions,
+    setAppliedFilters,
+    setFilteredPapers,
   ]);
-
-  // Memoized handlers
-  const handleSelectPaper = useCallback(
-    (paper: IPaper, isSelected: boolean) => {
-      setSelectedPapers((prev) =>
-        isSelected ? [...prev, paper] : prev.filter((p) => p._id !== paper._id),
-      );
-    },
-    [],
-  );
-
-  const handleDownloadSelected = useCallback(async () => {
-    const zip = new JSZip();
-    const uniquePapers = Array.from(
-      new Set(selectedPapers.map((paper) => paper._id)),
-    ).map((id) => selectedPapers.find((paper) => paper._id === id)) as IPaper[];
-    if (!uniquePapers) {
-      toast.error("No papers selected for download.");
-    }
-    for (const paper of uniquePapers) {
-      try {
-        const response = await fetch(getSecureUrl(paper.file_url));
-        const blob = await response.blob();
-        const filename = generateFileName(paper);
-        zip.file(filename, blob);
-      } catch (err) {
-        // Optionally handle individual download errors
-        console.error(`Failed to fetch ${paper.file_url}`, err);
-      }
-    }
-
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-    const url = URL.createObjectURL(zipBlob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "papers.zip";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    toast.success("Download Initiated");
-  }, [selectedPapers]);
-
-  const handleApplyFilters = useCallback(
-    (
-      exams: string[],
-      slots: string[],
-      years: string[],
-      campus: string[],
-      semester: string[],
-      anskey: boolean,
-    ) => {
-      setAppliedFilters(true);
-
-      let pushContent = "/catalogue";
-      if (subject) pushContent += `?subject=${encodeURIComponent(subject)}`;
-      if (exams.length > 0)
-        pushContent += `&exams=${encodeURIComponent(exams.join(","))}`;
-      if (slots.length > 0)
-        pushContent += `&slots=${encodeURIComponent(slots.join(","))}`;
-      if (years.length > 0)
-        pushContent += `&years=${encodeURIComponent(years.join(","))}`;
-      if (campus.length > 0)
-        pushContent += `&campus=${encodeURIComponent(campus.join(","))}`;
-      if (semester.length > 0)
-        pushContent += `&semester=${encodeURIComponent(semester.join(","))}`;
-      if (anskey) pushContent += "&answerkey=true";
-
-      router.push(pushContent);
-      setSelectedExams(exams);
-      setSelectedSlots(slots);
-      setSelectedYears(years);
-      setSelectedCampuses(campus);
-      setSelectedSemesters(semester);
-      setSelectedAnswerKeyIncluded(anskey);
-      const filtered = papers.filter((paper) => {
-        const examCondition = exams.length ? exams.includes(paper.exam) : true;
-        const slotCondition = slots.length ? slots.includes(paper.slot) : true;
-        const yearCondition = years.length ? years.includes(paper.year) : true;
-        const semesterCondition = semester.length
-          ? semester.includes(paper.semester)
-          : true;
-        const campusCondition = campus.length
-          ? campus.includes(paper.campus)
-          : true;
-        const answerkeyCondition = anskey
-          ? paper.answer_key_included === true
-          : true;
-        return (
-          examCondition &&
-          slotCondition &&
-          yearCondition &&
-          semesterCondition &&
-          campusCondition &&
-          answerkeyCondition
-        );
-      });
-      setFilteredPapers(filtered);
-    },
-    [subject, router, papers],
-  );
-
-  const closeFilters = useCallback(() => {
-    setFiltersPulled(false);
-  }, []);
-
-  const noAppliedFilters = useCallback(() => {
-    setAppliedFilters(false);
-  }, []);
-
-  const handleSelectAll = useCallback(() => {
-    setSelectedPapers(appliedFilters ? filteredPapers : papers);
-  }, [appliedFilters, filteredPapers, papers]);
-
-  const handleDeselectAll = useCallback(() => {
-    setSelectedPapers([]);
-  }, []);
-
-  const paginatedPapers = (appliedFilters ? filteredPapers : papers).slice(
-    (currentPage - 1) * papersPerPage,
-    currentPage * papersPerPage,
-  );
-
-  const totalPages = Math.ceil(
-    (appliedFilters ? filteredPapers.length : papers.length) / papersPerPage,
-  );
 
   // Render loading state until mounted to avoid hydration mismatch
   if (!isMounted) {
@@ -336,25 +205,7 @@ const CatalogueContent = () => {
     <div className="relative flex min-h-screen justify-center p-0 md:justify-normal">
       {papers.length > 0 && (
         <div className="hidden !w-[22%] min-w-[22%] max-w-[22%] flex-shrink-0 md:block">
-          <SideBar
-            filtersNotPulled={filtersNotPulled}
-            loading={loading}
-            selectedExams={selectedExams}
-            selectedSlots={selectedSlots}
-            selectedYears={selectedYears}
-            selectedSemesters={selectedSemesters}
-            selectedCampuses={selectedCampuses}
-            selectedAnswerKeyIncluded={selectedAnswerKeyIncluded}
-            noAppliedFilters={noAppliedFilters}
-            handleApplyFilters={handleApplyFilters}
-            handleSelectAll={handleSelectAll}
-            handleDeselectAll={handleDeselectAll}
-            selectedPapers={selectedPapers}
-            subject={subject}
-            filterOptions={filterOptions}
-            handleDownloadSelected={handleDownloadSelected}
-            closeFilters={closeFilters}
-          />
+          <SideBar />
         </div>
       )}
 
@@ -374,25 +225,7 @@ const CatalogueContent = () => {
               side={"left"}
               className="m-0 bg-[#f3f5ff] p-0 pt-4 dark:bg-[#070114]"
             >
-              <SideBar
-                filtersNotPulled={filtersNotPulled}
-                loading={loading}
-                selectedExams={selectedExams}
-                selectedSlots={selectedSlots}
-                selectedYears={selectedYears}
-                selectedSemesters={selectedSemesters}
-                selectedCampuses={selectedCampuses}
-                selectedAnswerKeyIncluded={selectedAnswerKeyIncluded}
-                noAppliedFilters={noAppliedFilters}
-                handleApplyFilters={handleApplyFilters}
-                handleSelectAll={handleSelectAll}
-                handleDeselectAll={handleDeselectAll}
-                selectedPapers={selectedPapers}
-                subject={subject}
-                filterOptions={filterOptions}
-                handleDownloadSelected={handleDownloadSelected}
-                closeFilters={closeFilters}
-              />
+              <SideBar />
             </SheetContent>
           </Sheet>
         )}
@@ -419,20 +252,16 @@ const CatalogueContent = () => {
             </div>
           </div>
 
-          
-      {/* Select/Deselect/Download All Buttons */}
-      
-      <div className="mb-8 flex w-full items-center justify-end gap-4">
-        <SidebarButton onClick={handleSelectAll}>
-          Select All
-        </SidebarButton>
-        <SidebarButton onClick={handleDeselectAll}>
-          Deselect All
-        </SidebarButton>
-        <SidebarButton onClick={handleDownloadSelected}>
-          Download Selected
-        </SidebarButton>
-      </div>
+          {/* Select/Deselect/Download All Buttons */}
+          <div className="mb-8 flex w-full items-center justify-end gap-4">
+            <SidebarButton onClick={handleSelectAll}>Select All</SidebarButton>
+            <SidebarButton onClick={handleDeselectAll}>
+              Deselect All
+            </SidebarButton>
+            <SidebarButton onClick={handleDownloadSelected}>
+              Download Selected
+            </SidebarButton>
+          </div>
 
           {relatedSubjects.length > 0 && (
             <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -477,7 +306,7 @@ const CatalogueContent = () => {
                   </div>
                 )
               ) : (
-                papers.map((paper: IPaper) => (
+                paginatedPapers.map((paper: IPaper) => (
                   <Card
                     key={paper._id}
                     paper={paper}
@@ -492,7 +321,7 @@ const CatalogueContent = () => {
                 <Button
                   variant="outline"
                   disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((prev) => prev - 1)}
+                  onClick={() => setCurrentPage(currentPage - 1)}
                 >
                   Previous
                 </Button>
@@ -504,7 +333,7 @@ const CatalogueContent = () => {
                 <Button
                   variant="outline"
                   disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((prev) => prev + 1)}
+                  onClick={() => setCurrentPage(currentPage + 1)}
                 >
                   Next
                 </Button>
@@ -519,6 +348,24 @@ const CatalogueContent = () => {
         )}
       </div>
     </div>
+  );
+};
+
+const CatalogueContent = () => {
+  const searchParams = useSearchParams();
+  const [subject, setSubject] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (searchParams) {
+      const subjectName = searchParams.get("subject");
+      setSubject(subjectName);
+    }
+  }, [searchParams]);
+
+  return (
+    <FilterProvider subject={subject}>
+      <CatalogueContentInner subject={subject} />
+    </FilterProvider>
   );
 };
 

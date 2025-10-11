@@ -127,6 +127,12 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
   }, []);
 
   const handleDownloadSelected = useCallback(async () => {
+    
+    if (selectedPapers.length === 0) {
+      toast.error("No papers selected for download.");
+      return;
+    }
+
     const zip = new JSZip();
     const uniquePapers = Array.from(
       new Set(selectedPapers.map((paper) => paper._id)),

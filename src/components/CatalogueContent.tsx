@@ -212,13 +212,14 @@ const CatalogueContent = () => {
   );
 
   const handleDownloadSelected = useCallback(async () => {
+    if (selectedPapers.length === 0) {
+      toast.error("No papers selected for download.");
+      return;
+    }
     const zip = new JSZip();
     const uniquePapers = Array.from(
       new Set(selectedPapers.map((paper) => paper._id)),
     ).map((id) => selectedPapers.find((paper) => paper._id === id)) as IPaper[];
-    if (!uniquePapers) {
-      toast.error("No papers selected for download.");
-    }
     for (const paper of uniquePapers) {
       try {
         const response = await fetch(getSecureUrl(paper.file_url));
@@ -419,9 +420,9 @@ const CatalogueContent = () => {
             </div>
           </div>
 
-          
+
       {/* Select/Deselect/Download All Buttons */}
-      
+
       <div className="mb-8 flex w-full items-center justify-end gap-4">
         <SidebarButton onClick={handleSelectAll}>
           Select All

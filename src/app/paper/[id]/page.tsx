@@ -21,10 +21,10 @@ export async function generateMetadata({
         metadataBase: new URL("https://papers.codechefvit.com/"),
         title: `Papers | ${paper.subject} | ${paper.exam} | ${paper.slot}`,
         description: `Discover ${paper.subject}'s question paper created by CodeChef-VIT at Vellore Institute of Technology. Made with ♡ to help students excel.`,
-        icons: [{ rel: "icon", url: "/favicon.svg" }],
+        icons: [{ rel: "icon", url: "/assets/images/favicon.svg" }],
         openGraph: {
           title: `Papers | ${paper.subject} | ${paper.exam} | ${paper.slot}`,
-          images: [{ url: "/papers.png" }],
+          images: [{ url: "/assets//images/papers.png" }],
           url: "https://papers.codechefvit.com/",
           type: "website",
           description: `Discover ${paper.subject}'s question paper created by CodeChef-VIT at Vellore Institute of Technology. Made with ♡ to help students excel.`,
@@ -34,7 +34,7 @@ export async function generateMetadata({
           card: "summary_large_image",
           title: `Papers | ${paper.subject} | ${paper.exam} | ${paper.slot}`,
           description: `Discover ${paper.subject}'s question paper created by CodeChef-VIT at Vellore Institute of Technology. Made with ♡ to help students excel.`,
-          images: [{ url: "/papers.png" }],
+          images: [{ url: "/assets//images/papers.png" }],
         },
         applicationName: "Papers by CodeChef-VIT",
         keywords: [

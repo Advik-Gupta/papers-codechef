@@ -1,10 +1,8 @@
 "use client";
 
-import { Pin } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { type IUpcomingPaper } from "@/interface";
-import Loader from "./ui/loader";
 import UpcomingPaper from "./UpcomingPaper";
 import {
   Carousel,
@@ -13,21 +11,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Skeleton } from "./ui/skeleton";
-import AddPapers from "./AddPapers";
 import Autoplay from "embla-carousel-autoplay";
 import { chunkArray } from "@/lib/utils/array";
-import { StoredSubjects } from "@/interface";
+import { type StoredSubjects } from "@/interface";
 import SkeletonPaperCard from "./SkeletonPaperCard";
 import PinnedModal from "./ui/PinnedModal";
-type PinnedPapersCarouselProps = {
-  carouselType: "users" | "upcoming",
-}
-import { Plus } from "lucide-react";
 
-function PinnedPapersCarousel({
-  carouselType = "upcoming",
-} : PinnedPapersCarouselProps) {
+function PinnedPapersCarousel() {
   const [isLoading, setIsLoading] = useState(true);
   const [chunkSize, setChunkSize] = useState<number>(4);
   const [displayPapers, setDisplayPapers] = useState<IUpcomingPaper[]>([]);

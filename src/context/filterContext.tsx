@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { type IPaper, type Filters } from "@/interface";
 import JSZip from "jszip";
 import { toast } from "react-hot-toast";
@@ -14,38 +14,38 @@ interface FilterState {
   selectedSemesters: string[];
   selectedCampuses: string[];
   selectedAnswerKeyIncluded: boolean;
-  
+
   papers: IPaper[];
   filteredPapers: IPaper[];
   selectedPapers: IPaper[];
   filterOptions: Filters | undefined;
   appliedFilters: boolean;
-  
+
   filtersPulled: boolean;
   currentPage: number;
   papersPerPage: number;
 }
 
 interface FilterActions {
-  
+
   setSelectedExams: (exams: string[]) => void;
   setSelectedSlots: (slots: string[]) => void;
   setSelectedYears: (years: string[]) => void;
   setSelectedSemesters: (semesters: string[]) => void;
   setSelectedCampuses: (campuses: string[]) => void;
   setSelectedAnswerKeyIncluded: (included: boolean) => void;
-  
-  
+
+
   setPapers: (papers: IPaper[]) => void;
   setFilteredPapers: (papers: IPaper[]) => void;
   setFilterOptions: (options: Filters | undefined) => void;
-  
-  
+
+
   setFiltersPulled: (pulled: boolean) => void;
   setAppliedFilters: (applied: boolean) => void;
   setCurrentPage: (page: number) => void;
-  
-  
+
+
   handleApplyFilters: (
     exams: string[],
     slots: string[],
@@ -61,8 +61,8 @@ interface FilterActions {
   filtersNotPulled: () => void;
   noAppliedFilters: () => void;
   closeFilters: () => void;
-  
-  
+
+
   paginatedPapers: IPaper[];
   totalPages: number;
 }
@@ -78,19 +78,19 @@ interface FilterProviderProps {
 
 export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subject }) => {
   const router = useRouter();
-  
+
   const [selectedExams, setSelectedExams] = useState<string[]>([]);
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [selectedYears, setSelectedYears] = useState<string[]>([]);
   const [selectedSemesters, setSelectedSemesters] = useState<string[]>([]);
   const [selectedCampuses, setSelectedCampuses] = useState<string[]>([]);
   const [selectedAnswerKeyIncluded, setSelectedAnswerKeyIncluded] = useState<boolean>(false);
-  
+
   const [papers, setPapers] = useState<IPaper[]>([]);
   const [filteredPapers, setFilteredPapers] = useState<IPaper[]>([]);
   const [selectedPapers, setSelectedPapers] = useState<IPaper[]>([]);
   const [filterOptions, setFilterOptions] = useState<Filters>();
-  
+
   const [filtersPulled, setFiltersPulled] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -126,8 +126,9 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
     setSelectedPapers([]);
   }, []);
 
+  const searchParams = useSearchParams();
   const handleDownloadSelected = useCallback(async () => {
-    
+
     if (selectedPapers.length === 0) {
       toast.error("No papers selected for download.");
       return;
@@ -137,14 +138,10 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
     const uniquePapers = Array.from(
       new Set(selectedPapers.map((paper) => paper._id)),
     ).map((id) => selectedPapers.find((paper) => paper._id === id)) as IPaper[];
-    
-    if (!uniquePapers || uniquePapers.length === 0) {
-      toast.error("No papers selected for download.");
-      return;
-    }
-    
+
     for (const paper of uniquePapers) {
       try {
+        console.log(paper);
         const response = await fetch(getSecureUrl(paper.file_url));
         const blob = await response.blob();
         const filename = generateFileName(paper);
@@ -158,7 +155,7 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
     const url = URL.createObjectURL(zipBlob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "papers.zip";
+    a.download = searchParams.get("subject")?.split(" [")[0];
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -190,7 +187,7 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
       if (anskey) pushContent += "&answerkey=true";
 
       router.replace(pushContent, { scroll: false });
-      
+
       setSelectedExams(exams);
       setSelectedSlots(slots);
       setSelectedYears(years);
@@ -202,7 +199,7 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
     [router, subject, setSelectedExams, setSelectedSlots, setSelectedYears, setSelectedCampuses, setSelectedSemesters, setSelectedAnswerKeyIncluded, setCurrentPage],
   );
 
-  
+
   const paginatedPapers = (appliedFilters ? filteredPapers : papers).slice(
     (currentPage - 1) * papersPerPage,
     currentPage * papersPerPage,
@@ -227,7 +224,7 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
     filtersPulled,
     currentPage,
     papersPerPage,
-    
+
     setSelectedExams,
     setSelectedSlots,
     setSelectedYears,
@@ -240,7 +237,7 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
     setFiltersPulled,
     setAppliedFilters,
     setCurrentPage,
-    
+
     handleApplyFilters,
     handleSelectPaper,
     handleSelectAll,
@@ -249,7 +246,7 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
     filtersNotPulled,
     noAppliedFilters,
     closeFilters,
-    
+
     paginatedPapers,
     totalPages,
   };

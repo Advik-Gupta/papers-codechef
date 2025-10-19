@@ -1,0 +1,84 @@
+"use client";
+
+import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
+import {
+  type ICourse,
+  type ICourseCount,
+  type ICourseWithCount,
+} from "@/interface";
+
+interface CoursesContextType {
+  courses: ICourseWithCount[];
+  loading: boolean;
+  error: string | null;
+  refetch: () => Promise<void>;
+}
+
+interface ApiError {
+  message?: string;
+}
+
+const CoursesContext = createContext<CoursesContextType | undefined>(undefined);
+
+export function CoursesProvider({ children }: { children: React.ReactNode }) {
+  const [courses, setCourses] = useState<ICourseWithCount[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchCourses = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.get<ICourse[]>("/api/course-list", {
+        headers: { "Cache-Control": "no-cache" },
+      });
+
+      const countRes = await axios.get<ICourseCount[]>("/api/papers/count", {
+        headers: { "Cache-Control": "no-cache" },
+      });
+
+      const countMap = new Map<string, number>(
+        countRes.data.map((c) => [c.name, c.count]),
+      );
+
+      const mergedCourses: ICourseWithCount[] = res.data.map((course) => ({
+        _id: course._id,
+        name: course.name,
+        count: countMap.get(course.name) ?? 0,
+      }));
+
+      setCourses(mergedCourses);
+    } catch (err: unknown) {
+      if (axios.isAxiosError<ApiError>(err)) {
+        setError(err.response?.data?.message ?? err.message);
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void fetchCourses();
+  }, []);
+
+  return (
+    <CoursesContext.Provider
+      value={{ courses, loading, error, refetch: fetchCourses }}
+    >
+      {children}
+    </CoursesContext.Provider>
+  );
+}
+
+export function useCourses() {
+  const context = useContext(CoursesContext);
+  if (!context) {
+    throw new Error("useCourses must be used within a CoursesProvider");
+  }
+  return context;
+}

@@ -6,15 +6,13 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Download, ZoomIn, ZoomOut, Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "./ui/button";
-import { downloadFile } from "@/util/download_paper";
+import { downloadFile } from "../lib/utils/download";
 import ShareButton from "./ShareButton";
 import Loader from "./ui/loader";
 import { FaGreaterThan, FaLessThan } from "react-icons/fa6";
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.mjs";
 
 interface PdfViewerProps {
   url: string;
@@ -26,6 +24,7 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState(pageNumber.toString());
   const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -89,11 +88,21 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
     });
   };
 
-  const handlePageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10);
-    if (!isNaN(value) && value >= 1 && value <= (numPages ?? 1)) {
-      setPageNumber(value);
-      scrollToPage(value);
+  const handlePageChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const target = e.target as HTMLInputElement;
+      if (/^\d+$/.test(inputValue)) {
+        const value = parseInt(inputValue, 10);
+        if (value >= 1 && value <= (numPages ?? 1)) {
+          setPageNumber(value);
+          scrollToPage(value);
+        } else {
+          setInputValue(pageNumber.toString());
+        }
+      } else {
+        setInputValue(pageNumber.toString());
+      }
+      target.blur();
     }
   };
 
@@ -142,6 +151,10 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
   };
 
   useEffect(() => {
+    setInputValue(pageNumber.toString());
+  }, [pageNumber]);
+
+  useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
@@ -153,26 +166,32 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
   }, []);
 
   useEffect(() => {
-    if (containerRef.current) {
-      const containerWidth = containerRef.current.offsetWidth;
-
-      const initialScale = containerWidth / 800;
-      setScale(initialScale > 1 ? 1 : initialScale);
-    }
-  }, []);
-
-  useEffect(() => {
-    const calculateScale = () => {
+    const calculateInitialScale = () => {
       if (containerRef.current) {
         const containerWidth = containerRef.current.offsetWidth;
         const initialScale = containerWidth / 800;
         setScale(initialScale > 1 ? 1 : initialScale);
       }
     };
+    calculateInitialScale();
+  }, []);
 
-    calculateScale();
-    window.addEventListener("resize", calculateScale);
-    return () => window.removeEventListener("resize", calculateScale);
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const step = 0.02;
+        setScale((prev) =>
+          Math.max(0.25, Math.min(3, prev + (e.deltaY < 0 ? step : -step))),
+        );
+      }
+    };
+
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    return () => container.removeEventListener("wheel", handleWheel);
   }, []);
 
   return (
@@ -218,63 +237,128 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
               </div>
             ))}
         </Document>
+        {isFullscreen && (
+          <div className="fixed bottom-4 left-1/2 z-50 mt-4 flex -translate-x-1/2 flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635] sm:flex-row">
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={goToPreviousPage}
+                disabled={pageNumber <= 1}
+                className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
+              >
+                <FaLessThan />
+              </Button>
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => handlePageChange(e)}
+                onFocus={() => setInputValue("")}
+                className="h-10 w-16 rounded border p-1 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              />
+              <span>of {numPages ?? 1}</span>
+              <Button
+                onClick={goToNextPage}
+                disabled={pageNumber >= (numPages ?? 1)}
+                className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
+              >
+                <FaGreaterThan />
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={zoomOut}
+                disabled={scale <= 0.25}
+                className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
+              >
+                <ZoomOut />
+              </Button>
+              <span>{(scale * 100).toFixed(0)}%</span>
+              <Button
+                onClick={zoomIn}
+                disabled={scale >= 3}
+                className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
+              >
+                <ZoomIn />
+              </Button>
+              <ShareButton />
+              <Button
+                onClick={downloadPDF}
+                className="aspect-square h-10 w-10 p-0"
+              >
+                <Download />
+              </Button>
+              <Button
+                onClick={toggleFullscreen}
+                className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1]"
+              >
+                {isFullscreen ? <Minimize2 /> : <Maximize2 />}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="mt-4 flex flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635] sm:flex-row">
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={goToPreviousPage}
-            disabled={pageNumber <= 1}
-            className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
-          >
-            <FaLessThan />
-          </Button>
-          <input
-            type="number"
-            value={pageNumber}
-            onChange={handlePageChange}
-            min={1}
-            max={numPages}
-            className="h-10 w-16 rounded border p-1 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-          />
-          <span>of {numPages ?? 1}</span>
-          <Button
-            onClick={goToNextPage}
-            disabled={pageNumber >= (numPages ?? 1)}
-            className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
-          >
-            <FaGreaterThan />
-          </Button>
-        </div>
+      {!isFullscreen && (
+        <div className="mt-4 flex flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635] sm:flex-row">
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={goToPreviousPage}
+              disabled={pageNumber <= 1}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
+            >
+              <FaLessThan />
+            </Button>
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => handlePageChange(e)}
+              onFocus={() => setInputValue("")}
+              className="h-10 w-16 rounded border p-1 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            />
+            <span>of {numPages ?? 1}</span>
+            <Button
+              onClick={goToNextPage}
+              disabled={pageNumber >= (numPages ?? 1)}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
+            >
+              <FaGreaterThan />
+            </Button>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={zoomOut}
-            disabled={scale <= 0.25}
-            className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
-          >
-            <ZoomOut />
-          </Button>
-          <span>{(scale * 100).toFixed(0)}%</span>
-          <Button
-            onClick={zoomIn}
-            disabled={scale >= 3}
-            className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
-          >
-            <ZoomIn />
-          </Button>
-          <ShareButton />
-          <Button onClick={downloadPDF} className="aspect-square h-10 w-10 p-0">
-            <Download />
-          </Button>
-          <Button
-            onClick={toggleFullscreen}
-            className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1]"
-          >
-            {isFullscreen ? <Minimize2 /> : <Maximize2 />}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={zoomOut}
+              disabled={scale <= 0.25}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
+            >
+              <ZoomOut />
+            </Button>
+            <span>{(scale * 100).toFixed(0)}%</span>
+            <Button
+              onClick={zoomIn}
+              disabled={scale >= 3}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
+            >
+              <ZoomIn />
+            </Button>
+            <ShareButton />
+            <Button
+              onClick={downloadPDF}
+              className="aspect-square h-10 w-10 p-0"
+            >
+              <Download />
+            </Button>
+            <Button
+              onClick={toggleFullscreen}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1]"
+            >
+              {isFullscreen ? <Minimize2 /> : <Maximize2 />}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

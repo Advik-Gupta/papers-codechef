@@ -2,10 +2,8 @@ import mongoose, { Schema, type Model } from "mongoose";
 import { type IPaper, type IAdminPaper, type ICourses } from "@/interface";
 
 const adminSchema = new Schema<IAdminPaper>({
-  public_id_cloudinary: { type: String, required: true },
-  cloudinary_index: { type: Number, required: true },
-  final_url: { type: String, required: true },
-  thumbnail_url: { type: String, required: true },
+  file_url: { type: String, required: true },
+  thumbnail_url: { type: String, required: false },
   subject: { type: String || null, index: true },
   slot: { type: String || null },
   year: { type: String || null },
@@ -35,10 +33,11 @@ const adminSchema = new Schema<IAdminPaper>({
   },
   answer_key_included: { type: Boolean || null, default: false },
   is_selected: { type: Boolean, default: false },
+  ambiguous_tags: { type: [String], default: [] },
 });
 
 const paperSchema = new Schema<IPaper>({
-  final_url: { type: String, required: true },
+  file_url: { type: String, required: true },
   thumbnail_url: { type: String, required: true },
   subject: { type: String, required: true, index: true },
   slot: { type: String, required: true },
@@ -73,14 +72,8 @@ const paperSchema = new Schema<IPaper>({
   answer_key_included: { type: Boolean, default: false },
 });
 
-const courseSchema = new Schema<ICourses>({
-  name: { type: String, required: true },
-});
-
 export const PaperAdmin: Model<IAdminPaper> =
   mongoose.models.Admin ?? mongoose.model<IAdminPaper>("Admin", adminSchema);
-export const Course: Model<ICourses> =
-  mongoose.models.Course ?? mongoose.model("Course", courseSchema);
 const Paper: Model<IPaper> =
   mongoose.models.Paper ?? mongoose.model<IPaper>("Paper", paperSchema);
 

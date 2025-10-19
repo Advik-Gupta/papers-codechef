@@ -1,13 +1,14 @@
 import {
-  capsule,
   extractBracketContent,
   extractWithoutBracketContent,
-} from "@/util/utils";
+} from "@/lib/utils/string";
+
 import { useRouter } from "next/navigation";
 import { Pin } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 import { StoredSubjects } from "@/interface";
+import { useCourses } from "@/context/courseContext";
+import { Capsule } from "@/components/ui/capsule";
 
 interface PaperCardProps {
   subject: string;
@@ -17,8 +18,9 @@ interface PaperCardProps {
 export default function PaperCard({ subject, slots }: PaperCardProps) {
   const courseName = extractWithoutBracketContent(subject);
   const courseCode = extractBracketContent(subject);
-  const [paperCount, setPaperCount] = useState<number | null>(0);
+  const { courses, loading, error, refetch } = useCourses();
   const [pinned, setPinned] = useState<boolean>(false);
+  const [paperCount, setPaperCount] = useState<number>(0);
 
   const handlePinToggle = () => {
     const current = !pinned;
@@ -33,51 +35,38 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
 
     localStorage.setItem("userSubjects", JSON.stringify(updated));
     window.dispatchEvent(new Event("userSubjectsChanged"));
+    if (!current) window.dispatchEvent(new Event("updatePapers"));
   };
 
   useEffect(() => {
-    const fetchPaperCount = async () => {
-      try {
-        const response = await axios.get<{ count: number }>(
-          "/api/papers/count",
-          {
-            params: { subject },
-          },
-        );
-        setPaperCount(response.data.count);
-      } catch (error) {
-        console.error("Failed to fetch paper count:", error);
-      }
-    };
-
     const currentPinnedSubjects = JSON.parse(
       localStorage.getItem("userSubjects") ?? "[]",
     ) as StoredSubjects;
 
-    if (subject && Array.isArray(currentPinnedSubjects)) {
-      if (currentPinnedSubjects.includes(subject)) {
-        setPinned(true);
-      } else {
-        setPinned(false);
-      }
-    }
+    setPinned(
+      Array.isArray(currentPinnedSubjects) &&
+        currentPinnedSubjects.includes(subject),
+    );
 
-    void fetchPaperCount();
-  }, [subject]);
+    if (courseName && Array.isArray(courses)) {
+      const matchedCourse = courses.find((course) => course.name === subject);
+      setPaperCount(matchedCourse?.count ?? 0);
+    } else {
+      setPaperCount(0);
+    }
+  }, [subject, courseName]);
 
   const router = useRouter();
   return (
     <div
       onClick={(e) => {
-        if (!paperCount) return; // disable click if no papers
         e.preventDefault();
         const queryParams = new URLSearchParams({ subject });
         router.push(`/catalogue?${queryParams.toString()}`);
       }}
       className={`h-full rounded-sm border-2 border-[#734DFF] bg-[#FFFFFF] text-black shadow-lg transition duration-150 ease-in-out dark:border-[#36266D] dark:bg-[#171720] dark:text-white ${
-        !paperCount
-          ? "cursor-not-allowed opacity-60 hover:bg-[#FFFFFF] dark:hover:bg-[#171720]"
-          : "cursor-pointer hover:bg-[#EFEAFF] hover:dark:bg-[#262635]"
+        // ? "cursor-not-allowed opacity-60 hover:bg-[#FFFFFF] dark:hover:bg-[#171720]"
+        "cursor-pointer hover:bg-[#EFEAFF] hover:dark:bg-[#262635]"
       }`}
     >
       <div className="border-b-2 border-[#453D60] p-2">
@@ -85,7 +74,9 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
           <h2 className="rounded-t-lg px-2 py-1 font-play text-base font-bold md:text-lg md:tracking-widest">
             {courseCode}
             <div className="text-sm font-normal">
-              (Papers available: {paperCount})
+              {paperCount
+                ? `Papers available: ${paperCount}`
+                : "Click to explore"}
             </div>
           </h2>
 
@@ -112,15 +103,13 @@ export default function PaperCard({ subject, slots }: PaperCardProps) {
           {courseName}
         </h2>
 
-        {paperCount ? (
+        {
           <div className="mt-4 flex flex-wrap gap-2 font-play">
-            {slots?.map((slotValue) => capsule(slotValue))}
+            {slots?.map((slotValue, index) => (
+              <Capsule key={index}>{slotValue}</Capsule>
+            ))}
           </div>
-        ) : (
-          <div className="mt-6 text-sm italic text-gray-500 dark:text-gray-400">
-            We will have papers for this soon!
-          </div>
-        )}
+        }
       </div>
     </div>
   );

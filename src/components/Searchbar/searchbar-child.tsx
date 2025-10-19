@@ -5,83 +5,53 @@ import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import Fuse from "fuse.js";
-import axios from "axios";
+import { ICourseWithCount } from "@/interface";
 
 function SearchBarChild({
   initialSubjects,
   filtersNotPulled,
 }: {
-  initialSubjects: string[];
+  initialSubjects: ICourseWithCount[];
   filtersNotPulled?: () => void;
 }) {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>(
-    {},
-  );
+  const [suggestions, setSuggestions] = useState<ICourseWithCount[]>([]);
   const suggestionsRef = useRef<HTMLUListElement | null>(null);
-  const fuzzy = new Fuse(initialSubjects);
+  const [fuzzy, setFuzzy] = useState(
+    () => new Fuse<ICourseWithCount>([], { keys: ["name"], threshold: 0.3 }),
+  );
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
 
-  const fetchPaperCount = async (subjectName: string) => {
-    try {
-      const cleanSubject = subjectName.replace(/^"|"$/g, "");
-      const encodedSubject = encodeURIComponent(cleanSubject);
-
-      const response = await axios.get<{ count: number }>(
-        `/api/papers/count?subject=${encodedSubject}`,
-      );
-
-      return response.data.count ?? 0;
-    } catch (error) {
-      console.error("Error fetching count for", subjectName, error);
-      return 0;
+  useEffect(() => {
+    if (initialSubjects && initialSubjects.length > 0) {
+      setFuzzy(new Fuse(initialSubjects, { keys: ["name"], threshold: 0.3 }));
     }
-  };
+  }, [initialSubjects]);
 
-  const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
     setSearchText(text);
 
     if (text.length > 1 && initialSubjects.length > 0) {
       const filteredSuggestions = fuzzy
         .search(text)
-        .sort((a, b) => {
-          return (a.score ?? Infinity) - (b.score ?? Infinity); // Use Infinity for undefined scores
-        })
-        .map((item) => item.item)
+        .sort((a, b) => (a.score ?? Infinity) - (b.score ?? Infinity))
+        .map((res) => res.item)
         .slice(0, 10);
 
       setSuggestions(filteredSuggestions);
-
-      // Fetch counts in parallel for each suggestion
-      const counts = await Promise.all(
-        filteredSuggestions.map(async (subject) => {
-          const count = await fetchPaperCount(subject);
-          return { subject, count };
-        }),
-      );
-
-      const countsMap = counts.reduce(
-        (acc, { subject, count }) => {
-          acc[subject] = count;
-          return acc;
-        },
-        {} as Record<string, number>,
-      );
-
-      setSubjectCounts(countsMap);
     } else {
       setSuggestions([]);
-      setSubjectCounts({});
     }
   };
 
-  const handleSelectSuggestion = (suggestion: string) => {
-    router.push(`/catalogue?subject=${encodeURIComponent(suggestion)}`);
-    setSearchText(suggestion);
+  const handleSelectSuggestion = (suggestion: ICourseWithCount) => {
+    router.push(`/catalogue?subject=${encodeURIComponent(suggestion.name)}`);
+    setSearchText("");
     setSuggestions([]);
     filtersNotPulled?.();
+    setHighlightedIndex(-1);
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -101,7 +71,7 @@ function SearchBarChild({
   }, []);
 
   return (
-    <div className="mx-auto w-full max-w-xl font-play">
+    <div className="w-full max-w-xl font-play md:mx-auto">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -118,6 +88,38 @@ function SearchBarChild({
             onChange={handleSearchChange}
             placeholder="Search by subject..."
             className={`text-md rounded-lg bg-[#B2B8FF] px-4 py-6 pr-10 font-play tracking-wider text-black shadow-sm ring-0 placeholder:text-black focus:outline-none focus:ring-0 dark:bg-[#7480FF66] dark:text-white placeholder:dark:text-white ${suggestions.length > 0 ? "rounded-b-none" : ""}`}
+            onKeyDown={(e) => {
+              if (suggestions.length === 0) return;
+              if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setHighlightedIndex((prev) => (prev + 1) % suggestions.length);
+              } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setHighlightedIndex((prev) => (prev - 1 + suggestions.length) % suggestions.length);
+              } else if (e.key === "Enter") {
+                e.preventDefault();
+                if (highlightedIndex >= 0 && highlightedIndex < suggestions.length && suggestions[highlightedIndex] !== undefined) {
+                  handleSelectSuggestion(suggestions[highlightedIndex]);
+                } else {
+                  router.push(`/catalogue?subject=${encodeURIComponent(searchText)}`);
+                  setSuggestions([]);
+                }
+              } else if (e.key === "Tab") {
+                e.preventDefault();
+                if(highlightedIndex == -1){
+                  if (suggestions.length > 0 && suggestions[0] != undefined) {
+                    setSearchText(suggestions[0].name || "");
+                    setSuggestions([]);
+                  }
+                }else{
+                  if (highlightedIndex >= 0 && highlightedIndex < suggestions.length && suggestions[highlightedIndex] !== undefined) {
+                    setSearchText(suggestions[highlightedIndex].name || "");
+                    setHighlightedIndex(-1);
+                    setSuggestions([]);
+                  }
+                }
+              }
+            }}
           />
           <button
             type="submit"
@@ -129,28 +131,36 @@ function SearchBarChild({
           {suggestions.length > 0 && (
             <ul
               ref={suggestionsRef}
-              className={`absolute z-20 h-[250px] w-full max-w-xl overflow-y-scroll rounded-md rounded-t-none border border-t-0 bg-white text-center shadow-lg dark:bg-[#303771] md:mx-0 ${suggestions.length > 6 ? "h-[250px]" : "h-auto"} ${suggestions.length > 10 ? "md:h-[400px]" : "md:h-auto"} `}
+              className={`absolute z-20 w-full max-w-xl overflow-y-auto rounded-md rounded-t-none border border-t-0 bg-white text-center shadow-lg dark:bg-[#303771] md:mx-0`}
+              style={{ maxHeight: "400px" }}
             >
-              {suggestions.map((suggestion, index) => (
+              {suggestions.map((suggestion : ICourseWithCount, index) => (
                 <li
-                  key={index}
+                  key={suggestion._id}
                   onClick={() => handleSelectSuggestion(suggestion)}
-                  className="flex cursor-pointer items-center rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
-                >
+                  className={`flex cursor-pointer items-center rounded p-2 
+                  ${index === highlightedIndex
+                    ? "bg-gray-200 dark:bg-gray-800"
+                    : "hover:bg-gray-200 dark:hover:bg-gray-800"}`}
+                  >
                   <div
                     id="paper_count"
-                    className="mr-4 flex h-10 w-10 items-center justify-center rounded-md bg-[#171720] text-sm font-semibold text-white"
+                    className="mr-4 flex h-8 w-8 items-center justify-center rounded-md bg-[#171720] text-xs font-semibold text-white"
                   >
-                    {subjectCounts[suggestion] ?? "0"}
+                    {suggestion.count}
                   </div>
+
                   <span
                     id="subject"
                     className="items-center text-sm tracking-wide text-black dark:text-white sm:text-base"
                   >
                     {(() => {
-                      const codeMatch = /\[[^\]]+\]$/.exec(suggestion);
+                      const codeMatch = /\[[^\]]+\]$/.exec(suggestion.name);
                       const code = codeMatch ? codeMatch[0] : "";
-                      const title = suggestion.replace(/\s\[[^\]]+\]$/, "");
+                      const title = suggestion.name.replace(
+                        /\s\[[^\]]+\]$/,
+                        "",
+                      );
 
                       let displayTitle = title;
                       const isMobile =

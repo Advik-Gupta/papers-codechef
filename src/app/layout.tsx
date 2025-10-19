@@ -7,16 +7,17 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChildrenWrapper from "@/components/ChildrenWrapper";
+import { CoursesProvider } from "@/context/courseContext";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://papers.codechefvit.com/"),
   title: "Papers by CodeChef-VIT | Explore VIT Previous Year Question Papers",
   description:
     "Discover previous year question papers created by CodeChef-VIT at Vellore Institute of Technology. Made with ♡ to help students excel.",
-  icons: [{ rel: "icon", url: "/favicon.svg" }],
+  icons: [{ rel: "icon", url: "/assets/images/favicon.svg" }],
   openGraph: {
     title: "Papers by CodeChef-VIT | Exam Resources",
-    images: [{ url: "/papers.png" }],
+    images: [{ url: "/assets/images/papers.png" }],
     url: "https://papers.codechefvit.com/",
     type: "website",
     description:
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     title: "Papers by CodeChef-VIT | VIT Previous Year Question Papers",
     description:
       "Discover previous year question papers created by CodeChef-VIT at Vellore Institute of Technology. Made with ♡ to help students excel.",
-    images: [{ url: "/papers.png" }],
+    images: [{ url: "/assets/images/papers.png" }],
   },
   applicationName: "Papers by CodeChef-VIT",
   keywords: [
@@ -131,10 +132,11 @@ export default function RootLayout({
         >
           <Toaster position="top-right" reverseOrder={false} />
           <div className="bg-[#F3F5FF] dark:bg-[#070114]">
-            <Navbar />
-            <ChildrenWrapper>{children}</ChildrenWrapper>
-
-            <Footer />
+            <CoursesProvider>
+              <Navbar />
+              <ChildrenWrapper>{children}</ChildrenWrapper>
+              <Footer />
+            </CoursesProvider>
           </div>
         </ThemeProvider>
       </body>

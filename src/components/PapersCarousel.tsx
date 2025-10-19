@@ -12,7 +12,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { chunkArray } from "@/util/utils";
+import { chunkArray } from "@/lib/utils/array";
 import { Skeleton } from "@/components/ui/skeleton";
 import SkeletonPaperCard from "@/components/SkeletonPaperCard";
 
@@ -23,7 +23,10 @@ function PapersCarousel() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) {
+      if(window.innerWidth <= 540){
+        setChunkSize(2);
+      }
+      else if (window.innerWidth <= 920) {
         setChunkSize(4);
       } else {
         setChunkSize(8);
@@ -36,21 +39,24 @@ function PapersCarousel() {
   }, []);
 
   useEffect(() => {
-    async function fetchPapers() {
+    const fetchPapers = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get<IUpcomingPaper[]>(
-          "/api/upcoming-papers",
-        );
+        const response = await axios.get<IUpcomingPaper[]>("/api/upcoming-papers");
         setDisplayPapers(response.data);
       } catch (error) {
         console.error("Failed to fetch papers:", error);
       } finally {
         setIsLoading(false);
       }
-    }
-
+    };
     void fetchPapers();
+    const handleUpdate = () => void fetchPapers();
+    window.addEventListener("updatePapers", handleUpdate);
+
+    return () => {
+      window.removeEventListener("updatePapers", handleUpdate);
+    };
   }, []);
 
   const chunkedPapers = chunkArray(displayPapers, chunkSize);
@@ -76,7 +82,7 @@ function PapersCarousel() {
           {isLoading ? (
             <CarouselItem
               className={`grid ${
-                chunkSize === 4 ? "grid-cols-2 grid-rows-2" : "grid-cols-4"
+                chunkSize === 2 ? "grid-cols-1 grid-rows-2" : chunkSize === 4 ? "grid-cols-2 grid-rows-2" : "grid-cols-4"
               } gap-4 lg:auto-rows-fr`}
             >
               <SkeletonPaperCard length={chunkSize} />
@@ -89,9 +95,7 @@ function PapersCarousel() {
                 <CarouselItem
                   key={`carousel-item-${index}`}
                   className={`grid ${
-                    chunkSize === 4
-                      ? "grid-cols-2 grid-rows-2"
-                      : "grid-cols-4 grid-rows-2"
+                    chunkSize === 2 ? "grid-cols-1 grid-rows-2" : chunkSize === 4 ? "grid-cols-2 grid-rows-2" : "grid-cols-4"
                   } gap-4 lg:auto-rows-fr`}
                 >
                   {paperGroup.map((paper, subIndex) => (

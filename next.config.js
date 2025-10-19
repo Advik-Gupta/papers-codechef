@@ -8,7 +8,7 @@ await import("./src/env.js");
 const config = {
   swcMinify: false,
   images: {
-    domains: ["storage.googleapis.com", "res.cloudinary.com"],
+    domains: ["storage.googleapis.com"],
   },
   async headers() {
     return [

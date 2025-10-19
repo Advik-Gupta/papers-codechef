@@ -17,16 +17,18 @@ function SideBar() {
     selectedAnswerKeyIncluded,
     filterOptions,
     handleApplyFilters,
+    setCurrentPage,
   } = useFilters();
   const exams =
-    filterOptions?.unique_exams.map((exam) => ({ label: exam, value: exam })) ?? [];
+    filterOptions?.unique_exams.map((exam) => ({ label: exam, value: exam })) ??
+    [];
   const slots =
     filterOptions?.unique_slots
       .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
       .map((slot) => ({ label: slot, value: slot })) ?? [];
   const years =
     filterOptions?.unique_years
-      .sort((a, b) => b.localeCompare(a)) 
+      .sort((a, b) => b.localeCompare(a))
       .map((year) => ({ label: year, value: year })) ?? [];
   const semesters =
     filterOptions?.unique_semesters.map((semester) => ({
@@ -39,57 +41,69 @@ function SideBar() {
       label: "Exams",
       data: exams,
       selected: selectedExams,
-      updater: (newVal: string[]) =>
+      updater: (newVal: string[]) => {
         handleApplyFilters(
           newVal,
           selectedSlots,
           selectedYears,
           selectedCampuses,
           selectedSemesters,
-          selectedAnswerKeyIncluded
-        ),
+          selectedAnswerKeyIncluded,
+        );
+        setCurrentPage(1);
+        console.log("Filtered Papers");
+      },
     },
     {
       label: "Slots",
       data: slots,
       selected: selectedSlots,
-      updater: (newVal: string[]) =>
+      updater: (newVal: string[]) => {
         handleApplyFilters(
           selectedExams,
           newVal,
           selectedYears,
           selectedCampuses,
           selectedSemesters,
-          selectedAnswerKeyIncluded
-        ),
+          selectedAnswerKeyIncluded,
+        );
+        setCurrentPage(1);
+        console.log("Filtered Papers");
+      },
     },
     {
       label: "Years",
       data: years,
       selected: selectedYears,
-      updater: (newVal: string[]) =>
+      updater: (newVal: string[]) => {
         handleApplyFilters(
           selectedExams,
           selectedSlots,
           newVal,
           selectedCampuses,
           selectedSemesters,
-          selectedAnswerKeyIncluded
-        ),
+          selectedAnswerKeyIncluded,
+        );
+        setCurrentPage(1);
+        console.log("Filtered Papers");
+      },
     },
     {
       label: "Semesters",
       data: semesters,
       selected: selectedSemesters,
-      updater: (newVal: string[]) =>
+      updater: (newVal: string[]) => {
         handleApplyFilters(
           selectedExams,
           selectedSlots,
           selectedYears,
           selectedCampuses,
           newVal,
-          selectedAnswerKeyIncluded
-        ),
+          selectedAnswerKeyIncluded,
+        );
+        setCurrentPage(1);
+        console.log("Filtered Papers");
+      },
     },
   ];
 
@@ -100,7 +114,9 @@ function SideBar() {
           <Filter size={24} />
           <div className="font-play text-xl font-bold">Filters</div>
         </div>
-        <SidebarButton onClick={() => handleApplyFilters([], [], [], [], [], false)}>
+        <SidebarButton
+          onClick={() => handleApplyFilters([], [], [], [], [], false)}
+        >
           Reset Filters
         </SidebarButton>
       </div>
@@ -115,14 +131,13 @@ function SideBar() {
               selectedYears,
               selectedCampuses,
               selectedSemesters,
-              !selectedAnswerKeyIncluded
+              !selectedAnswerKeyIncluded,
             )
           }
         >
           Answer Key Available
         </SidebarButton>
       </div>
-
 
       {filtersForSidebar.map((section) => (
         <SidebarSection

@@ -106,6 +106,13 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
   };
 
   const downloadPDF = async () => {
+    if(window.dataLayer){
+      window.dataLayer.push({
+          'event': 'pdf_download_start',
+          'paper_title': name,
+          'paper_url': url,
+      });
+    }
     const fileName = `${name}.pdf`;
     await downloadFile(url, fileName);
   };

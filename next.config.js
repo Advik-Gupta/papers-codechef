@@ -8,7 +8,7 @@ await import("./src/env.js");
 const config = {
   swcMinify: false,
   images: {
-    domains: ["res.cloudinary.com"],
+    domains: ["res.cloudinary.com", "storage.googleapis.com"],
   },
   webpack: (config, options) => {
     config.resolve.alias.canvas = false;

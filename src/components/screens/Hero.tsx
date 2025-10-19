@@ -15,7 +15,7 @@ const Hero = () => {
       <p className="my-8 text-center font-play text-lg font-semibold">
         Pinned Subjects
       </p>
-      <PinnedPapersCarousel carouselType="users"/>
+      <PinnedPapersCarousel />
       <PapersCarousel />
     </div>
   );

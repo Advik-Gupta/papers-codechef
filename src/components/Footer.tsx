@@ -25,8 +25,8 @@ export default function Footer() {
     }
   }, [theme]);
   const handleSubscribe = async () => {
-    if (!email?.includes("@")) {
-      toast.error("Please Enter A Valid Email.");
+    if (!email.trim()) {
+      toast.error("Please enter your email.");
       return;
     }
 
@@ -35,14 +35,16 @@ export default function Footer() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
-      }).then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok.");
-        return res.json();
+      })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) return Promise.reject(data.error || "Something went wrong.");
+        return data;
       }),
       {
         loading: "Subscribing...",
         success: "You've Successfully Subscribed!",
-        error: "Something went wrong. Try again later.",
+        error: (err: any) => err,
       },
     );
 

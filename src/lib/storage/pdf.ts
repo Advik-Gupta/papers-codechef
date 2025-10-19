@@ -16,5 +16,5 @@ export async function createPDFfromImages(files: File[]): Promise<Uint8Array> {
     page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
   }
 
-  return pdfDoc.save(); 
+  return pdfDoc.save();
 }

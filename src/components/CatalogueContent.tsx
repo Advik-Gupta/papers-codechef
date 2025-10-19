@@ -57,6 +57,11 @@ const CatalogueContent = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [papersPerPage, setPapersPerPage] = useState(12); // show 12 per page
 
+  useEffect(() => {
+    console.log("subject", subject);
+    setCurrentPage(1);
+  }, [subject]);
+
   // Fetch related subjects when subject changes
   useEffect(() => {
     if (!subject) return;
@@ -88,6 +93,7 @@ const CatalogueContent = () => {
     const filteredSubjects = courses.map((course) => course.name);
     setSubjects(filteredSubjects);
   }, [pathname, courses]);
+
   // Set initial state from searchParams on client-side mount
   useEffect(() => {
     setIsMounted(true);

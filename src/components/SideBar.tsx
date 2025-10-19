@@ -51,7 +51,6 @@ function SideBar() {
           selectedAnswerKeyIncluded,
         );
         setCurrentPage(1);
-        console.log("Filtered Papers");
       },
     },
     {
@@ -68,7 +67,6 @@ function SideBar() {
           selectedAnswerKeyIncluded,
         );
         setCurrentPage(1);
-        console.log("Filtered Papers");
       },
     },
     {
@@ -85,7 +83,6 @@ function SideBar() {
           selectedAnswerKeyIncluded,
         );
         setCurrentPage(1);
-        console.log("Filtered Papers");
       },
     },
     {
@@ -102,7 +99,6 @@ function SideBar() {
           selectedAnswerKeyIncluded,
         );
         setCurrentPage(1);
-        console.log("Filtered Papers");
       },
     },
   ];

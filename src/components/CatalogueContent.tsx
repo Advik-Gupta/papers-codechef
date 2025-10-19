@@ -297,6 +297,7 @@ const CatalogueContent = () => {
           answerkeyCondition
         );
       });
+      setCurrentPage(1);
       setFilteredPapers(filtered);
     },
     [subject, router, papers],
@@ -419,20 +420,17 @@ const CatalogueContent = () => {
             </div>
           </div>
 
-          
-      {/* Select/Deselect/Download All Buttons */}
-      
-      <div className="mb-8 flex w-full items-center justify-end gap-4">
-        <SidebarButton onClick={handleSelectAll}>
-          Select All
-        </SidebarButton>
-        <SidebarButton onClick={handleDeselectAll}>
-          Deselect All
-        </SidebarButton>
-        <SidebarButton onClick={handleDownloadSelected}>
-          Download Selected
-        </SidebarButton>
-      </div>
+          {/* Select/Deselect/Download All Buttons */}
+
+          <div className="mb-8 flex w-full items-center justify-end gap-4">
+            <SidebarButton onClick={handleSelectAll}>Select All</SidebarButton>
+            <SidebarButton onClick={handleDeselectAll}>
+              Deselect All
+            </SidebarButton>
+            <SidebarButton onClick={handleDownloadSelected}>
+              Download Selected
+            </SidebarButton>
+          </div>
 
           {relatedSubjects.length > 0 && (
             <div className="mt-3 flex flex-wrap items-center gap-2">

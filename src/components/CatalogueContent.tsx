@@ -207,7 +207,7 @@ const CatalogueContentInner = ({ subject }: { subject: string | null }) => {
         answerkeyCondition
       );
     });
-
+    setCurrentPage(1);
     setFilteredPapers(filtered);
     setAppliedFilters(
       selectedExams.length > 0 ||

@@ -1,72 +1,57 @@
-## Contribution Guidelines
+# Contribute to the Papers Repository
 
-Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+We appreciate your interest in contributing to the `papers-codechef` repository! Please follow these guidelines to ensure a smooth and effective contribution process.
 
-## How to contribute
 
-- Decide which repository to contribute
-- Decide what to contribute
-- Fork the repo then clone it locally
-- Commit your work (You should create a new branch when you're doing development work that is somewhat experimental in nature.)
-- Create a **Pull Request**
-- Congrats 🎉 you have just contributed towards open source!
+## Getting started
 
-## What to contribute
+- If you're looking for ideas about what to work on, check out our [issues](https://github.com/CodeChefVIT/papers-codechef/issues) 
+- If you have a bugfix to report ensure that you are on the latest pkull and no similar issue exists. You can then [create an bug report](https://github.com/CodeChefVIT/papers-codechef/issues/new?template=bug_report.md)
+- You can also propose a [feature request](https://github.com/CodeChefVIT/papers-codechef/issues/new?template=feature_request.md). Begin by filling out the template, write a brief problem statement that clearly explains the issue you want to address, without tying it to any specific solution. It doesn’t need to be long or formal; just provide enough context to clearly understand the problem before discussing possible solutions. 
 
-- Find an open issue to tackle
-- Ask if you can help write a new feature
-- Add / Improve Unit Testing
-- Write tutorials for how a project can be used and add to the readme
-- Review code on other people’s submissions and help improving / finding vulnerabilities
+## Setting up
+- **Fork** the repository. All the PRs would be made from this fork.
+- **Clone** the repository.
 
-## Making a PR
-- Provide all the appropriate details asked in PR template
-- A pull request doesn’t have to represent finished work. It’s usually better to open a pull request early on, so others can watch or give feedback on your progress. Just mark it as a “WIP” (Work in Progress) in the subject line. You can always add more commits later.
+To get the project running, you need to set up your local environment:
 
-## Opening an Issue
-- Make use of an appropriate Issue Template
-- We welcome Feature request, Bug Report, Documentation fix and others
-- Do not open critical security issues here, report them directly at [our email](mailto:contact@codechefvit.com).
+- **Create a `.env` file:** Create a new file named `.env` and use the .env.example file to create your own .env file and put in your your own environment variables to make the project functional.
+- **Install dependencies:** Run `pnpm i` in your terminal to install all necessary dependencies.
+- **Checkout staging branch**: Run `git checkout staging` to switch branches.
+- **Run the project:** Run `pnpm dev` to start the project.
 
-## Communicating effectively
-**Give context.** Help others get quickly up to speed. If you’re running into an error, explain what you’re trying to do and how to reproduce it. If you’re suggesting a new idea, explain why you think it’d be useful to the project (not just to you!).
+## How to Contribute
 
-```
-✔️ “X doesn’t happen when I do Y”
-❌ “X is broken! Please fix it.”
-```
+Once your environment is set up, you're ready to start coding.
 
-**Do your homework beforehand.** It’s OK not to know things, but show that you tried. Before asking for help, be sure to check a project’s README, documentation, issues (open or closed), mailing list, and search the internet for an answer. People will appreciate when you demonstrate that you’re trying to learn.
+- **Create a new branch:** Use the command `git checkout -b yourName/featureName` to create a new branch for your work.
+- **Make your changes:** Write the code to address the issue you were assigned.
+- **Add changed files:** After making your changes, use `git add .` to add the modified files to Git tracking.
+- **Commit your changes:** Please follow standard conventional commit guidelines as outlined here: https://www.conventionalcommits.org/en/v1.0.0/
+- **Push your changes:** Push your commits to your forked repository using `git push`.
 
-```
-✔️ ““I’m not sure how to implement X. I checked the help docs and didn’t find any mentions.””
-❌ “How do I X?”
-```
+## Submit a Pull Request
 
-**Keep requests short and direct.**
+- **[Submit your pull request](https://github.com/CodeChefVIT/papers-codechef/compare):** Please, fill in the Pull Request template - it will help us better understand the PR and increase the chances of it getting merged quickly.
 
-```
-✔️ “I’d like to write an API tutorial.”
-❌ “I was driving down the highway the other day and stopped for gas, and then I had this amazing idea for something we should be doing, but before I explain that, let me show you…“
-```
+An organization member will review the PR and discuss changes you might have to make before merging it. Any new changes you push to your branch will be automatically attached to the PR.
 
-**It’s okay to ask questions (but be patient!).**
+---
 
-```
-✔️ “Thanks for looking into this error. I followed your suggestions. Here’s the output.”
-❌ “Why can’t you fix my problem? Isn’t this your project?”
-```
+### Mandatory PR contents
 
-**Respect community decisions.**
+Please ensure that any Pull Request you make contains these things -
 
-```
-✔️ “I’m disappointed you can’t support my use case, but as you’ve explained it only affects a minor portion of users, I understand why. Thanks for listening.”
-❌ “Why won’t you support my use case? This is unacceptable!”
-```
+- Purpose and issue which the PR is made for.
+- Before & after screenshots if your changes involve any visual adjustments (e.g. UI changes, layout tweaks).
+- List of the major changes made in this PR.
+- Mention of any bug fixes, known issues or follow-ups needed.
 
-## Misc
-- You are welcome to Propose a new feature by creating an **Issue**.
-- You may Discuss a high-level topic or idea (for example, community, vision or policies) by writing to us at our [Email](mailto:contact@codechefvit.com).
+**Important:** Ensure no merge conflicts exist before making a PR and run `pnpm build` to check for build errors.
 
-## Attribution
-- [Open Source Guide](https://opensource.guide/how-to-contribute/)
+
+### Tips to improve the chances of your PR getting reviewed and merged
+
+- Small, focused & incremental pull requests are much easier to review.
+- Spend time explaining your changes in the pull request body.
+- Low effort PRs, such as those that just re-arrange syntax, won't be merged without a compelling justification.

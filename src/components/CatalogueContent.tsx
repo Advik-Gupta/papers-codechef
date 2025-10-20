@@ -61,7 +61,6 @@ const CatalogueContentInner = ({ subject }: { subject: string | null }) => {
   } = useFilters();
 
   useEffect(() => {
-    console.log("subject", subject);
     setCurrentPage(1);
   }, [subject]);
 

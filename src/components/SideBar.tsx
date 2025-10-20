@@ -50,7 +50,6 @@ function SideBar() {
           selectedSemesters,
           selectedAnswerKeyIncluded,
         );
-        setCurrentPage(1);
       },
     },
     {
@@ -66,7 +65,6 @@ function SideBar() {
           selectedSemesters,
           selectedAnswerKeyIncluded,
         );
-        setCurrentPage(1);
       },
     },
     {
@@ -82,7 +80,6 @@ function SideBar() {
           selectedSemesters,
           selectedAnswerKeyIncluded,
         );
-        setCurrentPage(1);
       },
     },
     {
@@ -98,7 +95,6 @@ function SideBar() {
           newVal,
           selectedAnswerKeyIncluded,
         );
-        setCurrentPage(1);
       },
     },
   ];

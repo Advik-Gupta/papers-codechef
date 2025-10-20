@@ -24,12 +24,9 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { useCourses } from "@/context/courseContext";
-<<<<<<< HEAD
-//import CookoffBanner from "./CookoffBanner";
-=======
 import PinnedModal from "./ui/PinnedModal";
 import RequestModal from "./ui/RequestModal";
->>>>>>> 9aef412fa4af29e2d832e504ff9a7ec10b083308
+//import CookoffBanner from "./CookoffBanner";
 
 function Navbar() {
   const pathname: string = usePathname() ?? "/";
@@ -66,7 +63,7 @@ function Navbar() {
 
   return (
     <div className="sticky top-0 z-[50] w-full bg-[#B2B8FF] dark:bg-[#130E1F]">
-      <Banner
+      {/*<Banner
         bannerId="freshers"
         bgColor="#fef3c7"
         textColor="#5a3000"
@@ -74,14 +71,9 @@ function Navbar() {
         accentColor="#78350f"
         title="Attention Freshers!"
         message="If papers for your subject are not yet available, click on your subject and explore related subjects until papers become available, as these are newly introduced courses."
-<<<<<<< HEAD
-      /> */}
-
+      />*/}
       {/* <CookoffBanner /> */}
 
-=======
-      />
->>>>>>> 9aef412fa4af29e2d832e504ff9a7ec10b083308
       <div className="flex items-center justify-between bg-inherit px-4 py-4 md:px-8 md:py-5">
         {}
         <div className="relative flex items-center gap-4">

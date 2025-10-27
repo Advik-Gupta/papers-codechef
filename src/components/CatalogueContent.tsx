@@ -60,6 +60,10 @@ const CatalogueContentInner = ({ subject }: { subject: string | null }) => {
     handleDownloadSelected,
   } = useFilters();
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [subject]);
+
   // Fetch related subjects when subject changes
   useEffect(() => {
     if (!subject) return;
@@ -92,11 +96,21 @@ const CatalogueContentInner = ({ subject }: { subject: string | null }) => {
         localStorage.getItem("userSubjects") ?? "[]",
       ) as StoredSubjects;
       const subjectName = searchParams.get("subject");
-      setSelectedExams(searchParams.get("exams")?.split(",").filter(Boolean) ?? []);
-      setSelectedSlots(searchParams.get("slots")?.split(",").filter(Boolean) ?? []);
-      setSelectedYears(searchParams.get("years")?.split(",").filter(Boolean) ?? []);
-      setSelectedCampuses(searchParams.get("campus")?.split(",").filter(Boolean) ?? []);
-      setSelectedSemesters(searchParams.get("semester")?.split(",").filter(Boolean) ?? []);
+      setSelectedExams(
+        searchParams.get("exams")?.split(",").filter(Boolean) ?? [],
+      );
+      setSelectedSlots(
+        searchParams.get("slots")?.split(",").filter(Boolean) ?? [],
+      );
+      setSelectedYears(
+        searchParams.get("years")?.split(",").filter(Boolean) ?? [],
+      );
+      setSelectedCampuses(
+        searchParams.get("campus")?.split(",").filter(Boolean) ?? [],
+      );
+      setSelectedSemesters(
+        searchParams.get("semester")?.split(",").filter(Boolean) ?? [],
+      );
       setSelectedAnswerKeyIncluded(searchParams.get("answerkey") === "true");
       if (subjectName && Array.isArray(currentPinnedSubjects)) {
         if (currentPinnedSubjects.includes(subjectName)) {
@@ -106,7 +120,15 @@ const CatalogueContentInner = ({ subject }: { subject: string | null }) => {
         }
       }
     }
-  }, [searchParams, setSelectedExams, setSelectedSlots, setSelectedYears, setSelectedSemesters, setSelectedCampuses, setSelectedAnswerKeyIncluded]);
+  }, [
+    searchParams,
+    setSelectedExams,
+    setSelectedSlots,
+    setSelectedYears,
+    setSelectedSemesters,
+    setSelectedCampuses,
+    setSelectedAnswerKeyIncluded,
+  ]);
 
   const handlePinToggle = () => {
     const current = !pinned;
@@ -151,12 +173,7 @@ const CatalogueContentInner = ({ subject }: { subject: string | null }) => {
     };
 
     void fetchPapers();
-  }, [
-    subject,
-    isMounted,
-    setPapers,
-    setFilterOptions,
-  ]);
+  }, [subject, isMounted, setPapers, setFilterOptions]);
 
   useEffect(() => {
     if (!papers.length) return;
@@ -189,15 +206,14 @@ const CatalogueContentInner = ({ subject }: { subject: string | null }) => {
         answerkeyCondition
       );
     });
-    
     setFilteredPapers(filtered);
     setAppliedFilters(
       selectedExams.length > 0 ||
-      selectedSlots.length > 0 ||
-      selectedYears.length > 0 ||
-      selectedSemesters.length > 0 ||
-      selectedCampuses.length > 0 ||
-      selectedAnswerKeyIncluded
+        selectedSlots.length > 0 ||
+        selectedYears.length > 0 ||
+        selectedSemesters.length > 0 ||
+        selectedCampuses.length > 0 ||
+        selectedAnswerKeyIncluded,
     );
   }, [
     papers,

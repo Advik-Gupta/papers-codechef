@@ -9,7 +9,6 @@ export interface IUpcomingSubject {
   slots: string[];
 }
 
-
 export interface PostRequestBody {
   tags: string;
 }
@@ -148,9 +147,7 @@ export interface Filters {
   unique_semesters: string[];
 }
 
-export interface StoredSubjects {
-  subjects: string[];
-}
+export type StoredSubjects = string[];
 
 export interface TransformedPaper {
   subject: string;

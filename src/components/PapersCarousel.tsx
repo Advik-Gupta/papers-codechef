@@ -64,7 +64,7 @@ function PapersCarousel() {
 
   return (
       <div className="mt-3 px-4">
-        <p className="my-8 hidden text-center font-play text-lg font-semibold md:block">
+        <p className="my-8 text-center font-play text-lg font-semibold md:block">
           Upcoming Exams
         </p>
 

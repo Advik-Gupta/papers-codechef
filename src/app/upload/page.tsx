@@ -374,27 +374,39 @@ export default function Page() {
               }}
               multiple={true}
             >
-              {({ getRootProps, getInputProps, isDragActive }) => (
+              {({ getRootProps, getInputProps, isDragActive }) => {
+                const pdfUploaded = files.some(f => f.type === "application/pdf");
+                return(
                 <div
-                  className={`relative h-20 w-20 flex-shrink-0 cursor-pointer touch-none ${
-                    isDragActive || isGlobalDragging
-                      ? "border-2 border-solid border-[#6D28D9]"
-                      : ""
-                  }`}
-                  {...getRootProps()}
+                  className={`relative h-20 w-20 flex-shrink-0 touch-none group${
+            isDragActive || isGlobalDragging
+              ? "border-2 border-solid border-[#6D28D9]"
+              : ""
+          }`}
+                  {...(!pdfUploaded ? getRootProps() : {})}
                 >
-                  <input {...getInputProps()} />
-                  <div className="absolute left-4 top-4 h-16 w-16 rounded-2xl bg-violet-950" />
+                  {!pdfUploaded && <input {...getInputProps()} />}
+                  <div className={`absolute left-4 top-4 h-16 w-16 rounded-2xl bg-violet-950 ${pdfUploaded ? "text-gray-500 cursor-not-allowed" : "text-white cursor-pointer"}`} />
                   <div className="absolute left-0 top-0 h-10 w-10 rounded-[20px] bg-violet-950" />
                   <div className="absolute left-1 top-1 flex h-8 w-8 items-center rounded-[20px] bg-black/50" />
-                  <div className="absolute left-9 top-9 text-2xl text-white">
+                  <div className={`absolute left-9 top-9 text-2xl ${pdfUploaded ? "text-gray-500 cursor-not-allowed" : "text-white cursor-pointer"}`}
+                >
+                    <div className={`absolute text-2xl ${pdfUploaded ? "text-gray-500 cursor-not-allowed" : "text-white cursor-pointer"}`}
+                >   
                     <FiPlus className="h-7 w-7" />
+
+                    {pdfUploaded && (<div className="absolute left-12 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-md bg-gradient-to-r from-indigo-900 to-violet-900 px-3 py-1 text-xs text-white shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1">
+                        Only one PDF file is permitted. 
+                    </div>
+                    )}
+                  </div>
                   </div>
                   <div className="absolute left-4 top-3 text-xs font-semibold text-white">
                     {previews.length}
                   </div>
                 </div>
-              )}
+                );
+              }}
             </Dropzone>
           )}
           {previews.length > 0 && (

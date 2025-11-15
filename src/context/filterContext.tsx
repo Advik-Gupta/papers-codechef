@@ -155,13 +155,13 @@ export const FilterProvider: React.FC<FilterProviderProps> = ({ children, subjec
     const url = URL.createObjectURL(zipBlob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = searchParams.get("subject")?.split(" [")[0];
+    a.download = subject ?? searchParams.get("subject")?.split(" [")[0] ?? "paper";
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
     toast.success("Download Initiated");
-  }, [selectedPapers]);
+  }, [searchParams, selectedPapers, subject]);
 
   const handleApplyFilters = useCallback(
     (

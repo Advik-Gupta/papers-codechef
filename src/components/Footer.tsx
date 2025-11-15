@@ -35,16 +35,15 @@ export default function Footer() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
-      })
+      })     
       .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) return Promise.reject(data.error || "Something went wrong.");
-        return data;
+        if (!res.ok) throw new Error("Network response was not ok.");
+        return res.json();
       }),
       {
         loading: "Subscribing...",
         success: "You've Successfully Subscribed!",
-        error: (err: any) => err,
+        error: (err: Error) => err.message || "Subscription Failed.",
       },
     );
 

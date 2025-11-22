@@ -200,7 +200,75 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
   }, []);
 
   return (
-    <div className="flex w-full justify-center gap-6 p-3 md:p-0">
+    <div className="w-full flex-row justify-center gap-6 p-3 md:flex md:p-0">
+      {!isFullscreen && (
+        <div className="mx-auto mb-6 mt-2 flex w-full max-w-[480px] flex-col items-center gap-3 rounded-xl bg-[#F3F5FF] p-3 shadow dark:bg-[#262635] sm:flex-row md:hidden">
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={goToPreviousPage}
+              disabled={pageNumber <= 1}
+              className="h-9 w-9 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
+            >
+              <FaLessThan />
+            </Button>
+
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => handlePageChange(e)}
+              onFocus={() => setInputValue("")}
+              className="h-9 w-14 rounded border bg-[#e7e9ff] p-1 text-center text-sm [appearance:textfield] dark:bg-[#1f1f2a] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            />
+
+            <span className="text-sm font-medium">of {numPages ?? 1}</span>
+
+            <Button
+              onClick={goToNextPage}
+              disabled={pageNumber >= (numPages ?? 1)}
+              className="h-9 w-9 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
+            >
+              <FaGreaterThan />
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={zoomOut}
+              disabled={scale <= 0.25}
+              className="h-9 w-9 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
+            >
+              <ZoomOut />
+            </Button>
+
+            <span className="w-10 text-center text-sm font-medium">
+              {(scale * 100).toFixed(0)}%
+            </span>
+
+            <Button
+              onClick={zoomIn}
+              disabled={scale >= 3}
+              className="h-9 w-9 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-gray-300"
+            >
+              <ZoomIn />
+            </Button>
+
+            <ShareButton />
+
+            <Button onClick={downloadPDF} className="h-9 w-9 rounded p-0">
+              <Download />
+            </Button>
+
+            <Button
+              onClick={toggleFullscreen}
+              className="h-9 w-9 rounded p-0 text-white transition hover:bg-[#6536c1]"
+            >
+              {isFullscreen ? <Minimize2 /> : <Maximize2 />}
+            </Button>
+          </div>
+        </div>
+      )}
+
       <div
         ref={containerRef}
         className="max-h-[70vh] overflow-auto rounded-lg bg-[#F3F5FF] px-4 shadow-lg dark:bg-[#070114]"
@@ -242,6 +310,7 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
               </div>
             ))}
         </Document>
+
         {isFullscreen && (
           <div className="fixed bottom-4 left-1/2 z-50 mt-4 flex -translate-x-1/2 flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635] sm:flex-row">
             <div className="flex items-center gap-2">
@@ -305,7 +374,7 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
       </div>
 
       {!isFullscreen && (
-        <div className="flex h-fit flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635]">
+        <div className="hidden h-fit flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635] md:flex">
           <div className="flex flex-col items-center gap-3">
             <Button
               onClick={toggleFullscreen}

@@ -316,16 +316,21 @@ const CatalogueContentInner = ({ subject }: { subject: string | null }) => {
           </div>
 
           {/* Select/Deselect/Download All Buttons */}
-          <div className="mb-8 flex w-full items-center justify-end gap-4">
+          <div className="mb-6 mt-5 flex w-full flex-wrap items-center justify-start gap-3 sm:gap-4 md:mt-4 md:justify-end">
             <SortComponent
               onSortChange={setSortOption}
               currentSort={sortOption}
             />
-            <SidebarButton onClick={handleSelectAll}>Select All</SidebarButton>
-            <SidebarButton onClick={handleDeselectAll}>
+
+            <SidebarButton onClick={handleSelectAll} className="order-2">
+              Select All
+            </SidebarButton>
+
+            <SidebarButton onClick={handleDeselectAll} className="order-2">
               Deselect All
             </SidebarButton>
-            <SidebarButton onClick={handleDownloadSelected}>
+
+            <SidebarButton onClick={handleDownloadSelected} className="order-2">
               Download Selected
             </SidebarButton>
           </div>

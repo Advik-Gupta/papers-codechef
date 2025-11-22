@@ -9,7 +9,12 @@ import { Button } from "./ui/button";
 import { downloadFile } from "../lib/utils/download";
 import ShareButton from "./ShareButton";
 import Loader from "./ui/loader";
-import { FaGreaterThan, FaLessThan } from "react-icons/fa6";
+import {
+  FaGreaterThan,
+  FaLessThan,
+  FaAngleUp,
+  FaAngleDown,
+} from "react-icons/fa6";
 
 pdfjs.GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.mjs";
@@ -115,11 +120,11 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
   };
 
   const downloadPDF = async () => {
-    if(window.dataLayer){
+    if (window.dataLayer) {
       window.dataLayer.push({
-          'event': 'pdf_download_start',
-          'paper_title': name,
-          'paper_url': url,
+        event: "pdf_download_start",
+        paper_title: name,
+        paper_url: url,
       });
     }
     const fileName = `${name}.pdf`;
@@ -195,10 +200,10 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
   }, []);
 
   return (
-    <div className="flex flex-col items-center p-3 md:p-0">
+    <div className="flex w-full justify-center gap-6 p-3 md:p-0">
       <div
         ref={containerRef}
-        className="max-h-[70vh] w-full overflow-auto bg-[#F3F5FF] px-4 shadow-lg dark:bg-[#070114]"
+        className="max-h-[70vh] overflow-auto rounded-lg bg-[#F3F5FF] px-4 shadow-lg dark:bg-[#070114]"
       >
         <Document
           file={url}
@@ -300,34 +305,26 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
       </div>
 
       {!isFullscreen && (
-        <div className="mt-4 flex flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635] sm:flex-row">
-          <div className="flex items-center gap-2">
+        <div className="flex h-fit flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635]">
+          <div className="flex flex-col items-center gap-3">
             <Button
-              onClick={goToPreviousPage}
-              disabled={pageNumber <= 1}
-              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
+              onClick={toggleFullscreen}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1]"
             >
-              <FaLessThan />
+              {isFullscreen ? <Minimize2 /> : <Maximize2 />}
             </Button>
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => handlePageChange(e)}
-              onFocus={() => setInputValue("")}
-              className="h-10 w-16 rounded border p-1 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-            />
-            <span>of {numPages ?? 1}</span>
+
             <Button
-              onClick={goToNextPage}
-              disabled={pageNumber >= (numPages ?? 1)}
-              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
+              onClick={downloadPDF}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1]"
             >
-              <FaGreaterThan />
+              <Download />
             </Button>
+
+            <ShareButton />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col items-center gap-3">
             <Button
               onClick={zoomOut}
               disabled={scale <= 0.25}
@@ -335,7 +332,9 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
             >
               <ZoomOut />
             </Button>
-            <span>{(scale * 100).toFixed(0)}%</span>
+
+            <span className="text-sm">{(scale * 100).toFixed(0)}%</span>
+
             <Button
               onClick={zoomIn}
               disabled={scale >= 3}
@@ -343,18 +342,35 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
             >
               <ZoomIn />
             </Button>
-            <ShareButton />
+          </div>
+
+          <div className="mt-2 flex flex-col items-center gap-3">
+            <div className="flex flex-col items-center">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => handlePageChange(e)}
+                onFocus={() => setInputValue("")}
+                className="h-10 w-16 rounded border p-1 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              />
+              <span className="mt-1 text-sm">of {numPages ?? 1}</span>
+            </div>
+
             <Button
-              onClick={downloadPDF}
-              className="aspect-square h-10 w-10 p-0"
+              onClick={goToNextPage}
+              disabled={pageNumber >= (numPages ?? 1)}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
             >
-              <Download />
+              <FaAngleUp />
             </Button>
+
             <Button
-              onClick={toggleFullscreen}
-              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1]"
+              onClick={goToPreviousPage}
+              disabled={pageNumber <= 1}
+              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
             >
-              {isFullscreen ? <Minimize2 /> : <Maximize2 />}
+              <FaAngleDown />
             </Button>
           </div>
         </div>

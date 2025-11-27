@@ -136,6 +136,15 @@ export default function Page() {
         return;
       }
 
+      const totalSize = allFiles.reduce(
+        (sum, f) => sum + f.size,
+        0,
+      );
+      if (totalSize > maxFileSize){
+        toast.error("The total upload size exceeds 5MB.", { id: toastId });
+        return;
+      }
+
       const invalidFiles = acceptedFiles.filter(
         (file) =>
           file.size > maxFileSize || !allowedFileTypes.includes(file.type),
@@ -143,7 +152,7 @@ export default function Page() {
 
       if (invalidFiles.length > 0) {
         toast.error(
-          "Some files are invalid. Make sure each is under 5MB and of allowed types (PDF, JPEG, PNG, GIF).",
+          "Some files are invalid. Make sure the total size is below 5MB and files are of allowed types (PDF, JPEG, PNG, GIF).",
           { id: toastId },
         );
         return;

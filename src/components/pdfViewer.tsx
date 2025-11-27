@@ -22,8 +22,7 @@ interface PdfViewerProps {
   year?: string;
 }
 
-export default function PdfViewer({ url, name, paperId, subject, exam, slot, year}: PdfViewerProps) {
-  const [reportOpen, setReportOpen] = useState(false);
+export default function PdfViewer({ url, name, paperId, subject, exam, slot, year }: PdfViewerProps) {
   const [numPages, setNumPages] = useState<number>();
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);

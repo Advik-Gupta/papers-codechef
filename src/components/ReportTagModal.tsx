@@ -13,8 +13,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MultiSelect } from "@/components/multi-select";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectValue,
+  SelectItem,
+} from "@/components/ui/select";
 import axios from "axios";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast";  
 
 interface ReportTagModalProps {
   paperId: string;
@@ -51,7 +58,6 @@ const ReportTagModal = ({
   const [originalCategoryValues, setOriginalCategoryValues] = useState<
     Record<string, string>
   >({});
-  const [originalComment, setOriginalComment] = useState("");
   const [originalEmail, setOriginalEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -98,7 +104,7 @@ const ReportTagModal = ({
       else if (c === "year" && year)
         setCategoryValues((s) => ({ ...s, [c]: year }));
     }
-  }, [selectedCategories]);
+  }, [selectedCategories, subject, exam, slot, year]);
 
   useEffect(() => {
     if (open) {
@@ -116,7 +122,6 @@ const ReportTagModal = ({
       if (slot) base["slot"] = slot;
       if (year) base["year"] = year;
       setOriginalCategoryValues(base);
-      setOriginalComment("");
       setOriginalEmail("");
     } else {
       setSelectedCategories([]);
@@ -124,7 +129,6 @@ const ReportTagModal = ({
       setComment("");
       setEmail("");
       setOriginalCategoryValues({});
-      setOriginalComment("");
       setOriginalEmail("");
     }
   }, [open, subject, exam, slot, year]);
@@ -134,6 +138,14 @@ const ReportTagModal = ({
     toast.error("Missing paper id.");
     return;
   }
+
+  if (selectedCategories.includes("subject")) {
+  const sub = (categoryValues.subject || "").trim();
+  if (!sub) {
+    toast.error("Subject name cannot be empty.");
+    return;
+  }
+}
 
   if (selectedCategories.includes("slot")) {
     const v = (categoryValues.slot || "").trim();
@@ -182,38 +194,41 @@ const ReportTagModal = ({
     }
   }
 
-  if (reportedFields.length === 0) {
-    toast.error("You haven’t changed anything to report.");
-    return;
-  }
+if (reportedFields.length === 0 && comment.trim().length === 0) {
+  toast.error("Please change a tag or write a comment.");
+  return;
+}
 
   setLoading(true);
-  try {
-    await toast.promise(
-      axios.post("/api/report-tag", {
-        paperId,
-        reportedFields,
-        comment,
-        reporterEmail: email || undefined,
-      }),
-      {
-        loading: "Submitting report...",
-        success: "Reported successfully. Thank you — we will work on that.",
-        error: "Failed to submit report.",
-      },
-    );
 
-    modalSetOpen(false);
-    setComment("");
-    setEmail("");
-    setSelectedCategories([]);
-    setCategoryValues({});
-  } catch (err: any) {
-    console.error(err);
-    toast.error(err?.response?.data?.error || "Failed to submit report.");
-  } finally {
-    setLoading(false);
-  }
+      try {
+        const res = await axios.post("/api/report-tag", {
+          paperId,
+          reportedFields,
+          comment,
+          reporterEmail: email || undefined,
+        });
+
+        toast.success("Reported successfully. Thank you, We will work on that.");
+
+        modalSetOpen(false);
+        setComment("");
+        setEmail("");
+        setSelectedCategories([]);
+        setCategoryValues({});
+      } catch (err: any) {
+        console.error(err);
+
+        const msg =
+          err?.response?.data?.error ||
+          err?.message ||
+          "Failed to submit report.";
+
+        toast.error(msg);
+      } finally {
+        setLoading(false);
+      }
+
 };
 
   return (
@@ -228,12 +243,14 @@ const ReportTagModal = ({
 
       <DialogContent className={contentClass}>
         <DialogHeader>
-          <DialogTitle>Report Wrong Tags</DialogTitle>
+         <div className="flex items-center gap-2">
+            <DialogTitle>Report Wrong Tags</DialogTitle>
+            <FaFlag className="text-lg" aria-hidden="true" />
+          </div>
           <DialogDescription>
             Help us improve tagging — suggest correct tags and add an optional
             comment.
           </DialogDescription>
-          <FaFlag className="text-lg" aria-hidden="true" />
         </DialogHeader>
 
         <div className="mt-4 w-full space-y-4">
@@ -257,7 +274,7 @@ const ReportTagModal = ({
           {selectedCategories.length > 0 && (
             <div>
               <label className="mb-2 block text-sm font-medium">
-                Correct values (optional)
+                Correct values
               </label>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {selectedCategories.map((c) => {
@@ -279,7 +296,7 @@ const ReportTagModal = ({
                           className="mb-2 w-full"
                         />
                         <label className="mb-1 block text-sm">
-                          Course code (optional)
+                          Course code
                         </label>
                         <Input
                           value={categoryValues["courseCode"] ?? ""}
@@ -294,30 +311,34 @@ const ReportTagModal = ({
                         />
                       </div>
                     );
-                  } else if (c == "exam") {
+                  } else if (c === "exam") {
                     return (
                       <div key={c} className="w-full">
                         <label className="mb-1 block text-sm capitalize">
                           Exam
                         </label>
 
-                        <select
-                          value={categoryValues["exam"] ?? ""}
-                          onChange={(e) =>
-                            setCategoryValues((s) => ({
-                              ...s,
-                              exam: e.target.value,
-                            }))
-                          }
-                          className="w-full rounded border bg-white p-2 dark:bg-[#1f1f2a]"
-                        >
-                          <option value="CAT-1">CAT-1</option>
-                          <option value="CAT-2">CAT-2</option>
-                          <option value="FAT">FAT</option>
-                        </select>
+                  <Select
+                    value={categoryValues["exam"] ?? ""}
+                    onValueChange={(v) =>
+                      setCategoryValues((s) => ({ ...s, exam: v }))
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select exam" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="CAT-1">CAT-1</SelectItem>
+                      <SelectItem value="CAT-2">CAT-2</SelectItem>
+                      <SelectItem value="FAT">FAT</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+
                       </div>
                     );
-                  } else if (c == "slot") {
+                  } else if (c === "slot") {
                     return (
                       <div key={c} className="w-full">
                         <label className="mb-1 block text-sm capitalize">
@@ -338,7 +359,7 @@ const ReportTagModal = ({
                       </div>
                     );
                   }
-                  else if(c=="year"){
+                  else if(c==="year"){
                     return (
     <div key={c} className="w-full">
       <label className="mb-1 block text-sm capitalize">Year</label>
@@ -382,7 +403,7 @@ const ReportTagModal = ({
             <Input
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Short note"
+              placeholder="eg: Paper quality is not good"
             />
           </div>
 
@@ -398,7 +419,7 @@ const ReportTagModal = ({
           </div>
 
           <div className="flex justify-end">
-            <Button onClick={handleSubmit} disabled={!isDirty || loading}>
+            <Button onClick={handleSubmit} disabled={(!isDirty && comment.trim().length === 0) || loading}>
               Submit
             </Button>
           </div>

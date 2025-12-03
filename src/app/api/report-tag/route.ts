@@ -3,8 +3,12 @@ import { connectToDatabase } from "@/lib/database/mongoose";
 import TagReport from "@/db/tagReport";
 import { Ratelimit } from "@upstash/ratelimit";
 import { redis } from "@/lib/utils/redis";
+import { exams } from "@/components/select_options";
 
-const ALLOWED_EXAMS = ["CAT-1", "CAT-2", "FAT"];
+interface ReportedFieldInput {
+  field: string;
+  value?: string;
+}
 const ALLOWED_FIELDS = ["subject", "courseCode", "exam", "slot", "year"];
 
 const ratelimit = new Ratelimit({
@@ -13,7 +17,7 @@ const ratelimit = new Ratelimit({
   analytics: true,
 });
 
-function getClientIp(req: any): string {
+function getClientIp(req: Request & { ip?: string}): string {
   return req.ip || "127.0.0.1";
 }
 
@@ -49,12 +53,14 @@ export async function POST(req: Request & { ip?: string }) {
         { status: 429 }
       );
     }
-    const reportedFields = (body.reportedFields ?? [])
-      .map((r: any) => ({
-        field: String(r.field).trim(),
-        value: r.value?.trim(),
-      }))
-      .filter((r: any) => r.field);
+      const reportedFields: ReportedFieldInput[] = Array.isArray(body.reportedFields)
+        ? body.reportedFields
+            .map((r:Partial<ReportedFieldInput>) => ({
+              field: typeof r.field === "string" ? r.field.trim() : "",
+              value: typeof r.value === "string" ? r.value.trim() : undefined,
+            }))
+            .filter((r:Partial<ReportedFieldInput>) => r.field)
+        : [];
 
     for (const rf of reportedFields) {
       if (!ALLOWED_FIELDS.includes(rf.field)) {
@@ -64,7 +70,7 @@ export async function POST(req: Request & { ip?: string }) {
         );
       }
       if (rf.field === "exam" && rf.value) {
-        if (!ALLOWED_EXAMS.includes(rf.value)) {
+        if (!exams.some(e => e.toLowerCase() === rf.value?.toLowerCase())) {
           return NextResponse.json(
             { error: `Invalid exam value: ${rf.value}` },
             { status: 400 }

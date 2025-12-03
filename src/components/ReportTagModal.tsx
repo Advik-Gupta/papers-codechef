@@ -10,16 +10,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MultiSelect } from "@/components/multi-select";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectValue,
-  SelectItem,
-} from "@/components/ui/select";
+import LabeledInput from "@/components/ui/LabeledInput";
+import LabeledSelect from "@/components/ui/LabeledSelect";
 import axios from "axios";
 import toast from "react-hot-toast";  
 
@@ -40,7 +34,6 @@ const ReportTagModal = ({
   exam,
   slot,
   year,
-  toolbarStyle = false,
   open,
   setOpen,
 }: ReportTagModalProps) => {
@@ -84,6 +77,7 @@ const ReportTagModal = ({
 
     return false;
   }, [selectedCategories, categoryValues, originalCategoryValues]);
+     const canSubmit = isDirty || comment.trim().length > 0;
 
   useEffect(() => {
     for (const c of selectedCategories) {
@@ -155,7 +149,6 @@ const ReportTagModal = ({
       return;
     }
   }
-
   if (selectedCategories.includes("year")) {
     const y = (categoryValues.year || "").trim();
     const yearRegex = /^\d{4}(-\d{4})?$/;
@@ -163,6 +156,24 @@ const ReportTagModal = ({
       toast.error("Year must be a valid format (e.g., 2024 or 2024-2025).");
       return;
     }
+    if (y.includes("-")) {
+    const parts = y.split("-");
+    const start = Number(parts[0]);
+    const end = Number(parts[1]);
+    
+    if (isNaN(start) || isNaN(end)) {
+      toast.error("Invalid year format.");
+      return;
+    }
+    if (end - start !== 1) {
+      toast.error("Year range difference must be exactly 1 (e.g., 2024-2025).");
+      return;
+    }
+  }
+  }
+    if (email.trim() && !email.includes("@gmail.com")) {
+    toast.error("Email must be a valid Gmail address (@gmail.com).");
+    return;
   }
 
   const reportedFields: { field: string; value?: string }[] = [];
@@ -265,164 +276,117 @@ if (reportedFields.length === 0 && comment.trim().length === 0) {
                 { label: "Slot", value: "slot" },
                 { label: "Year", value: "year" },
               ]}
-              onValueChange={(vals) => setSelectedCategories(vals)}
+              onValueChange={(vals:string[]) => setSelectedCategories(vals)}
               defaultValue={[]}
               placeholder="Select fields"
             />
           </div>
 
           {selectedCategories.length > 0 && (
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                Correct values
-              </label>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {selectedCategories.map((c) => {
-                  if (c === "subject") {
-                    return (
-                      <div key={c} className="w-full">
-                        <label className="mb-1 block text-sm">
-                          Subject name
-                        </label>
-                        <Input
-                          value={categoryValues["subject"] ?? ""}
-                          onChange={(e) =>
-                            setCategoryValues((s) => ({
-                              ...s,
-                              subject: e.target.value,
-                            }))
-                          }
-                          placeholder="Subject name"
-                          className="mb-2 w-full"
-                        />
-                        <label className="mb-1 block text-sm">
-                          Course code
-                        </label>
-                        <Input
-                          value={categoryValues["courseCode"] ?? ""}
-                          onChange={(e) =>
-                            setCategoryValues((s) => ({
-                              ...s,
-                              courseCode: e.target.value,
-                            }))
-                          }
-                          placeholder="e.g. BMAT205L"
-                          className="w-full"
-                        />
-                      </div>
-                    );
-                  } else if (c === "exam") {
-                    return (
-                      <div key={c} className="w-full">
-                        <label className="mb-1 block text-sm capitalize">
-                          Exam
-                        </label>
+                          <div>
+                <label className="mb-2 block text-sm font-medium">Correct values</label>
 
-                  <Select
-                    value={categoryValues["exam"] ?? ""}
-                    onValueChange={(v) =>
-                      setCategoryValues((s) => ({ ...s, exam: v }))
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {selectedCategories.map((c) => {
+              if (c === "subject") {
+                return (
+                  <div key={c} className="w-full space-y-2">
+                    <LabeledInput
+                      label="Subject name"
+                      value={categoryValues.subject ?? ""}
+                      onChange={(v) => setCategoryValues((s) => ({ ...s, subject: v }))}
+                      placeholder="Subject name"
+                    />
+                    <LabeledInput
+                      label="Course code"
+                      value={categoryValues.courseCode ?? ""}
+                      onChange={(v) => setCategoryValues((s) => ({ ...s, courseCode: v }))}
+                      placeholder="e.g. BMAT205L"
+                    />
+                  </div>
+                );
+              }
+
+              if (c === "exam") {
+                return (
+                  <LabeledSelect
+                    key={c}
+                    label="Exam"
+                    value={categoryValues.exam ?? ""}
+                    onChange={(v) => setCategoryValues((s) => ({ ...s, exam: v }))}
+                    options={["CAT-1", "CAT-2", "FAT"]}
+                    placeholder="Select exam"
+                  />
+                );
+              }
+
+              if (c === "slot") {
+                return (
+                  <LabeledInput
+                    key={c}
+                    label="Slot"
+                    value={categoryValues.slot ?? ""}
+                    onChange={(v) =>
+                      setCategoryValues((s) => ({
+                        ...s,
+                        slot: v.toUpperCase().replace(/[^A-Z0-9]/g, ""),
+                      }))
                     }
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select exam" />
-                    </SelectTrigger>
+                    placeholder="e.g. D1"
+                    maxLength={2}
+                  />
+                );
+              }
 
-                    <SelectContent>
-                      <SelectItem value="CAT-1">CAT-1</SelectItem>
-                      <SelectItem value="CAT-2">CAT-2</SelectItem>
-                      <SelectItem value="FAT">FAT</SelectItem>
-                    </SelectContent>
-                  </Select>
+              if (c === "year") {
+                return (
+                  <LabeledInput
+                    key={c}
+                    label="Year"
+                    value={categoryValues.year ?? ""}
+                    onChange={(v) => setCategoryValues((s) => ({ ...s, year: v }))}
+                    placeholder="e.g. 2024-2025"
+                  />
+                );
+              }
 
-
-                      </div>
-                    );
-                  } else if (c === "slot") {
-                    return (
-                      <div key={c} className="w-full">
-                        <label className="mb-1 block text-sm capitalize">
-                          Slot
-                        </label>
-                        <Input
-                          value={categoryValues[c] ?? ""}
-                          maxLength={2}
-                          onChange={(e) => {
-                            let v = e.target.value.toUpperCase();
-                            v = v.replace(/[^A-Z0-9]/g, "");
-
-                            setCategoryValues((s) => ({ ...s, slot: v }));
-                          }}
-                          placeholder="e.g. D1"
-                          className="w-full"
-                        />
-                      </div>
-                    );
-                  }
-                  else if(c==="year"){
-                    return (
-    <div key={c} className="w-full">
-      <label className="mb-1 block text-sm capitalize">Year</label>
-      <Input
-        value={categoryValues[c] ?? ""}
-        onChange={(e) =>
-          setCategoryValues((s) => ({ ...s, year: e.target.value }))
-        }
-        placeholder="e.g. 2024-2025"
-        className="w-full"
-      />
-    </div>
-  );
-                  }
-                  return (
-                    <div key={c} className="w-full">
-                      <label className="mb-1 block text-sm capitalize">
-                        {c}
-                      </label>
-                      <Input
-                        value={categoryValues[c] ?? ""}
-                        onChange={(e) =>
-                          setCategoryValues((s) => ({
-                            ...s,
-                            [c]: e.target.value,
-                          }))
-                        }
-                        className="w-full"
-                      />
-                    </div>
-                  );
-                })}
+              return (
+                <LabeledInput
+                  key={c}
+                  label={c}
+                  value={categoryValues[c] ?? ""}
+                  onChange={(v) => setCategoryValues((s) => ({ ...s, [c]: v }))}
+                />
+              );
+            })}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <div>
-            <label className="mb-2 block text-sm font-medium">
-              Comment (optional)
-            </label>
-            <Input
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="eg: Paper quality is not good"
-            />
-          </div>
+                <LabeledInput
+                  label="Comment (optional)"
+                  value={comment}
+                  onChange={setComment}
+                  placeholder="eg: Paper quality is not good"
+                />
 
-          <div>
-            <label className="mb-2 block text-sm font-medium">
-              Your email (optional)
-            </label>
-            <Input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-            />
-          </div>
+                <LabeledInput
+                  label="Your email (optional)"
+                  value={email}
+                  onChange={setEmail}
+                  placeholder="you@example.com"
+                  type="email"
+                />
 
-          <div className="flex justify-end">
-            <Button onClick={handleSubmit} disabled={(!isDirty && comment.trim().length === 0) || loading}>
-              Submit
-            </Button>
-          </div>
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={!canSubmit || loading}
+                  >
+                    Submit
+                  </Button>
+                </div>
+
         </div>
       </DialogContent>
     </Dialog>

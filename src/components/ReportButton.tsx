@@ -4,18 +4,11 @@ import { useState } from "react";
 import { FaFlag } from "react-icons/fa6";
 import { Button } from "./ui/button";
 import ReportTagModal from "./ReportTagModal";
+import { usePaper } from "@/context/PaperContext";
 
-export default function ReportButton({ 
-  paperId, subject, exam, slot, year 
-}: {
-  paperId: string;
-  subject?: string;
-  exam?: string;
-  slot?: string;
-  year?: string;
-}) {
+export default function ReportButton(){ 
+  const { paperId, subject, exam, slot, year } = usePaper();
   const [open, setOpen] = useState(false);
-
   return (
     <>
       <Button

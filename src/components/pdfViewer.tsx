@@ -1,5 +1,7 @@
 "use client";
 
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
 import ReportButton from "./ReportButton";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -15,14 +17,9 @@ pdfjs.GlobalWorkerOptions.workerSrc =
 interface PdfViewerProps {
   url: string;
   name: string;
-  paperId: string;
-  subject?: string;
-  exam?: string;
-  slot?: string;
-  year?: string;
 }
 
-export default function PdfViewer({ url, name, paperId, subject, exam, slot, year }: PdfViewerProps) {
+export default function PdfViewer({ url, name }: PdfViewerProps) {
   const [numPages, setNumPages] = useState<number>();
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);
@@ -248,13 +245,7 @@ export default function PdfViewer({ url, name, paperId, subject, exam, slot, yea
             >
               {isFullscreen ? <Minimize2 /> : <Maximize2 />}
             </Button>
-             <ReportButton
-                  paperId={paperId}
-                  subject={subject}
-                  exam={exam}
-                  slot={slot}
-                  year={year}
-                />
+             <ReportButton/>
           </div>
         </div>
       )}
@@ -292,8 +283,8 @@ export default function PdfViewer({ url, name, paperId, subject, exam, slot, yea
                   <Page
                     pageNumber={index + 1}
                     scale={scale}
-                    renderAnnotationLayer={false}
-                    renderTextLayer={false}
+                    renderAnnotationLayer
+                    renderTextLayer
                     className="shadow-md"
                   />
                 </div>
@@ -402,13 +393,7 @@ export default function PdfViewer({ url, name, paperId, subject, exam, slot, yea
               <span className="mt-1 text-sm">of {numPages ?? 1}</span>
             </div>
           </div>
-                <ReportButton
-                  paperId={paperId}
-                  subject={subject}
-                  exam={exam}
-                  slot={slot}
-                  year={year}
-                />
+                <ReportButton/>
           </div>
       )}
     </div>

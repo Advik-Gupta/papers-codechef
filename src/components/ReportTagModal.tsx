@@ -367,7 +367,7 @@ if (reportedFields.length === 0 && comment.trim().length === 0) {
                   label="Comment (optional)"
                   value={comment}
                   onChange={setComment}
-                  placeholder="Describe the issue clearly (e.g., pages torn, print faded, missing items)"
+                  placeholder="Describe the issue clearly (e.g., pages torn, print faded, incorrect paper, missing sections)"
                 />
 
                 <LabeledInput

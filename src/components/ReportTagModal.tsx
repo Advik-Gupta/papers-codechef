@@ -209,37 +209,37 @@ if (reportedFields.length === 0 && comment.trim().length === 0) {
   toast.error("Please change a tag or write a comment.");
   return;
 }
-
+  const payload = {
+    paperId,
+    reportedFields,
+    comment,
+    reporterEmail: email || undefined,
+  };
   setLoading(true);
-
-      try {
-        const res = await axios.post("/api/report-tag", {
-          paperId,
-          reportedFields,
-          comment,
-          reporterEmail: email || undefined,
-        });
-
-        toast.success("Reported successfully. Thank you, We will work on that.");
-
-        modalSetOpen(false);
-        setComment("");
-        setEmail("");
-        setSelectedCategories([]);
-        setCategoryValues({});
-      } catch (err: any) {
-        console.error(err);
-
-        const msg =
-          err?.response?.data?.error ||
-          err?.message ||
-          "Failed to submit report.";
-
-        toast.error(msg);
-      } finally {
-        setLoading(false);
-      }
-
+  await toast.promise(
+    axios.post("/api/report-tag", payload),
+    {
+      loading: "Submitting your report...",
+      success: "Reported successfully. Thank you, We will work on that",
+      error: (err)=>{
+        return (
+        err?.response?.data?.error ||
+        err?.message ||
+        "Failed to submit report."
+        )
+      },
+    }
+  )
+  .then(() => {
+      modalSetOpen(false);
+      setComment("");
+      setEmail("");
+      setSelectedCategories([]);
+      setCategoryValues({});
+    })
+  .finally(() => {
+      setLoading(false);
+    });
 };
 
   return (
@@ -367,7 +367,7 @@ if (reportedFields.length === 0 && comment.trim().length === 0) {
                   label="Comment (optional)"
                   value={comment}
                   onChange={setComment}
-                  placeholder="eg: Paper quality is not good"
+                  placeholder="Describe the issue clearly (e.g., pages torn, print faded, missing items)"
                 />
 
                 <LabeledInput
@@ -377,6 +377,9 @@ if (reportedFields.length === 0 && comment.trim().length === 0) {
                   placeholder="you@example.com"
                   type="email"
                 />
+                {!canSubmit &&(<p className="text-xs text-gray-500 dark:text-red-400">
+                      Submit button becomes active only if you update a tag or write a comment.
+                </p>)}
 
                 <div className="flex justify-end">
                   <Button

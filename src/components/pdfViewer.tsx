@@ -2,6 +2,7 @@
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+import ReportButton from "./ReportButton";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Download, ZoomIn, ZoomOut, Maximize2, Minimize2 } from "lucide-react";
@@ -9,12 +10,6 @@ import { Button } from "./ui/button";
 import { downloadFile } from "../lib/utils/download";
 import ShareButton from "./ShareButton";
 import Loader from "./ui/loader";
-import {
-  FaGreaterThan,
-  FaLessThan,
-  FaAngleUp,
-  FaAngleDown,
-} from "react-icons/fa6";
 
 pdfjs.GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.mjs";
@@ -204,14 +199,6 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
       {!isFullscreen && (
         <div className="mx-auto mb-6 mt-2 flex w-full max-w-[480px] flex-col items-center gap-3 rounded-xl bg-[#F3F5FF] p-3 shadow dark:bg-[#262635] sm:flex-row md:hidden">
           <div className="flex items-center gap-2">
-            <Button
-              onClick={goToPreviousPage}
-              disabled={pageNumber <= 1}
-              className="h-9 w-9 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
-            >
-              <FaLessThan />
-            </Button>
-
             <input
               type="text"
               value={inputValue}
@@ -223,13 +210,6 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
 
             <span className="text-sm font-medium">of {numPages ?? 1}</span>
 
-            <Button
-              onClick={goToNextPage}
-              disabled={pageNumber >= (numPages ?? 1)}
-              className="h-9 w-9 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
-            >
-              <FaGreaterThan />
-            </Button>
           </div>
 
           <div className="flex items-center gap-2">
@@ -265,6 +245,7 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
             >
               {isFullscreen ? <Minimize2 /> : <Maximize2 />}
             </Button>
+             <ReportButton/>
           </div>
         </div>
       )}
@@ -314,13 +295,6 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
         {isFullscreen && (
           <div className="fixed bottom-4 left-1/2 z-50 mt-4 flex -translate-x-1/2 flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635] sm:flex-row">
             <div className="flex items-center gap-2">
-              <Button
-                onClick={goToPreviousPage}
-                disabled={pageNumber <= 1}
-                className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
-              >
-                <FaLessThan />
-              </Button>
               <input
                 type="text"
                 value={inputValue}
@@ -330,13 +304,6 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
                 className="h-10 w-16 rounded border p-1 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />
               <span>of {numPages ?? 1}</span>
-              <Button
-                onClick={goToNextPage}
-                disabled={pageNumber >= (numPages ?? 1)}
-                className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
-              >
-                <FaGreaterThan />
-              </Button>
             </div>
 
             <div className="flex items-center gap-2">
@@ -425,24 +392,9 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
               />
               <span className="mt-1 text-sm">of {numPages ?? 1}</span>
             </div>
-
-            <Button
-              onClick={goToNextPage}
-              disabled={pageNumber >= (numPages ?? 1)}
-              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
-            >
-              <FaAngleUp />
-            </Button>
-
-            <Button
-              onClick={goToPreviousPage}
-              disabled={pageNumber <= 1}
-              className="h-10 w-10 rounded p-0 text-white transition hover:bg-[#6536c1] disabled:bg-[#706b7a] disabled:opacity-50"
-            >
-              <FaAngleDown />
-            </Button>
           </div>
-        </div>
+                <ReportButton/>
+          </div>
       )}
     </div>
   );

@@ -107,11 +107,11 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
   };
 
   const zoomIn = () => {
-    setScale((prev) => Math.min(prev + 0.25, 3));
+    setScale((prev) => Math.min(prev + 0.1, 3));
   };
 
   const zoomOut = () => {
-    setScale((prev) => Math.max(prev - 0.25, 0.25));
+    setScale((prev) => Math.max(prev - 0.1, 0.25));
   };
 
   const downloadPDF = async () => {
@@ -195,7 +195,7 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
   }, []);
 
   return (
-    <div className="w-full flex-row justify-center gap-6 p-3 md:flex md:p-0">
+    <div className="relative w-full gap-6 p-3 md:flex md:justify-center md:p-0">
       {!isFullscreen && (
         <div className="mx-auto mb-6 mt-2 flex w-full max-w-[480px] flex-col items-center gap-3 rounded-xl bg-[#F3F5FF] p-3 shadow dark:bg-[#262635] sm:flex-row md:hidden">
           <div className="flex items-center gap-2">
@@ -209,7 +209,6 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
             />
 
             <span className="text-sm font-medium">of {numPages ?? 1}</span>
-
           </div>
 
           <div className="flex items-center gap-2">
@@ -245,14 +244,14 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
             >
               {isFullscreen ? <Minimize2 /> : <Maximize2 />}
             </Button>
-             <ReportButton/>
+            <ReportButton />
           </div>
         </div>
       )}
 
       <div
         ref={containerRef}
-        className="max-h-[70vh] overflow-auto rounded-lg bg-[#F3F5FF] px-4 shadow-lg dark:bg-[#070114]"
+        className="relative max-h-[70vh] overflow-auto rounded-lg bg-[#F3F5FF] px-4 shadow-lg dark:bg-[#070114]"
       >
         <Document
           file={url}
@@ -341,7 +340,7 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
       </div>
 
       {!isFullscreen && (
-        <div className="hidden h-fit flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635] md:flex">
+        <div className="absolute right-4 top-1/2 z-20 hidden h-fit -translate-y-1/2 flex-col items-center gap-4 rounded-lg bg-[#F3F5FF] p-4 shadow dark:bg-[#262635] md:flex">
           <div className="flex flex-col items-center gap-3">
             <Button
               onClick={toggleFullscreen}
@@ -359,7 +358,6 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
 
             <ShareButton />
           </div>
-
           <div className="flex flex-col items-center gap-3">
             <Button
               onClick={zoomOut}
@@ -379,7 +377,6 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
               <ZoomIn />
             </Button>
           </div>
-
           <div className="mt-2 flex flex-col items-center gap-3">
             <div className="flex flex-col items-center">
               <input
@@ -393,8 +390,8 @@ export default function PdfViewer({ url, name }: PdfViewerProps) {
               <span className="mt-1 text-sm">of {numPages ?? 1}</span>
             </div>
           </div>
-                <ReportButton/>
-          </div>
+          <ReportButton />
+        </div>
       )}
     </div>
   );
